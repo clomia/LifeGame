@@ -14,5 +14,5 @@
 >   * __보류__
 >
 >완료된 항목은 ~~취소선~~ 처리
-[notion_link] = :"https://www.notion.so/LifeGame-326024ece4404f18b527259659b58c6c"
+[notion_link]:"https://www.notion.so/LifeGame-326024ece4404f18b527259659b58c6c"
 ### [Notion URL][notion_link]
