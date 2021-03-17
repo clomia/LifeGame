@@ -1,5 +1,7 @@
 # 콘웨이의 Life Game을 3차원으로 구현한 게임 만들기
 ### [Notion Link](https://www.notion.so/LifeGame-326024ece4404f18b527259659b58c6c)
+---
+![](img/screenshot.jpg)
 ------------
 > #### 목표
 > * 2D환경에서 기초적으로 구현해보기 [ursina 패키지 이해를 위해서]
