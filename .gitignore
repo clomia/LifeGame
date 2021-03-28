@@ -1,0 +1,9 @@
+*.pyc
+__pycache__/
+media/*
+!media/cell_cube.jpg
+!media/prototype_screenshot.jpg
+apps/*
+env/*
+test/*
+!env/requirements.txt

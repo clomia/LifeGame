@@ -1,0 +1,16 @@
+{
+    "python.pythonPath": "env\\Scripts\\python.exe",
+    "python.analysis.extraPaths": [
+        "./apps",
+        "./client",
+        "./client/connection",
+        "./client/core",
+        "./client/core/artifacts",
+        "./client/core/artifacts/origin",
+        "./client/core/scripts",
+        "./env",
+        "./media",
+        "./server",
+        "./test",
+    ],
+}
