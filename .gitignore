@@ -1,4 +1,6 @@
 *.pyc
+*.psd
+*.psb
 __pycache__/
 media/*
 !media/cell_cube.jpg

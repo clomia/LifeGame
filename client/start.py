@@ -8,8 +8,8 @@ def pipe(init):
     world = core.Universe(walls, "source/universe.jpg")
     cursor.visible = False
     core.Eye(limit=world.scale)
-    controller = core.CellController()
-    controller(init)
+    # controller = core.CellController()
+    # controller(init)
 
 
 with core.artifacts() as cursor:
