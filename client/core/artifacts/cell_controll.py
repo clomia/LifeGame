@@ -48,7 +48,12 @@ class CellController(Entity):
         )
         self.fixed_cubic(cell, color.hex("aefff1"), self.cell_cubic_thickness)
         cell.rotation_z = -90
-        cell.update = self.cell_moving(cell)
+        cell.update = self.cell_moving(cell, creating=True)
+
+        def default_moving():
+            cell.update = self.cell_moving(cell)
+
+        invoke(default_moving, delay=3)
         self.field[co] = cell
 
     def blue_cell(self, co):
@@ -60,12 +65,24 @@ class CellController(Entity):
         )
         self.fixed_cubic(cell, color.hex("aef4ff"), self.cell_cubic_thickness)
         cell.rotation_z = -90
-        cell.update = self.cell_moving(cell)
+        cell.update = self.cell_moving(cell, creating=True)
+
+        def default_moving():
+            cell.update = self.cell_moving(cell)
+
+        invoke(default_moving, delay=3)
         self.field[co] = cell
 
-    def cell_moving(self, cell):
-        def func():
-            cell.rotation_y += time.dt * 220
+    def cell_moving(self, cell, creating=False):
+        if creating:
+
+            def func():
+                cell.rotation_y += time.dt * 3000
+
+        else:
+
+            def func():
+                cell.rotation_y += time.dt * 220
 
         return func
 
