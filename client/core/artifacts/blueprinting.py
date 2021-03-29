@@ -12,7 +12,7 @@ else:
 
 class InputGrid(Entity):
     """
-    설계 단계의 모든것을 구현한다
+    설계 단계를 구현한다
 
     입력이 모두 완료되면 pipe_func에게 값을 전달한다
     """

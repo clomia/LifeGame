@@ -114,19 +114,16 @@ class Esc:
 
 def esc_handler(mouse_locked=False):
     """
-    Esc누르면 설정창이 생기는 input 함수를 반환한다.
-
-    마우스 잠금을 사용할때는 매개변수로 True를 전달해주세요
-    -pure function-
+    함수를 호출하면 설정창이 나옵니다.
+    함수를 반환합니다. 메인 스코프의 input함수에 넣으세요
     """
     Esc.mouse_locked = mouse_locked
 
     @react_roop(*Esc.loop)
-    def input(key):
-        if key == "escape":
-            return True
+    def func(key):
+        return True
 
-    return input
+    return func
 
 
 @contextmanager

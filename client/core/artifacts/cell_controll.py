@@ -30,7 +30,10 @@ class CellController(Entity):
         for co, number in space_dict.items():
             co = self.co_convert(co)
             if not number:
-                destroy(self.field[co])
+                cell, cubic = self.field[co]
+                destroy(cell)
+                for outline in cubic.values():
+                    destroy(outline)
                 del self.field[co]
             elif number == 1:
                 self.blue_cell(co)
@@ -46,15 +49,15 @@ class CellController(Entity):
             scale=self.cell_scale,
             position=co,
         )
-        self.fixed_cubic(cell, color.hex("aefff1"), self.cell_cubic_thickness)
+        cubic_dict = self.fixed_cubic(cell, color.hex("aefff1"), self.cell_cubic_thickness)
         cell.rotation_z = -90
         cell.update = self.cell_moving(cell, creating=True)
 
         def default_moving():
             cell.update = self.cell_moving(cell)
 
-        invoke(default_moving, delay=3)
-        self.field[co] = cell
+        invoke(default_moving, delay=2)
+        self.field[co] = (cell, cubic_dict)
 
     def blue_cell(self, co):
         cell = Entity(
@@ -63,15 +66,15 @@ class CellController(Entity):
             scale=self.cell_scale,
             position=co,
         )
-        self.fixed_cubic(cell, color.hex("aef4ff"), self.cell_cubic_thickness)
+        cubic_dict = self.fixed_cubic(cell, color.hex("aef4ff"), self.cell_cubic_thickness)
         cell.rotation_z = -90
         cell.update = self.cell_moving(cell, creating=True)
 
         def default_moving():
             cell.update = self.cell_moving(cell)
 
-        invoke(default_moving, delay=3)
-        self.field[co] = cell
+        invoke(default_moving, delay=2)
+        self.field[co] = (cell, cubic_dict)
 
     def cell_moving(self, cell, creating=False):
         if creating:
@@ -95,7 +98,7 @@ class CellController(Entity):
             rotation=deg,
             scale=parent.scale,
         )
-        {
+        cubic_dict = {
             "front": outline((parent.x, parent.y, parent.z + -parent.scale.z * 0.5), (0, 0, 0)),
             "back": outline((parent.x, parent.y, parent.z + parent.scale.z * 0.5), (0, 0, 0)),
             "right": outline((parent.x + parent.scale.x * 0.5, parent.y, parent.z), (0, 90, 0)),
@@ -103,6 +106,7 @@ class CellController(Entity):
             "top": outline((parent.x, parent.y + parent.scale.y * 0.5, parent.z), (90, 0, 0)),
             "bottom": outline((parent.x, parent.y + -parent.scale.y * 0.5, parent.z), (90, 0, 0)),
         }
+        return cubic_dict
 
     def cubic(self, parent, color, thickness, segments=5):
         outline = lambda co, deg: Entity(
@@ -112,7 +116,7 @@ class CellController(Entity):
             position=co,
             rotation=deg,
         )
-        {
+        cubic_dict = {
             "front": outline((0, 0, -0.5), (0, 0, 0)),
             "back": outline((0, 0, 0.5), (0, 0, 0)),
             "right": outline((0.5, 0, 0), (0, 90, 0)),
@@ -120,6 +124,7 @@ class CellController(Entity):
             "top": outline((0, 0.5, 0), (90, 0, 0)),
             "bottom": outline((0, -0.5, 0), (90, 0, 0)),
         }
+        return cubic_dict
 
     def co_convert(self, co: Co):
         """

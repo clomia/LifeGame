@@ -217,9 +217,9 @@ class PropheticGrid(Mapping):
 
     def __iter__(self):
         """
-        이터레이션은 공간 델타를 반환합니다. 첫 값은 빈 딕셔너리입니다.
+        이터레이션은 delta와 space를 반환합니다
         """
-        yield from self.delta_list
+        yield from zip(self.delta_list, self.space_list)
         while True:
             next_space, next_delta = self.execute()
             if next_delta:
@@ -276,3 +276,10 @@ class PropheticGrid(Mapping):
 
     def __str__(self) -> str:
         return f"<PropheticGridlength  Cache={self.length()}>"
+
+
+if __name__ == "__main__":
+    glider = {(-1, 1): 1, (-1, 0): 2, (0, 1): 1, (0, -1): 2, (1, 1): 1}
+    iterator = PropheticGrid(glider)
+    for delta, space in iterator:
+        print(delta)
