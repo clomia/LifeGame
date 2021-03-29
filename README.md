@@ -4,7 +4,7 @@
 ![](media/cell_cube.jpg)
 ![](media/prototype_screenshot.jpg)
 ------------
-[프로토타입 다운로드](https://docs.google.com/uc?export=download&id=1QSwfwIYjNlPEsti7kwV-w7P07m3XDSEs)
+[단순 구현 태스트 다운로드](https://docs.google.com/uc?export=download&id=1QSwfwIYjNlPEsti7kwV-w7P07m3XDSEs)
 
 # 소개  
 게임 참가자 두명이 자신의 세포를 번갈아가며 배치해서 유기체를 설계한다. 둘 중 한명이 창조 버튼을 누르면 유기체가 시공간 속에서 창조된다.  

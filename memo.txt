@@ -2,4 +2,4 @@
 
 auto-py-to-exe 할때 exe로 변환하는 명령어 기록해두고 간단하게 쓸수 있도록 자동화시키기
 
-가상환경 만들기
+가상환경 진입 : env/Scripts/activate.ps1
