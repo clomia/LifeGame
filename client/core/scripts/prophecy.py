@@ -51,6 +51,8 @@ class Space(dict):
 
 class PropheticGrid(Mapping):
     """
+    [주의!]객체는 멸망점의 space와 delta를 가지지 않는다 멸망점 이전 세대까지만 이터레이션 한다
+
     객체의 정의: 무한한 크기의 그리드(공간)와 소실점까지의 시간을 곱한것
 
     ---
@@ -281,6 +283,7 @@ class PropheticGrid(Mapping):
 
 
 if __name__ == "__main__":
+    """
     bprin = {}
     for i in range(225):
         if i % 2 == 0:
@@ -288,6 +291,9 @@ if __name__ == "__main__":
         else:
             bprin[(-i, i)] = 2
     print(f"FieldSet-> {bprin}")
-    iterator = PropheticGrid(bprin)
+    """
+    iterator = PropheticGrid(
+        {(-1, -2): 1, (-6, -7): 2, (7, -7): 1, (-2, -2): 2, (0, -2): 2, (1, -2): 2}
+    )
     for (delta, space) in iterator:
-        print(f"Delta-> {delta}")
+        print(f"space->{space} \ndelta->{delta}")

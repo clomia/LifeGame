@@ -60,8 +60,16 @@ class CellController(Entity):
 
     def input(self, key):
         if key == "space":
-            space_dict = self.prophecy_fieldset.get()
-            self.__call__(space_dict)
+            if not self.prophecy_fieldset.empty():
+                space_dict = self.prophecy_fieldset.get()
+                self.__call__(space_dict)
+            else:
+                # 멸망점
+                for cell, cubic in self.field.values():
+                    destroy(cell)
+                    for outline in cubic.values():
+                        destroy(outline)
+                self.field.clear()
 
     def red_cell(self, co):
         cell = Entity(

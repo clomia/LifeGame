@@ -33,7 +33,6 @@ class Connection(Thread):
             self.responser(sock)
             while len(self.responser(sock)) >= PROPHECY_COUNT:
                 pass
-            print("연산 수신 끝!")
 
 
 connect = Connection(pipe_queue)
