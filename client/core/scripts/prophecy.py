@@ -61,25 +61,26 @@ class PropheticGrid(Mapping):
     for delta in (ins) : 시작점부터 Delta를 이터레이션한다.
     for delta in -(ins) : 종단점~시작점까지 시간을 역행할수 있는 Delta를 이터레이션한다.
     (ins)[x] : x세대의 Space를 반환한다. / (ins)[x,y] x~(y-1)까지의 세대를 반환한다.
-    ~(ins) : 시공간을 얼려서 반환한다.
-    -(ins) : 시간을 뒤집어서 반환한다. 이 영향으로 시공간이 얼게된다.
+    ~(ins) : Field을 얼려서 반환한다.
+    -(ins) : 시간을 뒤집어서 반환한다. 이 영향으로 Field이 얼게된다.
     len(int) : 소멸점 까지 걸리는 세대를 반환한다. 소멸점을 모르는 동안에는 0을 반환한다.
 
-    시공간 추출 , 시간역행 , 시공간얼리기 등 얼마든지 조합해서 구현할수 있다.
+    Field 추출 , 시간역행 , Field얼리기 등 얼마든지 조합해서 구현할수 있다.
 
     ---
-    사용되는 개념
+    사용되는 개념 (변수명)
     ---
     Cell: 세포의 상태이다. 양의정수이며 0은 없음,1부터는 세포의 색(팀) 구분자이다.
     Space: 공간(그리드)이다. 크기가 무한하다. 딕셔너리를 상속받아서 구현되었다.
     Delta: 공간의 변화이다. 다음 세대로 공간이 변화하는데에 필요한 최소한의 정보만 담은 dict이다.
     Logic: 생명게임의 규칙이다. 자기 자신의 Cell값과 주변8칸의 Cell값을 가지고 다음 세대에 자신이 가져야 할 Cell값을 반환한다.
+    Field: 시공간을 의미한다 Space와 Delta들을 묶어서 field라고 한다.
 
     시작점: 생성자가 입력받는 Space를 의미한다.
     종단점: 객채가 알고있는 가장 먼 미래의 Space이다 (객체의 관점은 항상 시작점이다).
     소실점: 텅 빈 Space를 의미한다.
 
-    시공간을 얼리다: 종단점 이후를 소실점으로 만들어서 고정한다. 시작과 끝을 모두 알고있는 상태로 만든다.
+    Field을 얼리다: 종단점 이후를 소실점으로 만들어서 고정한다. 시작과 끝을 모두 알고있는 상태로 만든다.
 
     ---
     주의사항
@@ -225,7 +226,7 @@ class PropheticGrid(Mapping):
             if next_delta:
                 yield (next_delta, next_space)
             else:
-                raise StopIteration
+                break
 
     def __len__(self) -> int:
         """
@@ -279,7 +280,13 @@ class PropheticGrid(Mapping):
 
 
 if __name__ == "__main__":
-    glider = {(-1, 1): 1, (-1, 0): 2, (0, 1): 1, (0, -1): 2, (1, 1): 1}
-    iterator = PropheticGrid(glider)
-    for delta, space in iterator:
-        print(delta)
+    bprin = {}
+    for i in range(225):
+        if i % 2 == 0:
+            bprin[(-i, i)] = 1
+        else:
+            bprin[(-i, i)] = 2
+    print(f"FieldSet-> {bprin}")
+    iterator = PropheticGrid(bprin)
+    for (delta, space) in iterator:
+        print(f"Delta-> {delta}")

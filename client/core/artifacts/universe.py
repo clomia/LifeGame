@@ -72,3 +72,16 @@ class Universe:
             "top": self.outlining((0, self.scale / 2, 0), (90, 0, 0)),
             "bottom": self.outlining((0, -self.scale / 2, 0), (90, 0, 0)),
         }
+
+
+if __name__ == "__main__":
+    app = Ursina()
+    EditorCamera()
+    walls = {
+        "bottom": "source/wall_bottom.jpg",
+        "top": "source/wall_top.jpg",
+        "left": "source/wall_front.jpg",
+    }
+    Universe(walls, "source/universe.jpg")
+    input("야")
+    app.run()

@@ -34,8 +34,6 @@ class GameCursor(Cursor):
 class Eye(Entity):
     """
     공간을 둘러보기 위한 컨트롤러. player라고 봐도 무방하다.
-
-    cusor인자로 커서를 주면 cursor.visible = False로 만든다
     limit 인자로 공간 크기 단위값을 주면 그 안에 가둔다.
 
     ---
@@ -115,7 +113,8 @@ class Esc:
 def esc_handler(mouse_locked=False):
     """
     함수를 호출하면 설정창이 나옵니다.
-    함수를 반환합니다. 메인 스코프의 input함수에 넣으세요
+
+    커서가 잠겨있는 상태에서 실행될때는 mouse_locked=True를 해주세요
     """
     Esc.mouse_locked = mouse_locked
 
@@ -123,7 +122,7 @@ def esc_handler(mouse_locked=False):
     def func(key):
         return True
 
-    return func
+    func()
 
 
 @contextmanager
@@ -134,7 +133,7 @@ def artifacts(*, core_in=False):
     core/artifacts 내부에서 디버깅용으로 사용시 True를 받아야 합니다
     """
     app = Ursina()
-    CURSOR = GameCursor()
+    cursor = GameCursor()
     window.title = "Clomia Life Game"
     window.fullscreen = True
     window.exit_button.visible = False
@@ -144,7 +143,30 @@ def artifacts(*, core_in=False):
     else:
         Text.default_font = "core/artifacts/source/main_font.ttf"
     try:
-        yield CURSOR
+        yield cursor  #! 내부적으로 application.quit가 실행되야 한다
+    finally:
+        app.run()
+
+
+@contextmanager
+def artifacts_3D(*, core_in=False):
+    """
+    3D 시뮬레이션 단계에서 사용하는 컨텍스트 구문이다
+
+    """
+    app = Ursina()
+    cursor = GameCursor()
+    cursor.visible = False
+    window.title = "Clomia Life Game"
+    window.fullscreen = True
+    window.exit_button.visible = False
+    window.fps_counter.enabled = False
+    if core_in:
+        Text.default_font = "source/main_font.ttf"
+    else:
+        Text.default_font = "core/artifacts/source/main_font.ttf"
+    try:
+        yield cursor  # 커서를 보였다 안보였다 하는 로직에 사용하라
     finally:
         app.run()
 

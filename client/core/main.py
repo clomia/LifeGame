@@ -5,11 +5,19 @@ else:
     from .artifacts import *
     from .scripts import *
 
-with artifacts() as cursor:
-    blue_printing = InputGrid()
-    score_panel(blue_printing)
+"""
+def input(key):
+    if key == "escape":
+        esc_handler()
+
+
+
+with artifacts():
+    blueprinting = InputGrid()
+    score_panel(blueprinting)
     walls = {
         "bottom": "source/wall_bottom.jpg",
         "top": "source/wall_top.jpg",
         "left": "source/wall_front.jpg",
     }
+"""
