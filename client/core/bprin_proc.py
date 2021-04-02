@@ -25,5 +25,5 @@ connect = Connection()
 connect.start()
 
 with blue_printing() as cursor:
-    blue_printing = InputGrid(pipe_func=lambda x: connect.send(x))
-    score_panel(blue_printing)
+    blue_printer = InputGrid(pipe_func=lambda x: connect.send(x))
+    score_panel(blue_printer)
