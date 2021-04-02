@@ -1,13 +1,8 @@
-import subprocess, sys, socket
+import subprocess, sys, socket, time
 from threading import Thread
 from queue import Queue
-
-if __name__ == "__main__":
-    from artifacts import *
-    from scripts import *
-else:
-    from .artifacts import *
-    from .scripts import *
+from ast import literal_eval
+from .scripts import *
 
 
 class BprinConnect(Thread):
@@ -33,6 +28,29 @@ class BprinConnect(Thread):
         self.queue.put(fieldset)
 
 
+class Operator:
+    def __init__(self, propheticgrid):
+        self.propheticgrid_iter = iter(propheticgrid)
+        self.close = False
+
+    def __call__(self):
+        if not self.close:
+            return self.iteration(PROPHECY_COUNT)
+        else:
+            return False  # :=에서 사용
+
+    def iteration(self, count):
+        fieldset_list = []
+        try:
+            for _ in range(count):
+                delta, space = next(self.propheticgrid_iter)
+                fieldset_list.append(delta)
+        except StopIteration:
+            self.close = True
+        finally:
+            return fieldset_list
+
+
 class SimulConnect(Thread):
     def __init__(self, queue, bprin_queue):
         super().__init__()
@@ -47,16 +65,24 @@ class SimulConnect(Thread):
             sock.bind((self.local_host, self.port))
             sock.listen()
             self.sock, addr = sock.accept()
-            signal = self.sock.recv(4096).decode()
-        return signal
+            self.sock.recv(4096)
 
     def run(self):
-        signal = self.connect()
-        print(f"[SimulConnect] 프로세스로부터 signal {signal} 수신")
+        self.connect()
         fieldset = self.bprin_queue.get()
         print(f"[SimulConnect] [Get] {fieldset} ")
-        # PropheticGrid(fieldset)
-        self.sock.sendall(fieldset.encode())
+        init_fieldset = literal_eval(fieldset)
+        assert isinstance(init_fieldset, dict)
+        p_grid = PropheticGrid(init_fieldset)
+        operator = Operator(p_grid)
+        field_list = operator()
+        field_list[0] = init_fieldset
+        field_list.append({})  # 구분자
+        self.sock.sendall(str(field_list).encode())
+        # field_list를 미리 준비해두기 위함
+        while field_list := operator():
+            self.sock.recv(4096)
+            self.sock.sendall(str(field_list).encode())
 
 
 def execute():

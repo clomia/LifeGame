@@ -201,6 +201,7 @@ class PropheticGrid(Mapping):
         return next_space, next_delta
 
     def execute(self):
+        """ 다음 세대로 넘어간다"""
         return self.prophesy(self.space_list[-1])
 
     def __getitem__(self, generation: int):

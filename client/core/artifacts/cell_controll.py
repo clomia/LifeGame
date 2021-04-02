@@ -21,10 +21,11 @@ class CellController(Entity):
         self.cubic(self, color.white10, thickness=1.5, segments=0)
         self.field = {}
         self.queue = input_queue
+        self.prophecy_fieldset = Queue()
 
     def __call__(self, space_dict):
         """
-        좌표,number쌍이 들어있는 delta_dict를 입력받아서 세포들을 전개시킨다.
+        좌표,number쌍이 들어있는 delta_dict를 입력받아서 세포들을 배치한다.
         0=delete
         1=blue_cell
         2=red_cell
@@ -45,15 +46,21 @@ class CellController(Entity):
                 CellControllException("세포값이 잘못되었습니다")
 
     def update(self):
-        """ 큐에 space가 들어오면 그린다"""
+        """ 큐에 fieldset정보들이 들어오면 다른 큐에 세팅한다"""
         if not self.queue.empty():
-            space_dict = self.queue.get()
-            if space_dict.get(0, False):
-                # 초기 입력시 스크린 세팅을 한다
+            fieldset_list = self.queue.get()
+            if not fieldset_list[-1]:
                 window.fullscreen = True
                 window.title = "Clomia Life Game 3D Simulator"
                 window.center_on_screen()
-                del space_dict[0]
+                del fieldset_list[-1]
+            for field in fieldset_list:
+                self.prophecy_fieldset.put(field)
+            self.input("space")
+
+    def input(self, key):
+        if key == "space":
+            space_dict = self.prophecy_fieldset.get()
             self.__call__(space_dict)
 
     def red_cell(self, co):
