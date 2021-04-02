@@ -1,3 +1,4 @@
+from queue import Queue
 from typing import Tuple, Union
 from ursina import *
 
@@ -11,7 +12,7 @@ class CellControllException(Exception):
 class CellController(Entity):
     """ 유의: 외부에서 cell이라고 부르는 숫자를 여기서는 number라고 부른다. """
 
-    def __init__(self, finite_space_size=101):
+    def __init__(self, input_queue, finite_space_size=101):
         super().__init__()
         self.space_size = finite_space_size
         self.cell_scale = 0.5
@@ -19,6 +20,7 @@ class CellController(Entity):
         self.scale = finite_space_size * self.cell_scale
         self.cubic(self, color.white10, thickness=1.5, segments=0)
         self.field = {}
+        self.queue = input_queue
 
     def __call__(self, space_dict):
         """
@@ -41,6 +43,18 @@ class CellController(Entity):
                 self.red_cell(co)
             else:
                 CellControllException("세포값이 잘못되었습니다")
+
+    def update(self):
+        """ 큐에 space가 들어오면 그린다"""
+        if not self.queue.empty():
+            space_dict = self.queue.get()
+            if space_dict.get(0, False):
+                # 초기 입력시 스크린 세팅을 한다
+                window.fullscreen = True
+                window.title = "Clomia Life Game 3D Simulator"
+                window.center_on_screen()
+                del space_dict[0]
+            self.__call__(space_dict)
 
     def red_cell(self, co):
         cell = Entity(

@@ -126,7 +126,7 @@ def esc_handler(mouse_locked=False):
 
 
 @contextmanager
-def artifacts(*, core_in=False):
+def blue_printing(*, core_in=False):
     """
     준비된 환경을 제공한다.
 
@@ -136,6 +136,7 @@ def artifacts(*, core_in=False):
     cursor = GameCursor()
     window.title = "Clomia Life Game"
     window.fullscreen = True
+    window.cog_button.visible = False
     window.exit_button.visible = False
     window.fps_counter.enabled = False
     if core_in:
@@ -143,22 +144,21 @@ def artifacts(*, core_in=False):
     else:
         Text.default_font = "core/artifacts/source/main_font.ttf"
     try:
-        yield cursor  #! 내부적으로 application.quit가 실행되야 한다
+        yield
     finally:
         app.run()
 
 
 @contextmanager
-def artifacts_3D(*, core_in=False):
+def simulation(*, core_in=False):
     """
     3D 시뮬레이션 단계에서 사용하는 컨텍스트 구문이다
 
     """
     app = Ursina()
-    cursor = GameCursor()
-    cursor.visible = False
-    window.title = "Clomia Life Game"
-    window.fullscreen = True
+    window.title = "Clomia 3D Loader"
+    window.size /= 600
+    window.cog_button.visible = False
     window.exit_button.visible = False
     window.fps_counter.enabled = False
     if core_in:
@@ -166,7 +166,7 @@ def artifacts_3D(*, core_in=False):
     else:
         Text.default_font = "core/artifacts/source/main_font.ttf"
     try:
-        yield cursor  # 커서를 보였다 안보였다 하는 로직에 사용하라
+        yield
     finally:
         app.run()
 
