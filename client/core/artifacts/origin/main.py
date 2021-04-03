@@ -126,7 +126,7 @@ def esc_handler(mouse_locked=False):
 
 
 @contextmanager
-def blue_printing(*, core_in=False):
+def bprin(*, debug=False):
     """
     준비된 환경을 제공한다.
 
@@ -139,18 +139,18 @@ def blue_printing(*, core_in=False):
     window.cog_button.visible = False
     window.exit_button.visible = False
     window.fps_counter.enabled = False
-    if core_in:
+    if debug:
         Text.default_font = "source/main_font.ttf"
     else:
         Text.default_font = "core/artifacts/source/main_font.ttf"
     try:
-        yield
+        yield cursor
     finally:
         app.run()
 
 
 @contextmanager
-def simulation(*, core_in=False):
+def simul(*, debug=False):
     """
     3D 시뮬레이션 단계에서 사용하는 컨텍스트 구문이다
 
@@ -161,7 +161,7 @@ def simulation(*, core_in=False):
     window.cog_button.visible = False
     window.exit_button.visible = False
     window.fps_counter.enabled = False
-    if core_in:
+    if debug:
         Text.default_font = "source/main_font.ttf"
     else:
         Text.default_font = "core/artifacts/source/main_font.ttf"

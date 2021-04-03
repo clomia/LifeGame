@@ -24,6 +24,11 @@ class Connection(Thread):
 connect = Connection()
 connect.start()
 
-with blue_printing() as cursor:
+
+def offline_bprin():
     blue_printer = InputGrid(pipe_func=lambda x: connect.send(x))
     score_panel(blue_printer)
+
+
+with bprin() as cursor:
+    home_screen(cursor, offline_bprin, None)

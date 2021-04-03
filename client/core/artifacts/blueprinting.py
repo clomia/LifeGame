@@ -285,7 +285,7 @@ def score_panel(provider):
 if __name__ == "__main__":
     from origin.main import artifacts, esc_handler
 
-    with artifacts(core_in=True):
+    with artifacts(debug=True):
         blue_printing = InputGrid()
         score_panel(blue_printing)
         input = esc_handler()

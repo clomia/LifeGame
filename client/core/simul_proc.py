@@ -64,5 +64,5 @@ class LoadScreen(Entity):
         destroy(self)
 
 
-with simulation():
+with simul():
     LoadScreen()

@@ -80,7 +80,6 @@ class SimulConnect(Thread):
         field_list.append({})  # 구분자
         self.sock.sendall(str(field_list).encode())
         # field_list를 미리 준비해두기 위함
-        print(field_list)
         while field_list := operator():
             self.sock.recv(4096)
             self.sock.sendall(str(field_list).encode())
