@@ -95,6 +95,7 @@ def execute():
     proc_list = []
     for arg in [[sys.executable, "core/simul_proc.py"], [sys.executable, "core/bprin_proc.py"]]:
         proc_list.append(subprocess.Popen(arg))
+        time.sleep(0.6)
+    # 이렇게 안하면 동기로 순차실행되더라
     for proc in proc_list:
         proc.communicate()
-        time.sleep(1)

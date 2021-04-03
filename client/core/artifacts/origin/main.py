@@ -157,7 +157,7 @@ def simulation(*, core_in=False):
     """
     app = Ursina()
     window.title = "Clomia 3D Loader"
-    window.size /= 600
+    window.fullscreen = True
     window.cog_button.visible = False
     window.exit_button.visible = False
     window.fps_counter.enabled = False

@@ -50,7 +50,6 @@ class CellController(Entity):
         if not self.queue.empty():
             fieldset_list = self.queue.get()
             if not fieldset_list[-1]:
-                window.fullscreen = True
                 window.title = "Clomia Life Game 3D Simulator"
                 window.center_on_screen()
                 del fieldset_list[-1]
