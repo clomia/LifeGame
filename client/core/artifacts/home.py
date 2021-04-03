@@ -97,12 +97,37 @@ class OnlineBtn(Button):
         # pipe_func()
 
 
-def home_screen(cursor, offline_pipe, online_pipe=None):
+class Intro(Entity):
+    def __init__(self):
+        super().__init__()
+        self.parent = camera.ui
+        self.origin = (-0.5, 0.5)
+        self.model = "quad"
+        x_ratio, y_ratio = window.screen_resolution
+        value = 1 / y_ratio
+        self.scale_x = x_ratio * value
+        self.scale_y = y_ratio * value
+        self.texture = "source/intro.mp4"
+
+
+def home_screen(cursor, offline_pipe, online_pipe=None, intro=False):
     bg = BackGround()
     online_btn = OnlineBtn(cursor, online_pipe)
     offline_btn = OfflineBtn(cursor, offline_pipe)
     online_btn.lazy__init__(bg, offline_btn)
     offline_btn.lazy__init__(bg, online_btn)
+    if intro:
+        home_stuff = (bg, online_btn, offline_btn)
+        for entity in home_stuff:
+            entity.visible = False
+        intro_video = Intro()
+
+        def visible():
+            destroy(intro_video)
+            for entity in home_stuff:
+                entity.visible = True
+
+        invoke(visible, delay=3.5)
 
 
 __all__ = ["home_screen"]
@@ -111,4 +136,4 @@ if __name__ == "__main__":
     from origin import *
 
     with bprin(debug=True) as cursor:
-        home_screen(cursor, lambda: print("click!"), None)
+        home_screen(cursor, lambda: print("click!"), intro=True)

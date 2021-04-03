@@ -31,4 +31,4 @@ def offline_bprin():
 
 
 with bprin() as cursor:
-    home_screen(cursor, offline_bprin, None)
+    home_screen(cursor, offline_bprin, online_pipe=None, intro=True)
