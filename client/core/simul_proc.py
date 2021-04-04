@@ -10,6 +10,6 @@ connect = SimulConnection(pipe_queue)
 connect.start()
 
 
-with simul(lang="en"):
+with simul():
     input = react_handler(simul_react_map)
     LoadScreen(pipe_queue)

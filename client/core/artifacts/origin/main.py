@@ -4,12 +4,7 @@ from itertools import cycle
 from functools import wraps
 from contextlib import contextmanager
 from ursina import *
-
-
-def language_setting(lang="ko"):
-    """ 'ko' , 'en' """
-    global LANGUAGE
-    LANGUAGE = lang
+from .setting import *
 
 
 def source_path(*, unix=False):
@@ -114,10 +109,10 @@ class Esc:
         self.handler = handler
 
     def leng_setting(self):
-        if LANGUAGE == "ko":
+        if LANGUAGE.now == "ko":
             self.title = "설정"
             self.exit_text = "게임 종료"
-        elif LANGUAGE == "en":
+        elif LANGUAGE.now == "en":
             self.title = "Setting"
             self.exit_text = "Game Exit"
 
@@ -140,13 +135,12 @@ class Esc:
 
 
 @contextmanager
-def bprin(*, debug=False, lang="ko"):
+def bprin(*, debug=False):
     """
     준비된 환경을 제공한다.
 
     core/artifacts 내부에서 디버깅용으로 사용시 True를 받아야 합니다
     """
-    language_setting(lang)
     app = Ursina()
     cursor = GameCursor()
     window.title = "Clomia Life Game"
@@ -166,12 +160,11 @@ def bprin(*, debug=False, lang="ko"):
 
 
 @contextmanager
-def simul(*, debug=False, lang="ko"):
+def simul(*, debug=False):
     """
     3D 시뮬레이션 단계에서 사용하는 컨텍스트 구문이다
 
     """
-    language_setting(lang)
     app = Ursina()
     window.title = "Clomia 3D Loader"
     window.fullscreen = True

@@ -5,9 +5,9 @@ from itertools import chain
 from ursina import *
 
 if __name__ == "__main__":
-    from origin import tools
+    from origin import *
 else:
-    from .origin import tools
+    from .origin import *
 
 
 class InputGrid(Entity):
@@ -55,7 +55,10 @@ class InputGrid(Entity):
         self.player = self.player_1
         self.info = {}
         self.other_player = lambda: self.player_2 if self.player == self.player_1 else self.player_1
-        self.decision_btn("창조", "계속")
+        if LANGUAGE.now == "ko":
+            self.decision_btn("창조", "계속")
+        elif LANGUAGE.now == "en":
+            self.decision_btn("create", "continue")
         self.background()
         self.click_counter = -inf
 
