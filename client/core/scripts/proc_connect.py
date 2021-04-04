@@ -1,3 +1,4 @@
+""" [!]다른(서브) 프로세스가 사용하는[!] 프로세스간 통신용 모듈입니다 """
 import socket
 from threading import Thread
 from queue import Queue
