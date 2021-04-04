@@ -140,34 +140,40 @@ class InputGrid(Entity):
                 self.need_decision = False
 
         self.continue_btn = Button(parent=self, z=-0.01, model="quad")
+        self.execution_btn = Button(parent=self, z=-0.01, model="quad")
         self.continue_btn.x = self.x + self.size // 4 + 0.75
         self.continue_btn.y = self.y - self.size // 2 - 1.25
         self.continue_btn.scale_x = self.size // 2 + 0.5
         self.continue_btn.scale_y = 1.5
-        self.continue_btn.color = self.btn_color
+        self.execution_btn.x = self.x - self.size // 4 - 0.75
+        self.execution_btn.y = self.y - self.size // 2 - 1.25
+        self.execution_btn.scale_x = self.size // 2 + 0.5
+        self.execution_btn.scale_y = 1.5
+        if LANGUAGE.now == "ko":
+            continue_text_origin = (-self.size / 5.5, self.size / 1.29)
+            execution_text_origin = (self.size / 5.5, self.size / 1.29)
+        elif LANGUAGE.now == "en":
+            continue_text_origin = (-self.size / 12, self.size / 1.29)
+            execution_text_origin = (self.size / 9, self.size / 1.29)
         self.continue_btn.text_entity = Text(
             text=continue_text,
             size=0.035,
-            origin=(-self.size / 5.5, self.size / 1.29),
+            origin=continue_text_origin,
             alpha=150,
         )
+        self.execution_btn.text_entity = Text(
+            text=excution_text,
+            size=0.035,
+            origin=execution_text_origin,
+            alpha=150,
+        )
+        self.continue_btn.color = self.btn_color
         self.continue_btn.on_mouse_enter = mouse_hover(self.continue_btn)
         self.continue_btn.on_mouse_exit = mouse_exit(self.continue_btn)
         self.continue_btn.on_click = continue_henble
         self.outline(self.continue_btn, 60)
 
-        self.execution_btn = Button(parent=self, z=-0.01, model="quad")
-        self.execution_btn.x = self.x - self.size // 4 - 0.75
-        self.execution_btn.y = self.y - self.size // 2 - 1.25
-        self.execution_btn.scale_x = self.size // 2 + 0.5
-        self.execution_btn.scale_y = 1.5
         self.execution_btn.color = self.btn_color
-        self.execution_btn.text_entity = Text(
-            text=excution_text,
-            size=0.035,
-            origin=(self.size / 5.5, self.size / 1.29),
-            alpha=150,
-        )
         self.execution_btn.on_mouse_enter = mouse_hover(self.execution_btn)
         self.execution_btn.on_mouse_exit = mouse_exit(self.execution_btn)
         self.execution_btn.on_click = submit
