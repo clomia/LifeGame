@@ -1,4 +1,4 @@
 import core
 
 
-core.execute()
+processing = core.ProcControll()

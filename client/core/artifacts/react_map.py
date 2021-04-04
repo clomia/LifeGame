@@ -4,13 +4,15 @@ ex: input = react_handler(bprin_react_map)
 """
 from .origin import *
 
-default_react_map: dict = {
+default_react_map: dict = {}
+
+bprin_react_map: dict = {
     "escape": Esc().handler,
 }
 
-bprin_react_map: dict = {}
-
-simul_react_map: dict = {}
+simul_react_map: dict = {
+    "escape": Esc(mouse_locked=True).handler,
+}
 
 
 # ---------------------------------------------------------
