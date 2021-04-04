@@ -49,13 +49,17 @@ class CellController(Entity):
         """ 큐에 fieldset정보들이 들어오면 다른 큐에 세팅한다"""
         if not self.queue.empty():
             fieldset_list = self.queue.get()
-            if not fieldset_list[-1]:
+            if fieldset_list[-1]:
+                for field in fieldset_list:
+                    self.prophecy_fieldset.put(field)
+            else:
+                # 첫 수신의 경우 (구분자: [-1]=False)
                 window.title = "Clomia Life Game 3D Simulator"
                 window.center_on_screen()
                 del fieldset_list[-1]
-            for field in fieldset_list:
-                self.prophecy_fieldset.put(field)
-            self.input("space")
+                for field in fieldset_list:
+                    self.prophecy_fieldset.put(field)
+                self.input("space")
 
     def input(self, key):
         if key == "space":
@@ -104,7 +108,8 @@ class CellController(Entity):
         invoke(default_moving, delay=2)
         self.field[co] = (cell, cubic_dict)
 
-    def cell_moving(self, cell, creating=False):
+    @staticmethod
+    def cell_moving(cell, creating=False):
         if creating:
 
             def func():
@@ -117,7 +122,8 @@ class CellController(Entity):
 
         return func
 
-    def fixed_cubic(self, parent, color, thickness, segments=5):
+    @staticmethod
+    def fixed_cubic(parent, color, thickness, segments=5):
         outline = lambda co, deg: Entity(
             parent=scene,
             model=Quad(segments=segments, mode="line", thickness=thickness),
@@ -136,7 +142,8 @@ class CellController(Entity):
         }
         return cubic_dict
 
-    def cubic(self, parent, color, thickness, segments=5):
+    @staticmethod
+    def cubic(parent, color, thickness, segments=5):
         outline = lambda co, deg: Entity(
             parent=parent,
             model=Quad(segments=segments, mode="line", thickness=thickness),
@@ -166,11 +173,7 @@ class CellController(Entity):
         반환값: Grid내부 좌표
         """
         grid_scale = self.space_size
-        convert_yz = lambda x, y, z: tuple(map(lambda x: x * self.cell_scale, (x, z, y)))
-        if len(co) == 3:
-            co = convert_yz(*co)
-        else:
-            co = convert_yz(*co, 0)
+        convertor = lambda x, y, z: tuple(map(lambda n: n * self.cell_scale, (x, z, y)))
         threshold, zero = divmod(grid_scale, 2)
         if not zero:
             raise CellControllException("grid_scale가 짝수이면 안됩니다!")
@@ -183,18 +186,26 @@ class CellController(Entity):
                 return -threshold + (value + threshold) % grid_scale
             return value
 
-        return tuple(calculation(co) for co in co)
+        finite_co = tuple(calculation(co) for co in co)
+        if len(finite_co) == 3:
+            return convertor(*finite_co)
+        else:
+            return convertor(*finite_co, 0)
 
 
 if __name__ == "__main__":
+    from queue import Queue
+
+    input_queue = Queue()
     app = Ursina()
-    controller = CellController()
+    controller = CellController(input_queue)
     controller(
         {
-            (1, 1): 1,
-            (1, 2): 2,
-            (2, 1): 1,
-            (0, 0): 2,
+            (-70, 1): 1,
+            (-51, 2): 2,
+            (-71, 0): 1,
+            (-71, 2): 2,
+            (-72, 2): 1,
         }
     )
     EditorCamera()

@@ -83,5 +83,4 @@ if __name__ == "__main__":
         "left": "source/wall_front.jpg",
     }
     Universe(walls, "source/universe.jpg")
-    input("야")
     app.run()
