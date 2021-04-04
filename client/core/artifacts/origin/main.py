@@ -6,6 +6,12 @@ from contextlib import contextmanager
 from ursina import *
 
 
+def language_setting(lang="ko"):
+    """ 'ko' , 'en' """
+    global LANGUAGE
+    LANGUAGE = lang
+
+
 def source_path(*, unix=False):
     """ source 디렉토리 절대경로를 리턴한다 """
     root_dir = os.getcwd()
@@ -70,19 +76,25 @@ def react_roop(*args):
     """
     함수들을 인자로 받아서 input에 대한 함수실행 루프를 만들어준다
 
-    클로저 공간에서 함수들을 무한 이터레이션 하면서 매번 타겟 키가 눌렸을때마다 순서대로 하나의 함수를 실행한다.
+    ---
+    예시
+    ---
+    @react_roop(func1,func2,func3,func4)\n
+    def space_react():
+        pass
 
-    ---
-    input함수는 타겟 키가 눌렸을때 True를 반환하도록 작성하세요
-    ---
+    def input():
+        if key=='space':
+            space_react()
+
+    위와같이 구현하세요. (func1,func2,func3,func4)들이 cycle을 돌면서 space_react를 호출할때마다 하나씩 실행됩니다.
     """
     func_gen = cycle((func for func in args))
 
     def decorator(function):
         @wraps(function)
-        def wrapper(key):
-            if function(key):
-                next(func_gen)()
+        def wrapper():
+            next(func_gen)()
 
         return wrapper
 
@@ -90,48 +102,51 @@ def react_roop(*args):
 
 
 class Esc:
-    mouse_locked = False
+    """ 커서가 잠겨있는 상태(3D환경) 에는 mouse_locked=True를 해주세요"""
 
-    def on():
-        if Esc.mouse_locked:
-            mouse.locked = False
-        shut_down_btn = Button(text="게임 종료", color=color.gray)
-        shut_down_btn.on_click = application.quit
-        Esc.panel = WindowPanel(
-            title="설정",
-            content=(shut_down_btn,),
+    def __init__(self, mouse_locked=False):
+        self.mouse_locked = mouse_locked
+
+        @react_roop(self.on, self.off)
+        def handler():
+            pass
+
+        self.handler = handler
+
+    def leng_setting(self):
+        if LANGUAGE == "ko":
+            self.title = "설정"
+            self.exit_text = "게임 종료"
+        elif LANGUAGE == "en":
+            self.title = "Setting"
+            self.exit_text = "Game Exit"
+
+    def on(self):
+        self.leng_setting()
+        if self.mouse_locked:
+            self.mouse.locked = False
+        self.shut_down_btn = Button(text=self.exit_text, color=color.gray)
+        self.shut_down_btn.on_click = application.quit
+        self.panel = WindowPanel(
+            title=self.title,
+            content=(self.shut_down_btn,),
         )
 
-    def off():
-        if Esc.mouse_locked:
+    def off(self):
+        self.leng_setting()
+        if self.mouse_locked:
             mouse.locked = True
-        destroy(Esc.panel)
-
-    loop = (on, off)
-
-
-def esc_handler(mouse_locked=False):
-    """
-    함수를 호출하면 설정창이 나옵니다.
-
-    커서가 잠겨있는 상태에서 실행될때는 mouse_locked=True를 해주세요
-    """
-    Esc.mouse_locked = mouse_locked
-
-    @react_roop(*Esc.loop)
-    def func(key):
-        return True
-
-    func()
+        destroy(self.panel)
 
 
 @contextmanager
-def bprin(*, debug=False):
+def bprin(*, debug=False, lang="ko"):
     """
     준비된 환경을 제공한다.
 
     core/artifacts 내부에서 디버깅용으로 사용시 True를 받아야 합니다
     """
+    language_setting(lang)
     app = Ursina()
     cursor = GameCursor()
     window.title = "Clomia Life Game"
@@ -139,6 +154,7 @@ def bprin(*, debug=False):
     window.cog_button.visible = False
     window.exit_button.visible = False
     window.fps_counter.enabled = False
+
     if debug:
         Text.default_font = "source/main_font.ttf"
     else:
@@ -150,11 +166,12 @@ def bprin(*, debug=False):
 
 
 @contextmanager
-def simul(*, debug=False):
+def simul(*, debug=False, lang="ko"):
     """
     3D 시뮬레이션 단계에서 사용하는 컨텍스트 구문이다
 
     """
+    language_setting(lang)
     app = Ursina()
     window.title = "Clomia 3D Loader"
     window.fullscreen = True
@@ -195,3 +212,19 @@ class ColorSet:
     player_1_light = color.rgb(99, 205, 255)
     player_2 = color.rgb(148, 148, 148)
     player_2_light = color.rgb(255, 199, 224)
+
+
+if __name__ == "__main__":
+    from ursina import *
+
+    app = Ursina()
+
+    @react_roop(lambda: print("1하나"), lambda: print("2둘!!"))
+    def func():
+        pass
+
+    def input(key):
+        if key == "escape":
+            func()
+
+    app.run()

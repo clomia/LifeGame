@@ -11,5 +11,6 @@ def offline_bprin():
     score_panel(blue_printer)
 
 
-with bprin() as cursor:
-    home_screen(cursor, offline_bprin, online_pipe=None, intro=True)
+with bprin(lang="en") as cursor:
+    input = react_handler(bprin_react_map)
+    home_screen(cursor, offline_pipe=offline_bprin, online_pipe=None, intro=True)
