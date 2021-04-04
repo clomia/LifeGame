@@ -1,27 +1,8 @@
-import socket
-from threading import Thread
-from queue import Queue
 from artifacts import *
+from scripts import *
 
 
-class Connection(Thread):
-    def __init__(self):
-        super().__init__()
-        self.local_host = socket.gethostbyname(socket.gethostname())
-        self.port = 40000
-        self.queue = Queue()
-
-    def run(self):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.connect((self.local_host, self.port))
-            fieldset = self.queue.get()
-            sock.sendall(str(fieldset).encode())
-
-    def send(self, fieldset):
-        self.queue.put(fieldset)
-
-
-connect = Connection()
+connect = BprinConnection()
 connect.start()
 
 
