@@ -1,10 +1,10 @@
+from queue import Queue
 from artifacts import *
 from scripts import *
 
 
 connect = BprinConnection()
 connect.start()
-
 
 with bprin() as cursor:
 
