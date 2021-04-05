@@ -1,8 +1,10 @@
-# 콘웨이의 Life Game을 기반으로하는 온라인 게임
+## 콘웨이의 Life Game을 기반으로 PVP 온라인 게임 + 3(+N)차원으로 새롭게 구현하기  
+### -- 게임을 완성시켜서 출시하기
+### -- (두뇌 구현 시각화를 위한 기반 프로젝트)  
 ### [Notion Link](https://www.notion.so/LifeGame-326024ece4404f18b527259659b58c6c)
 ---
-![](media/cell_cube.jpg)
-![](media/prototype_screenshot.jpg)
+![](client/core/artifacts/source/undeveloped_screen.jpg)
+![](media/env.jpg)
 ------------
 [단순 구현 태스트 다운로드](https://docs.google.com/uc?export=download&id=1QSwfwIYjNlPEsti7kwV-w7P07m3XDSEs)
 
