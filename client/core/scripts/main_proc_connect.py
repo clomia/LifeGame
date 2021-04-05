@@ -30,9 +30,12 @@ class BprinConnect(Thread):
 
     def run(self):
         fieldset = self.connect()
+        print("[main프로세스]-bprin프로세스로부터 fieldset을 제공받았습니다.")
         self.simul_loading_complate_signal.get()
+        print("[main프로세스]-simul프로세스의 로딩 완료 signal이 들어온것을 확인하였습니다.")
+        # todo 여기서 메인이 bprin을 죽이고 그전까지는 bprin이 컨텐츠를 제공하자
         self.queue.put(fieldset)
-        self.queue.put(True)  # 쓰레드 안전을 위한 추가 signal
+        self.queue.put(True)  # 쓰레드 안전을 위한 추가 signal (shutdown작동을 막는 용도)
 
 
 class Operator:
@@ -66,14 +69,16 @@ class Operator:
 class SimulConnect(Thread):
     """ 메인 프로세스가 Simul프로세스와 가지는 연결"""
 
-    def __init__(self, queue, bprin_queue, success_signal: Queue, oper_grid=PropheticGrid):
+    def __init__(
+        self, queue, bprin_queue, simul_loading_complate_signal: Queue, oper_grid=PropheticGrid
+    ):
         """ 연산 그리드 클래스(ex: PropheticGrid)를 oper_grid인자로 입력받아 사용합니다 """
         super().__init__()
         self.local_host = socket.gethostbyname(socket.gethostname())
         self.port = SIMUL_PROC_PORT
         self.queue = queue
         self.bprin_queue = bprin_queue
-        self.success_signal_queue = success_signal
+        self.simul_loading_complate_signal = simul_loading_complate_signal
         self.oper_grid = oper_grid
         self.name = "[Main Process]-(simul connection)"
 
@@ -89,7 +94,8 @@ class SimulConnect(Thread):
 
     def run(self):
         self.connect()
-        self.success_signal_queue.put(True)
+        print("[main 프로세스]-simul프로세스의 로딩 완료 signal을 수신하였습니다.")
+        self.simul_loading_complate_signal.put(True)
         fieldset = self.bprin_queue.get()
         init_fieldset = literal_eval(fieldset)
         assert isinstance(init_fieldset, dict)
