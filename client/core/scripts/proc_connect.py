@@ -13,7 +13,7 @@ class BprinConnection(Thread):
         self.port = BPRIN_PROC_PORT
         self.queue = Queue()
         self.daemon = True
-        self.name = "[Sub Process] bprin connection"
+        self.name = "[Sub Process]-(bprin connection)"
 
     def run(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -32,7 +32,7 @@ class SimulConnection(Thread):
         self.port = SIMUL_PROC_PORT
         self.queue = queue
         self.daemon = True
-        self.name = "[Sub Process] simul connection"
+        self.name = "[Sub Process]-(simul connection)"
         self.success_signal_queue = success_signal
 
     def responser(self, sock):

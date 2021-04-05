@@ -17,7 +17,7 @@ class BprinConnect(Thread):
         self.port = BPRIN_PROC_PORT
         self.queue = queue
         self.simul_loading_complate_signal = simul_loading_complate_signal
-        self.name = "[Main Process] bprin connection"
+        self.name = "[Main Process]-(bprin connection)"
 
     def connect(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -75,7 +75,7 @@ class SimulConnect(Thread):
         self.bprin_queue = bprin_queue
         self.success_signal_queue = success_signal
         self.oper_grid = oper_grid
-        self.name = "[Main Process] simul connection"
+        self.name = "[Main Process]-(simul connection)"
 
     def connect(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -83,7 +83,9 @@ class SimulConnect(Thread):
             sock.bind((self.local_host, self.port))
             sock.listen()
             self.sock, addr = sock.accept()
-            self.sock.recv(4096)
+            self.sock.setblocking(True)
+            signal = self.sock.recv(4096)
+            return signal
 
     def run(self):
         self.connect()
