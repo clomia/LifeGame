@@ -3,7 +3,7 @@
 ### -- (두뇌 구현 시각화를 위한 기반 프로젝트)  
 ### [Notion Link](https://www.notion.so/LifeGame-326024ece4404f18b527259659b58c6c)
 ---
-![](client/core/artifacts/source/undeveloped_screen.jpg)
+![](client/core/artifacts/source/undeveloped_screen.jpg)  
 ![](media/env.jpg)
 ------------
 [단순 구현 태스트 다운로드](https://docs.google.com/uc?export=download&id=1QSwfwIYjNlPEsti7kwV-w7P07m3XDSEs)
