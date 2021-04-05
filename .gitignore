@@ -3,7 +3,7 @@
 *.psb
 __pycache__/
 media/*
-!media/env.jpg
+!./media/env.jpg
 apps/*
 env/*
 test/*
