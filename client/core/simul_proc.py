@@ -12,5 +12,4 @@ connect.start()
 
 with simul():
     input = react_handler(simul_react_map)
-    LoadScreen(pipe_queue)
-    simul_loading_complate_signal.put(True)
+    LoadScreen(pipe_queue, simul_loading_complate_signal)

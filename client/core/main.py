@@ -13,29 +13,47 @@ class ProcControll:
         self.shutdown_request = Queue()
         self.bprin_queue = Queue()
         self.simul_loading_complate_signal = Queue()
+        self.bprin_kill_signal = Queue()
 
     def main(self):
         """ 모든것을 실행합니다"""
-        bprin_con = BprinConnect(self.bprin_queue, self.simul_loading_complate_signal)
-        simul_con = SimulConnect(Queue(), self.bprin_queue, self.simul_loading_complate_signal)
-        bprin_con.start()
-        simul_con.start()
-        self.simul_proc = subprocess.Popen([sys.executable, "core/simul_proc.py"])
+        bprin_connect = BprinConnect(
+            self.bprin_queue,
+            self.simul_loading_complate_signal,
+            self.bprin_kill_signal,
+        )
+        simul_connect = SimulConnect(
+            Queue(),
+            self.bprin_queue,
+            self.simul_loading_complate_signal,
+        )
+        bprin_connect.start()
+        simul_connect.start()
+        self.simul_process = subprocess.Popen([sys.executable, "core/simul_proc.py"])
         time.sleep(0.1)
-        self.bprin_proc = subprocess.Popen([sys.executable, "core/bprin_proc.py"])
-        Thread(target=self.simul_proc_check, daemon=True).start()
-        Thread(target=self.bprin_proc_check, daemon=True).start()
-        Thread(target=self.shutdown, daemon=True).start()
+        self.bprin_process = subprocess.Popen([sys.executable, "core/bprin_proc.py"])
+        for method in self.threading_helper():
+            Thread(target=method, daemon=True).start()
+
+    def threading_helper(self):
+        yield self.simul_proc_check
+        yield self.bprin_proc_check
+        yield self.shutdown
+        yield self.bprin_killer
 
     def bprin_proc_check(self):
         """ 프로세스가 죽으면 큐에 신호를 넣습니다"""
-        self.bprin_proc.wait()
+        self.bprin_process.wait()
         if self.bprin_queue.empty():
             self.shutdown_request.put(True)
 
+    def bprin_killer(self):
+        self.bprin_kill_signal.get()
+        self.bprin_process.kill()
+
     def simul_proc_check(self):
         """ 프로세스가 죽으면 큐에 신호를 넣습니다"""
-        self.simul_proc.wait()
+        self.simul_process.wait()
         self.shutdown_request.put(True)
 
     def shutdown(self):
@@ -46,8 +64,9 @@ class ProcControll:
         self.shutdown_request.put(True) 를 할 때 이 함수가 실행됩니다!
         """
         self.shutdown_request.get()
-        self.bprin_proc.kill()
-        self.simul_proc.kill()
+        print("[main 프로세스]-shutdown signal을 수신하였습니다. 프로세스들을 모두 죽입니다.")
+        self.bprin_process.kill()
+        self.simul_process.kill()
 
     @contextmanager
     def execute(self):

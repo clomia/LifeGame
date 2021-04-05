@@ -10,13 +10,14 @@ from .prophecy import *
 class BprinConnect(Thread):
     """ 메인 프로세스가 Bprin프로세스와 가지는 연결"""
 
-    def __init__(self, queue, simul_loading_complate_signal: Queue):
+    def __init__(self, queue, simul_loading_complate_signal: Queue, bprin_kill_signal: Queue):
         """ bprin프로세스의 응답을 self.queue에 담는다"""
         super().__init__()
         self.local_host = socket.gethostbyname(socket.gethostname())
         self.port = BPRIN_PROC_PORT
         self.queue = queue
         self.simul_loading_complate_signal = simul_loading_complate_signal
+        self.bprin_kill_signal = bprin_kill_signal
         self.name = "[Main Process]-(bprin connection)"
 
     def connect(self):
@@ -33,9 +34,9 @@ class BprinConnect(Thread):
         print("[main프로세스]-bprin프로세스로부터 fieldset을 제공받았습니다.")
         self.simul_loading_complate_signal.get()
         print("[main프로세스]-simul프로세스의 로딩 완료 signal이 들어온것을 확인하였습니다.")
-        # todo 여기서 메인이 bprin을 죽이고 그전까지는 bprin이 컨텐츠를 제공하자
+        self.bprin_kill_signal.put(True)
         self.queue.put(fieldset)
-        self.queue.put(True)  # 쓰레드 안전을 위한 추가 signal (shutdown작동을 막는 용도)
+        self.queue.put(True)  # * core/main.ProcControll.bprin_proc_check의 if문->fieldset수신 확인 signal
 
 
 class Operator:

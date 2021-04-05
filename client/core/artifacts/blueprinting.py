@@ -96,7 +96,6 @@ class InputGrid(Entity):
                         destroy(self.bg)
                         destroy(self)
                         self.pipe_func(self.info)
-                        application.quit()
                         return
                     else:
                         progress()

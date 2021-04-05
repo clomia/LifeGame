@@ -9,7 +9,7 @@ connect.start()
 with bprin() as cursor:
 
     def offline_bprin():
-        blue_printer = InputGrid(pipe_func=lambda x: connect.send(x))
+        blue_printer = InputGrid(pipe_func=SimulLoadWaiter(connect, cursor))
         score_panel(blue_printer)
 
     input = react_handler(bprin_react_map)
