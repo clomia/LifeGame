@@ -3,8 +3,7 @@
 *.psb
 __pycache__/
 media/*
-!media/cell_cube.jpg
-!media/prototype_screenshot.jpg
+!media/env.jpg
 apps/*
 env/*
 test/*
