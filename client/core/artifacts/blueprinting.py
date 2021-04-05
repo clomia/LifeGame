@@ -29,6 +29,7 @@ class InputGrid(Entity):
         """
         self.final_input = final_input_count
         super().__init__()
+        self.is_complete = False
         self.need_decision = False
         self.pipe_func = pipe_func
         self.bg_image = bg_image
@@ -95,6 +96,7 @@ class InputGrid(Entity):
                         progress()
                         destroy(self.bg)
                         destroy(self)
+                        self.is_complete = True
                         self.pipe_func(self.info)
                         return
                     else:
@@ -279,6 +281,9 @@ class Score(Entity):
         self.cell_counter()
         self.number_updater(1, self.cell_count[1])
         self.number_updater(2, self.cell_count[2])
+        if self.provider.is_complete:
+            destroy(self.player[1])
+            destroy(self.player[2])
 
     def cell_counter(self):
         cells = list(self.provider.info.values())
@@ -287,6 +292,10 @@ class Score(Entity):
 
 
 def score_panel(provider):
+    """
+    provider는 is_complete 속성을 가지고 있어야 합니다
+    기본 is_complete = False 이며 True가 되면 destroy(score number)를 수행합니다
+    """
     Score(InfoPanel(), provider)
 
 
