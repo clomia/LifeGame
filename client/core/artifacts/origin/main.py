@@ -119,7 +119,8 @@ class Esc:
     def on(self):
         self.leng_setting()
         if self.mouse_locked:
-            self.mouse.locked = False
+            mouse.locked = False
+            self.cursor = GameCursor()
         self.shut_down_btn = Button(text=self.exit_text, color=color.gray)
         self.shut_down_btn.on_click = application.quit
         self.panel = WindowPanel(
@@ -131,6 +132,7 @@ class Esc:
         self.leng_setting()
         if self.mouse_locked:
             mouse.locked = True
+            destroy(self.cursor)
         destroy(self.panel)
 
 
