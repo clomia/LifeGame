@@ -101,39 +101,45 @@ class Esc:
 
     def __init__(self, mouse_locked=False):
         self.mouse_locked = mouse_locked
+        self.popup = True
 
         @react_roop(self.on, self.off)
         def handler():
             pass
 
-        self.handler = handler
-
-    def leng_setting(self):
         if LANGUAGE.now == "ko":
             self.title = "설정"
-            self.exit_text = "게임 종료"
         elif LANGUAGE.now == "en":
             self.title = "Setting"
-            self.exit_text = "Game Exit"
+        self.handler = handler
+        # 여기서 람다 안쓰고 먼저 만들어두려고 하면 에러가 발생
+        self.panel_gen = lambda: WindowPanel(
+            title=self.title,
+            content=(self.shut_down_btn(),),
+            popup=self.popup,
+        )
 
     def on(self):
-        self.leng_setting()
         if self.mouse_locked:
             mouse.locked = False
             self.cursor = GameCursor()
-        self.shut_down_btn = Button(text=self.exit_text, color=color.gray)
-        self.shut_down_btn.on_click = application.quit
-        self.panel = WindowPanel(
-            title=self.title,
-            content=(self.shut_down_btn,),
-        )
+        self.panel = self.panel_gen()
 
     def off(self):
-        self.leng_setting()
         if self.mouse_locked:
             mouse.locked = True
             destroy(self.cursor)
         destroy(self.panel)
+
+    @staticmethod
+    def shut_down_btn():
+        if LANGUAGE.now == "ko":
+            exit_text = "게임 종료"
+        elif LANGUAGE.now == "en":
+            exit_text = "Game Exit"
+        btn = Button(text=exit_text, color=color.gray)
+        btn.on_click = application.quit
+        return btn
 
 
 @contextmanager
