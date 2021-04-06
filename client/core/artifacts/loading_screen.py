@@ -35,6 +35,21 @@ class LoadScreen(Entity):
         self.simul_loading_complate_signal.put(True)
 
 
+class InputHandler(Entity):
+    def __init__(self):
+        super().__init__()
+        self.pressed = False
+
+    def input(self, key):
+        if key == "escape":
+            if self.pressed:
+                mouse.locked = True
+                self.pressed = False
+            else:
+                mouse.locked = False
+                self.pressed = True
+
+
 class SimulLoadWaiter(Entity):
     def __init__(self, bprin_connect, cursor):
         super().__init__()
@@ -65,6 +80,7 @@ class SimulLoadWaiter(Entity):
         """
         self.bprin_connect.send(fieldset)
         self.main_execute()
+        InputHandler()
 
     def msg_window_gen(self):
         for xyz, ro in (
