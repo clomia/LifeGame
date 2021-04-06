@@ -43,7 +43,7 @@ class SimulConnection(Thread):
         self.queue.put(fieldset_list)
         self.oper_counter += 1
         print(f"[simul프로세스]-연산을 제공받았습니다-제공받은 정보량: 총 [{self.oper_counter*PROPHECY_COUNT}]세대")
-        time.sleep(10)
+        time.sleep(OPERATION_SPEED)
         sock.sendall("need next".encode("utf-8"))
         return fieldset_list
 
