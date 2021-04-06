@@ -5,6 +5,8 @@ OPERATION_SPEED: int = 10
 # 필요시 OPERATION_SPEED에 더해지는 값입니다
 SLOW_OPERATION_SPEED: int = 600
 # -------------------------------
+SIGNAL = object()
+# -------------------------------
 # todo 여기서 포트번호 검사 & 설정하기
 BPRIN_PROC_PORT: int = 40000
 SIMUL_PROC_PORT: int = 40001

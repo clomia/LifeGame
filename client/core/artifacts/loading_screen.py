@@ -32,7 +32,7 @@ class LoadScreen(Entity):
         Eye(limit=world.scale)
         CellController(self.pipe_queue)
         destroy(self)
-        self.simul_loading_complate_signal.put(True)
+        self.simul_loading_complate_signal.put(SIGNAL)
 
 
 class InputHandler(Entity):

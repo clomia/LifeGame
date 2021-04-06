@@ -6,3 +6,5 @@ outline = lambda obj, opacity: Entity(
     color=color.rgba(196, 235, 232, opacity),
     z=-0.01,
 )
+
+SIGNAL = object()

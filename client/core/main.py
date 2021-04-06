@@ -45,7 +45,7 @@ class ProcControll:
         """ 프로세스가 죽으면 큐에 신호를 넣습니다"""
         self.bprin_process.wait()
         if self.bprin_queue.empty():
-            self.shutdown_request.put(True)
+            self.shutdown_request.put(SIGNAL)
 
     def bprin_killer(self):
         self.bprin_kill_signal.get()
@@ -55,14 +55,14 @@ class ProcControll:
     def simul_proc_check(self):
         """ 프로세스가 죽으면 큐에 신호를 넣습니다"""
         self.simul_process.wait()
-        self.shutdown_request.put(True)
+        self.shutdown_request.put(SIGNAL)
 
     def shutdown(self):
         """
         큐에 신호가 들어오면 실행중인 서브 프로세스들을 모두 죽입니다
         이 함수를 직접 호출하지 마세요!
 
-        self.shutdown_request.put(True) 를 할 때 이 함수가 실행됩니다!
+        self.shutdown_request.put(SIGNAL) 를 할 때 이 함수가 실행됩니다!
         """
         self.shutdown_request.get()
         print("[main 프로세스]-shutdown signal을 수신하였습니다. 프로세스들을 모두 죽입니다.")

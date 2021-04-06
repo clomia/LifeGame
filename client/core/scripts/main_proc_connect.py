@@ -34,9 +34,10 @@ class BprinConnect(Thread):
         print("[main프로세스]-bprin프로세스로부터 fieldset을 제공받았습니다.")
         self.simul_loading_complate_signal.get()
         print("[main프로세스]-simul프로세스의 로딩 완료 signal이 들어온것을 확인하였습니다.")
-        self.bprin_kill_signal.put(True)
+        self.bprin_kill_signal.put(SIGNAL)
         self.queue.put(fieldset)
-        self.queue.put(True)  # * core/main.ProcControll.bprin_proc_check의 if문->fieldset수신 확인 signal
+        self.queue.put(SIGNAL)
+        # * core/main.ProcControll.bprin_proc_check의 if문->fieldset수신 확인때 인터셉팅 대응용
 
 
 class Operator:
@@ -96,7 +97,7 @@ class SimulConnect(Thread):
     def run(self):
         self.connect()
         print("[main 프로세스]-simul프로세스의 로딩 완료 signal을 수신하였습니다.")
-        self.simul_loading_complate_signal.put(True)
+        self.simul_loading_complate_signal.put(SIGNAL)
         fieldset = self.bprin_queue.get()
         init_fieldset = literal_eval(fieldset)
         assert isinstance(init_fieldset, dict)
