@@ -1,0 +1,16 @@
+------------------------------
+Ursina 라이브러리 변경 내역
+
+ursina/prefabs.window_panel.WindowPanel.__init__ -> line: 93 
+변경 전:color,highlight_color,pressed_color = color.black66
+변경 후:color,highlight_color,pressed_color = Color(0, 0, 0, 0.92)
+비고: 1인칭 환경에서 ESC버튼 눌렀을때 주변 어두워지도록 하는것.
+클래스 상속 후 속성 변경을 하면 런타임중 원인모를 에러가 발생해서 직접 변경함.
+------------------------------
+------------------------------
+메모
+
+auto-py-to-exe 할때 exe로 변환하는 명령어 기록해두고 간단하게 쓸수 있도록 자동화시키기
+
+가상환경 진입 : env/Scripts/activate.ps1
+--------------------------------
