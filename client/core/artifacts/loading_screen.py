@@ -29,8 +29,8 @@ class LoadScreen(Entity):
             "top": "source/wall_top.jpg",
             "left": "source/wall_front.jpg",
         }
-        world = Universe(walls, "source/universe.jpg")
-        Eye(limit=world.scale)
+        internal = Universe(walls, "source/universe.jpg")
+        Eye(limit=internal.scale)
         CellController(self.pipe_queue)
         MobiusNodeCube()
         destroy(self)

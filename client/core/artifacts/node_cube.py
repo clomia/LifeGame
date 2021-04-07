@@ -7,6 +7,9 @@ class MobiusNodeCube(Entity):
         self.scale = 3
         self.field_scale = 100
         self.vertex = 46
+        self.world_z = -50
+        self.world_x = 150  # 150을 넘어가면 z축이 변경되면서 튕겨나간다
+        self.x += 130  # 이것도 일정 숫자를 넘어가면 튕겨나간다
         self.in_vertex = (
             lambda axis: self.vertex - self.scale.x / 2 < axis < self.vertex + self.scale.x / 2
             or -self.vertex - self.scale.x / 2 < axis < -self.vertex + self.scale.x / 2
@@ -16,8 +19,8 @@ class MobiusNodeCube(Entity):
         self.NEGATIVE_DIRECTION = 0
         self.model = "cube"
         self.y = -self.field_scale / 2 + self.scale.y + 0.8
-        self.rotation_z = 45
-        self.rotation_x = 45
+        self.rotation_z = 60
+        self.rotation_x = 60
         self.texture = load_texture("source/cube.png")
         position_setting = (Func(self._position_setting), 11)  # 총 11초
         move_around = (
