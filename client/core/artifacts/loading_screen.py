@@ -5,6 +5,7 @@ if not __name__ == "__main__":
     from .universe import *
     from .origin import *
     from .cell_controll import *
+    from .node_cube import *
 
 
 class LoadScreen(Entity):
@@ -31,6 +32,7 @@ class LoadScreen(Entity):
         world = Universe(walls, "source/universe.jpg")
         Eye(limit=world.scale)
         CellController(self.pipe_queue)
+        MobiusNodeCube()
         destroy(self)
         self.simul_loading_complate_signal.put(SIGNAL)
 
