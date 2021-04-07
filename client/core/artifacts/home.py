@@ -119,15 +119,26 @@ def home_screen(cursor, offline_pipe, online_pipe=None, intro=False):
     if intro:
         home_stuff = (bg, online_btn, offline_btn)
         for entity in home_stuff:
-            entity.visible = False
+            entity.enabled = False
         intro_video = Intro()
+        online_btn.fade_out()
+        online_btn.text_color = color.rgba(255, 255, 255, 0)
+        offline_btn.fade_out()
+        offline_btn.text_color = color.rgba(255, 255, 255, 0)
 
         def visible():
             destroy(intro_video)
             for entity in home_stuff:
-                entity.visible = True
+                entity.enabled = True
+            online_btn.fade_in(1)
+            offline_btn.fade_in(1)
+
+        def text_visible():
+            online_btn.text_color = online_btn.hide_color
+            offline_btn.text_color = offline_btn.hide_color
 
         invoke(visible, delay=3.5)
+        invoke(text_visible, delay=4)
 
 
 __all__ = ["home_screen"]
