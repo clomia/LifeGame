@@ -34,7 +34,8 @@ def react_handler(react_map):
         try:
             react_map[key]()
         except KeyError:
-            print(f"[react_map]Not Mapping: {key}")
+            # print(f"[react_map]Not Mapping: {key}")
+            pass
 
     return func
 
