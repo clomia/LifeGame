@@ -18,7 +18,7 @@ class MobiusNodeCube(Entity):
         self.y = -self.field_scale / 2 + self.scale.y + 0.8
         self.rotation_z = 45
         self.rotation_x = 45
-        self.texture = load_texture("source/cube/cube.png")
+        self.texture = load_texture("source/cube.png")
         position_setting = (Func(self._position_setting), 11)  # 총 11초
         move_around = (
             Func(self._move_z_ne),

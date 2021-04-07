@@ -254,6 +254,7 @@ class Score(Entity):
         """
         super().__init__()
         self.provider = provider
+        self.panel = panel
         self.cell_count = {1: 0, 2: 0}
         self.x_origin = (panel.player_1.x + panel.player_1.scale_x / 3) / 9.67
         self.player = {
@@ -284,6 +285,10 @@ class Score(Entity):
         if self.provider.is_complete:
             destroy(self.player[1])
             destroy(self.player[2])
+            destroy(self.panel.player_1)
+            destroy(self.panel.player_1_number_screen)
+            destroy(self.panel.player_2)
+            destroy(self.panel.player_2_number_screen)
 
     def cell_counter(self):
         cells = list(self.provider.info.values())

@@ -129,7 +129,7 @@ class Player(FirstPersonController):
         self.origin_y = -0.5
         self.camera_pivot = Entity(parent=self, y=2)
         self.cursor = Entity(parent=camera.ui, model="circle", color=color.black, scale=0.005)
-        self.position = Vec3(4, 60, 4)
+        self.position = Vec3(4, 10, 4)
         self.mouse_sensitivity = Vec2(60, 60)
         camera.parent = self.camera_pivot
         camera.position = (0, 0, 0)
