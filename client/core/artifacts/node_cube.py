@@ -14,13 +14,10 @@ class MobiusNodeCube(Entity):
             lambda axis: self.vertex - self.scale.x / 2 < axis < self.vertex + self.scale.x / 2
             or -self.vertex - self.scale.x / 2 < axis < -self.vertex + self.scale.x / 2
         )
-
         self.POSITIVE_DIRECTION = 1
         self.NEGATIVE_DIRECTION = 0
         self.model = "cube"
         self.y = -self.field_scale / 2 + self.scale.y + 0.8
-        self.rotation_z = 60
-        self.rotation_x = 60
         self.texture = load_texture("source/cube.png")
         position_setting = (Func(self._position_setting), 11)  # 총 11초
         move_around = (
@@ -43,7 +40,7 @@ class MobiusNodeCube(Entity):
             0.25,
             Func(self._rotation_xy, 1000),
             0.25,
-        )  # 총 1초 (이것으로 인한 각도 변화율은 지금이 딱 좋다 바꾸지 말자)
+        )  # 총 1초 (이것으로 인한 각도 변화율: x,z축이 45도 이동)
         move_around_up_down = (
             Func(self._move_z_ne),
             7,
@@ -71,14 +68,14 @@ class MobiusNodeCube(Entity):
             5,
         )  # 총 68초
         self.complete_move = position_setting + move_around + up_down + furious  # 총 50초
-        self.complete_move_2 = move_around + furious  # 총 28초
-        self.complete_move_3 = move_around_up_down + furious
+        self.complete_move_2 = move_around_up_down + move_around + furious + up_down  # 총 106초
+        self.complete_move_3 = move_around_up_down + up_down + furious
         # 이터레이터를 곱하거나 더해서 언패킹하면 작동을 안해서 단순 반복입력함.
         self.movement = Sequence(*self.complete_move)
         self.movement.loop = True
         self.movement.start()
         invoke(self.movement_resetting, args=self.complete_move_2, delay=50)
-        invoke(self.movement_resetting, args=self.complete_move_3, delay=78)
+        invoke(self.movement_resetting, args=self.complete_move_3, delay=156)
 
     def movement_resetting(self, args):
         self.movement.kill()
