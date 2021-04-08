@@ -118,7 +118,17 @@ class SimulLoadWaiter(Entity):
                 voxel.eternal = True
                 if x in (0, 7) or z in (0, 7):
                     Voxel(position=(x, 1, z))
-
+        ground = Button(
+            parent=scene,
+            model="cube",
+            position=(2.5, 985, 2.5),
+            color=color.rgba(255, 255, 255, 0),
+            scale_y=2000,
+            scale_x=2000,
+            scale_z=2000,
+            double_sided=True,
+        )
+        # ground.model.colorize()
         Player()
 
 

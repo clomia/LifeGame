@@ -7,7 +7,7 @@ class MobiusNodeCube(Entity):
         self.scale = 3
         self.field_scale = 100
         self.vertex = 46
-        self.world_z = -50
+        self.world_z = -50  # 변경 금지
         self.world_x = 150  # 150을 넘어가면 z축이 변경되면서 튕겨나간다
         self.x += 130  # 이것도 일정 숫자를 넘어가면 튕겨나간다
         self.in_vertex = (
