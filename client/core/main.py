@@ -49,7 +49,6 @@ class ProcControll:
 
     def bprin_killer(self):
         self.bprin_kill_signal.get()
-        time.sleep(2.5)
         self.bprin_process.kill()
 
     def simul_proc_check(self):

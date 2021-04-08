@@ -34,7 +34,7 @@ class LoadScreen(Entity):
         CellController(self.pipe_queue)
         MobiusNodeCube()
         destroy(self)
-        self.simul_loading_complate_signal.put(SIGNAL)
+        invoke(lambda: self.simul_loading_complate_signal.put(SIGNAL), delay=2.5)
 
 
 class InputHandler(Entity):
