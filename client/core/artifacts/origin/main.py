@@ -117,12 +117,19 @@ class EscBg(Entity):
         self.scale_x = x_ratio * value
         self.scale_y = y_ratio * value
         self.texture = load_texture("source/esc_bg.jpg")
+        self.alpha = 249
 
 
 class Esc:
     """ 커서가 잠겨있는 상태(3D환경) 에는 mouse_locked=True를 해주세요"""
 
     def __init__(self, mouse_locked=False):
+        """
+        mouse_locked = True 이면 simul , False이면 bprin으로 간주하고 작동합니다.
+
+        invoke_time에 숫자를 입력하면 인스턴스 생성 후 해당 초 이후에 활성화됩니다.
+        이것은 처음에만 적용됩니다.
+        """
         self.mouse_locked = mouse_locked
         self.esc_stuff = []
         self.parent = camera.ui
@@ -133,15 +140,15 @@ class Esc:
         self.scale_x = x_ratio * value
         self.scale_y = y_ratio * value
 
-        @react_roop(self.on, self.off)
+        @react_roop(self.on, self.off)  # todo 이 사이에 다른 화면 삽입 가능
         def handler():
             pass
-            #!언어 변경은 on_click = LANGUAGE.setting 하면 됨 (람다로 인자전달)
 
         if LANGUAGE.now == "ko":
             self.title = "설정"
         elif LANGUAGE.now == "en":
             self.title = "Setting"
+
         self.handler = handler
 
     @contextmanager
@@ -198,17 +205,27 @@ class Esc:
             exit_text = "게임 종료"
         elif LANGUAGE.now == "en":
             exit_text = "Game Exit"
-        btn = Button(text=exit_text, color=color.gray, y=-0.4, scale_x=0.5, scale_y=0.05)
+        btn = Button(
+            text=exit_text,
+            color=color.gray,
+            y=-0.4,
+            scale_x=0.4,
+            scale_y=0.05,
+            model=Quad(thickness=1.3, segments=0, mode="line"),
+        )
+        btn.highlight_color = color.white
+        btn.pressed_color = color.black66
         btn.on_click = application.quit
         return btn
 
-    @staticmethod
-    def lang_btn_gen():
+    def lang_btn_gen(self):
         if LANGUAGE.now == "ko":
             descr = "언어 설정"
+            position_x = -0.735
         elif LANGUAGE.now == "en":
             descr = "Language setting"
-        text = Text(descr, x=-0.8, y=0.07)
+            position_x = -0.8
+        text = Text(descr, x=position_x, y=0.05)
         en_btn = Button(
             text="English",
             color=color.gray,
@@ -216,19 +233,30 @@ class Esc:
             x=-0.686,  # 위치 변경 주의
             scale_x=0.25,
             scale_y=0.05,
-            model=Quad(thickness=1, segments=0, mode="line"),
+            model=Quad(thickness=1.3, segments=0, mode="line"),
         )
         ko_btn = Button(
             text="한국어",
             color=color.gray,
-            y=-0.07,
+            y=-0.073,
             x=-0.686,  # 위치 변경 주의
             scale_x=0.25,
             scale_y=0.05,
-            model=Quad(thickness=1, segments=0, mode="line"),
+            model=Quad(thickness=1.3, segments=0, mode="line"),
         )
-        en_btn.on_click = lambda: LANGUAGE.setting("en") if LANGUAGE.now != "en" else None
-        ko_btn.on_click = lambda: LANGUAGE.setting("ko") if LANGUAGE.now != "ko" else None
+
+        def event(lang: str):
+            if LANGUAGE.now != lang:
+                LANGUAGE.setting(lang)
+                self.off()
+                self.on()
+
+        en_btn.highlight_color = color.white
+        en_btn.pressed_color = color.black66
+        ko_btn.highlight_color = color.white
+        ko_btn.pressed_color = color.black66
+        en_btn.on_click = lambda: event("en")
+        ko_btn.on_click = lambda: event("ko")
         return (text, en_btn, ko_btn)
 
     @staticmethod

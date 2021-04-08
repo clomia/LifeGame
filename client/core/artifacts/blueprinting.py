@@ -56,10 +56,12 @@ class InputGrid(Entity):
         self.player = self.player_1
         self.info = {}
         self.other_player = lambda: self.player_2 if self.player == self.player_1 else self.player_1
+        self.nowlang = None
         if LANGUAGE.now == "ko":
-            self.decision_btn("창조", "계속")
-        elif LANGUAGE.now == "en":
-            self.decision_btn("create", "continue")
+            self.execution_btn, self.continue_btn = self.decision_btn("ko")
+        if LANGUAGE.now == "en":
+            self.execution_btn, self.continue_btn = self.decision_btn("en")
+
         self.background()
         self.click_counter = -inf
 
@@ -112,7 +114,7 @@ class InputGrid(Entity):
         button.on_click = click
         return button
 
-    def decision_btn(self, excution_text: str, continue_text: str):
+    def decision_btn(self, lang):
         def mouse_hover(btn):
             def func():
                 btn.color = color.rgba(196, 235, 232, 30)
@@ -140,45 +142,70 @@ class InputGrid(Entity):
                 self.continue_btn.color = self.btn_color
                 self.need_decision = False
 
-        self.continue_btn = Button(parent=self, z=-0.01, model="quad")
-        self.execution_btn = Button(parent=self, z=-0.01, model="quad")
-        self.continue_btn.x = self.x + self.size // 4 + 0.75
-        self.continue_btn.y = self.y - self.size // 2 - 1.25
-        self.continue_btn.scale_x = self.size // 2 + 0.5
-        self.continue_btn.scale_y = 1.5
-        self.execution_btn.x = self.x - self.size // 4 - 0.75
-        self.execution_btn.y = self.y - self.size // 2 - 1.25
-        self.execution_btn.scale_x = self.size // 2 + 0.5
-        self.execution_btn.scale_y = 1.5
-        if LANGUAGE.now == "ko":
-            continue_text_origin = (-self.size / 5.5, self.size / 1.29)
-            execution_text_origin = (self.size / 5.5, self.size / 1.29)
-        elif LANGUAGE.now == "en":
-            continue_text_origin = (-self.size / 12, self.size / 1.29)
-            execution_text_origin = (self.size / 9, self.size / 1.29)
-        self.continue_btn.text_entity = Text(
-            text=continue_text,
-            size=0.035,
-            origin=continue_text_origin,
-            alpha=150,
-        )
-        self.execution_btn.text_entity = Text(
-            text=excution_text,
-            size=0.035,
-            origin=execution_text_origin,
-            alpha=150,
-        )
-        self.continue_btn.color = self.btn_color
-        self.continue_btn.on_mouse_enter = mouse_hover(self.continue_btn)
-        self.continue_btn.on_mouse_exit = mouse_exit(self.continue_btn)
-        self.continue_btn.on_click = continue_henble
-        self.outline(self.continue_btn, 60)
+        continue_btn = Button(parent=self, z=-0.01, model="quad")
+        execution_btn = Button(parent=self, z=-0.01, model="quad")
+        continue_btn.x = self.x + self.size // 4 + 0.75
+        continue_btn.y = self.y - self.size // 2 - 1.25
+        continue_btn.scale_x = self.size // 2 + 0.5
+        continue_btn.scale_y = 1.5
+        execution_btn.x = self.x - self.size // 4 - 0.75
+        execution_btn.y = self.y - self.size // 2 - 1.25
+        execution_btn.scale_x = self.size // 2 + 0.5
+        execution_btn.scale_y = 1.5
 
-        self.execution_btn.color = self.btn_color
-        self.execution_btn.on_mouse_enter = mouse_hover(self.execution_btn)
-        self.execution_btn.on_mouse_exit = mouse_exit(self.execution_btn)
-        self.execution_btn.on_click = submit
-        self.outline(self.execution_btn, 60)
+        def lang_conf(lang=lang):
+            if lang == "ko" and self.nowlang != "ko":
+                destroy(continue_btn.text_entity)
+                destroy(execution_btn.text_entity)
+                continue_text_origin = (-self.size / 5.5, self.size / 1.29)
+                execution_text_origin = (self.size / 5.5, self.size / 1.29)
+                continue_btn.text_entity = Text(
+                    text="창조",
+                    size=0.035,
+                    origin=continue_text_origin,
+                    alpha=150,
+                )
+                execution_btn.text_entity = Text(
+                    text="계속",
+                    size=0.035,
+                    origin=execution_text_origin,
+                    alpha=150,
+                )
+                self.nowlang = "ko"
+            elif lang == "en" and self.nowlang != "en":
+                destroy(continue_btn.text_entity)
+                destroy(execution_btn.text_entity)
+                continue_text_origin = (-self.size / 12, self.size / 1.29)
+                execution_text_origin = (self.size / 9, self.size / 1.29)
+                continue_btn.text_entity = Text(
+                    text="continue",
+                    size=0.035,
+                    origin=continue_text_origin,
+                    alpha=150,
+                )
+                execution_btn.text_entity = Text(
+                    text="create",
+                    size=0.035,
+                    origin=execution_text_origin,
+                    alpha=150,
+                )
+                self.nowlang = "en"
+
+        lang_conf()
+        continue_btn.color = self.btn_color
+        continue_btn.on_mouse_enter = mouse_hover(continue_btn)
+        continue_btn.on_mouse_exit = mouse_exit(continue_btn)
+        continue_btn.on_click = continue_henble
+        continue_btn.update = lambda: lang_conf(LANGUAGE.now)
+        self.outline(continue_btn, 60)
+
+        execution_btn.color = self.btn_color
+        execution_btn.on_mouse_enter = mouse_hover(execution_btn)
+        execution_btn.on_mouse_exit = mouse_exit(execution_btn)
+        execution_btn.on_click = submit
+        execution_btn.update = lambda: lang_conf(LANGUAGE.now)
+        self.outline(execution_btn, 60)
+        return execution_btn, continue_btn
 
     def background(self):
         self.bg = Entity(
