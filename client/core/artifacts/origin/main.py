@@ -106,18 +106,32 @@ def react_roop(*args):
     return decorator
 
 
+class EscBg(Entity):
+    def __init__(self):
+        super().__init__()
+        self.parent = camera.ui
+        self.origin = (-0.5, 0.5)
+        self.model = "quad"
+        x_ratio, y_ratio = window.screen_resolution
+        value = 1 / y_ratio
+        self.scale_x = x_ratio * value
+        self.scale_y = y_ratio * value
+        self.texture = load_texture("source/esc_bg.jpg")
+
+
 class Esc:
     """ 커서가 잠겨있는 상태(3D환경) 에는 mouse_locked=True를 해주세요"""
 
-    def __init__(self, mouse_locked=False, bg_deep=False):
+    def __init__(self, mouse_locked=False):
         self.mouse_locked = mouse_locked
         self.esc_stuff = []
-        if not bg_deep:
-            self.bg_color = color.rgba(0, 0, 0, 120)
-        else:
-            self.bg_color = color.rgba(135, 135, 135, 0)
-            #! 하단에서 color로 대입되는거 고려해서
-            #! texture 넣기
+        self.parent = camera.ui
+        self.origin = (-0.5, 0.5)
+        self.model = "quad"
+        x_ratio, y_ratio = window.screen_resolution
+        value = 1 / y_ratio
+        self.scale_x = x_ratio * value
+        self.scale_y = y_ratio * value
 
         @react_roop(self.on, self.off)
         def handler():
@@ -135,7 +149,7 @@ class Esc:
         """ursina특성상, 시각정보는 새로 만들어진 레이어가 위로,
         버튼 이벤트 핸들러는 새로 만들어진 레이어가 아레로 쌓인다
         위와 같은 레이어 반전때문에 증폭된 복잡도를 상쇄하는 함수이다."""
-        self.esc_stuff.append(self.bg_gen())
+        self.esc_stuff.append(EscBg())
         try:
             yield
         finally:
@@ -149,6 +163,7 @@ class Esc:
             self.esc_stuff.append(self.shut_down_btn_gen())
             self.esc_stuff.append(self.key_description_gen())
             self.esc_stuff.extend(self.main_gen())
+            self.esc_stuff.extend(self.lang_btn_gen())
 
     def off(self):
         if self.mouse_locked:
@@ -177,14 +192,6 @@ class Esc:
         screen.pressed_color = screen.color
         return screen
 
-    def bg_gen(self):
-        bg = Entity(
-            parent=camera.ui,
-            model=Quad(scale=(10, 10), thickness=3, segments=0),
-            color=self.bg_color,
-        )
-        return bg
-
     @staticmethod
     def shut_down_btn_gen():
         if LANGUAGE.now == "ko":
@@ -194,6 +201,35 @@ class Esc:
         btn = Button(text=exit_text, color=color.gray, y=-0.4, scale_x=0.5, scale_y=0.05)
         btn.on_click = application.quit
         return btn
+
+    @staticmethod
+    def lang_btn_gen():
+        if LANGUAGE.now == "ko":
+            descr = "언어 설정"
+        elif LANGUAGE.now == "en":
+            descr = "Language setting"
+        text = Text(descr, x=-0.8, y=0.07)
+        en_btn = Button(
+            text="English",
+            color=color.gray,
+            y=-0.02,
+            x=-0.686,  # 위치 변경 주의
+            scale_x=0.25,
+            scale_y=0.05,
+            model=Quad(thickness=1, segments=0, mode="line"),
+        )
+        ko_btn = Button(
+            text="한국어",
+            color=color.gray,
+            y=-0.07,
+            x=-0.686,  # 위치 변경 주의
+            scale_x=0.25,
+            scale_y=0.05,
+            model=Quad(thickness=1, segments=0, mode="line"),
+        )
+        en_btn.on_click = lambda: LANGUAGE.setting("en") if LANGUAGE.now != "en" else None
+        ko_btn.on_click = lambda: LANGUAGE.setting("ko") if LANGUAGE.now != "ko" else None
+        return (text, en_btn, ko_btn)
 
     @staticmethod
     def key_description_gen():
@@ -207,6 +243,19 @@ class Esc:
                 <white>[d] <light_gray>오른쪽으로 이동
                 <white>[alt] <light_gray>하강
                 <white>[space] <light_gray>상승
+                """
+            ).strip()
+            return Text(description, x=-0.8, y=0.3)
+        elif LANGUAGE.now == "en":
+            description = dedent(
+                """
+                <white>[left click] <light_gray>Accelerate
+                <white>[w] <light_gray>Move Front
+                <white>[a] <light_gray>Move Left
+                <white>[s] <light_gray>Move Back
+                <white>[d] <light_gray>Move Right
+                <white>[alt] <light_gray>Move Down
+                <white>[space] <light_gray>Move Up
                 """
             ).strip()
             return Text(description, x=-0.8, y=0.3)

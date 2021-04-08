@@ -1,13 +1,13 @@
 """ 설정 관리 모듈 """
 import json
 
-with open("core/artifacts/origin/setting.json", "rb") as file:
+with open("core/artifacts/origin/setting.json", "rt") as file:
     SETTING: dict = json.load(file)
 
 
 def config(setting: dict):
     """ setting.json변경 함수 [주의!]add가 아니라 replace이다. 변경한 SETTING 딕셔너리를 입력하세요."""
-    with open("core/artifacts/origin/setting.json", "wb") as file:
+    with open("core/artifacts/origin/setting.json", "wt") as file:
         json.dump(setting, file)
 
 
