@@ -77,51 +77,6 @@ class Universe:
 if __name__ == "__main__":
     app = Ursina()
 
-    class Eye(Entity):
-        """
-        공간을 둘러보기 위한 컨트롤러. player라고 봐도 무방하다.
-        limit 인자로 공간 크기 단위값을 주면 그 안에 가둔다.
-
-        ---
-        생성하기 전에 커서를 보이지 않게 해주세요
-        ---
-        """
-
-        def __init__(self, *, speed=12, position: tuple = (0, 0, 0), fav=90, limit=None):
-            super().__init__()
-            self.limit = limit
-            self.origin_speed = self.speed = speed
-            self.sensitivity = 80
-            camera.parent = self
-            camera.position = position
-            camera.rotation = (0, 0, 0)
-            camera.fov = fav
-            mouse.locked = True
-            self.fast_speed = self.speed * 2
-
-        def update(self):
-            self.y += held_keys["shift"] * time.dt * self.speed
-            self.y -= held_keys["alt"] * time.dt * self.speed
-            self.rotation_y += mouse.velocity[0] * self.sensitivity
-            self.rotation_x -= mouse.velocity[1] * self.sensitivity
-            self.direction = Vec3(
-                self.forward * (held_keys["w"] - held_keys["s"])
-                + self.right * (held_keys["d"] - held_keys["a"])
-            ).normalized()
-            self.position += self.direction * self.speed * time.dt
-            if self.limit:
-                self.x = clamp(self.x, -self.limit / 2 + 2, self.limit / 2 - 2)
-                self.y = clamp(self.y, -self.limit / 2 + 2, self.limit / 2 - 2)
-                self.z = clamp(self.z, -self.limit / 2 + 2, self.limit / 2 - 2)
-
-        def input(self, key):
-            print(key)
-            if key == "left mouse down":
-                self.speed = self.fast_speed
-            if key == "left mouse up":
-                self.speed = self.origin_speed
-
-    Eye()
     walls = {
         "bottom": "source/wall_bottom.jpg",
         "top": "source/wall_top.jpg",

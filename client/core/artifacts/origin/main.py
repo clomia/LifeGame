@@ -109,9 +109,12 @@ def react_roop(*args):
 class Esc:
     """ 커서가 잠겨있는 상태(3D환경) 에는 mouse_locked=True를 해주세요"""
 
-    def __init__(self, mouse_locked=False):
+    def __init__(self, mouse_locked=False, bg_dark=True):
         self.mouse_locked = mouse_locked
-        self.popup = True
+        if not bg_dark:
+            self.bg_color = color.rgba(0, 0, 0, 120)
+        else:
+            self.bg_color = color.rgba(0, 0, 0, 200)
 
         @react_roop(self.on, self.off)
         def handler():
@@ -123,33 +126,64 @@ class Esc:
             self.title = "Setting"
         self.handler = handler
         # 여기서 람다 안쓰고 먼저 만들어두려고 하면 에러가 발생
-        self.panel_gen = lambda: WindowPanel(
-            title=self.title,
-            content=(self.shut_down_btn(),),
-            popup=self.popup,
-        )
 
     def on(self):
         if self.mouse_locked:
             mouse.locked = False
             self.cursor = GameCursor()
-        self.panel = self.panel_gen()
+        self.panel = self.main_gen()
+        self.shut_down_btn = self.shut_down_btn_gen()
+        self.key_description = self.key_description_gen()
 
     def off(self):
         if self.mouse_locked:
             mouse.locked = True
             destroy(self.cursor)
-        destroy(self.panel)
+        for stuff in self.panel:
+            destroy(stuff)
+        destroy(self.shut_down_btn)
+        destroy(self.key_description)
+
+    def main_gen(self):
+        penal = WindowPanel()
+        bg = Entity(
+            parent=camera.ui,
+            model=Quad(scale=(10, 10), thickness=3, segments=0),
+            color=self.bg_color,
+            z=-0.1,
+        )
+        frame = Entity(
+            parent=camera.ui,
+            model=Quad(scale=(0.5, 0.5), thickness=3, segments=3, mode="line"),
+            color=color.color(0, 1, 1, 0.7),
+        )
+        return (penal, bg, frame)
 
     @staticmethod
-    def shut_down_btn():
+    def shut_down_btn_gen():
         if LANGUAGE.now == "ko":
             exit_text = "게임 종료"
         elif LANGUAGE.now == "en":
             exit_text = "Game Exit"
-        btn = Button(text=exit_text, color=color.gray)
+        btn = Button(text=exit_text, color=color.gray, y=-0.4, scale_x=0.5, scale_y=0.05)
         btn.on_click = application.quit
         return btn
+
+    @staticmethod
+    def key_description_gen():
+        if LANGUAGE.now == "ko":
+            description = dedent(
+                """
+                <white>[마우스 좌클릭] <light_gray>가속
+                <white>[w] <light_gray>앞으로 이동
+                <white>[a] <light_gray>왼쪽으로 이동
+                <white>[s] <light_gray>뒤로 이동
+                <white>[d] <light_gray>오른쪽으로 이동
+                <white>[alt] <light_gray>하강
+                <white>[space] <light_gray>상승
+                """
+            ).strip()
+            return Text(description, x=-0.8, y=0.3)
 
 
 @contextmanager
@@ -160,13 +194,14 @@ def bprin(*, debug=False):
     core/artifacts 내부에서 디버깅용으로 사용시 True를 받아야 합니다
     """
     app = Ursina()
+    application.development_mode = False
     cursor = GameCursor()
     window.title = "Clomia Life Game"
     window.fullscreen = True
     window.cog_button.visible = False
     window.exit_button.visible = False
     window.fps_counter.enabled = False
-
+    Text.default_resolution = 1080 * Text.size
     if debug:
         Text.default_font = "source/main_font.ttf"
     else:
@@ -184,11 +219,13 @@ def simul(*, debug=False):
 
     """
     app = Ursina()
+    application.development_mode = False
     window.title = "Clomia 3D Loader"
     window.fullscreen = True
     window.cog_button.visible = False
     window.exit_button.visible = False
     window.fps_counter.enabled = False
+    Text.default_resolution = 1080 * Text.size
     if debug:
         Text.default_font = "source/main_font.ttf"
     else:

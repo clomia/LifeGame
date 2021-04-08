@@ -1,11 +1,24 @@
 ------------------------------
 Ursina 라이브러리 변경 내역
 
-ursina/prefabs.window_panel.WindowPanel.__init__ -> line: 93 
+ursina/prefabs.window_panel.WindowPanel.__init__ -> line: 93 , 103
+
+line 93:
 변경 전:color,highlight_color,pressed_color = color.black66
 변경 후:color,highlight_color,pressed_color = Color(0, 0, 0, 0.92)
 비고: 1인칭 환경에서 ESC버튼 눌렀을때 주변 어두워지도록 하는것.
 클래스 상속 후 속성 변경을 하면 런타임중 원인모를 에러가 발생해서 직접 변경함.
+
+line 103:
+변경 후: 주석처리 하였음.
+비고: Esc클릭 후 버튼 이외의 부분을 클릭하면 패널이 사라지는 기능.
+기존에 구현한 Esc 클릭 루프와 겹쳐서 제거함.
+
+
+ursina/main.py -> line: 199, 202
+변경 후: 주석처리 하였음
+비고:f11 눌러서 fullscreen을 껏다 켯다 할 수 있는 기능 , f10에 할당된 어떤 기능
+위 기능을 제거함.
 ------------------------------
 ------------------------------
 메모
