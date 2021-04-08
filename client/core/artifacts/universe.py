@@ -76,7 +76,7 @@ class Universe:
 
 if __name__ == "__main__":
     app = Ursina()
-    EditorCamera()
+
     walls = {
         "bottom": "source/wall_bottom.jpg",
         "top": "source/wall_top.jpg",

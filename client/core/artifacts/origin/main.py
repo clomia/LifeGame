@@ -54,6 +54,8 @@ class Eye(Entity):
         mouse.locked = True
 
     def update(self):
+        self.y += held_keys["shift"] * time.dt * self.speed
+        self.y -= held_keys["space"] * time.dt * self.speed
         self.rotation_y += mouse.velocity[0] * self.sensitivity
         self.rotation_x -= mouse.velocity[1] * self.sensitivity
         self.direction = Vec3(
