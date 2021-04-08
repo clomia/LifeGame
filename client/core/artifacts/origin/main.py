@@ -109,55 +109,81 @@ def react_roop(*args):
 class Esc:
     """ 커서가 잠겨있는 상태(3D환경) 에는 mouse_locked=True를 해주세요"""
 
-    def __init__(self, mouse_locked=False, bg_dark=True):
+    def __init__(self, mouse_locked=False, bg_deep=False):
         self.mouse_locked = mouse_locked
-        if not bg_dark:
+        self.esc_stuff = []
+        if not bg_deep:
             self.bg_color = color.rgba(0, 0, 0, 120)
         else:
-            self.bg_color = color.rgba(0, 0, 0, 200)
+            self.bg_color = color.rgba(135, 135, 135, 0)
+            #! 하단에서 color로 대입되는거 고려해서
+            #! texture 넣기
 
         @react_roop(self.on, self.off)
         def handler():
             pass
+            #!언어 변경은 on_click = LANGUAGE.setting 하면 됨 (람다로 인자전달)
 
         if LANGUAGE.now == "ko":
             self.title = "설정"
         elif LANGUAGE.now == "en":
             self.title = "Setting"
         self.handler = handler
-        # 여기서 람다 안쓰고 먼저 만들어두려고 하면 에러가 발생
+
+    @contextmanager
+    def on_bg(self):
+        """ursina특성상, 시각정보는 새로 만들어진 레이어가 위로,
+        버튼 이벤트 핸들러는 새로 만들어진 레이어가 아레로 쌓인다
+        위와 같은 레이어 반전때문에 증폭된 복잡도를 상쇄하는 함수이다."""
+        self.esc_stuff.append(self.bg_gen())
+        try:
+            yield
+        finally:
+            self.esc_stuff.append(self.screen_gen())
 
     def on(self):
         if self.mouse_locked:
             mouse.locked = False
             self.cursor = GameCursor()
-        self.panel = self.main_gen()
-        self.shut_down_btn = self.shut_down_btn_gen()
-        self.key_description = self.key_description_gen()
+        with self.on_bg():
+            self.esc_stuff.append(self.shut_down_btn_gen())
+            self.esc_stuff.append(self.key_description_gen())
+            self.esc_stuff.extend(self.main_gen())
 
     def off(self):
         if self.mouse_locked:
             mouse.locked = True
             destroy(self.cursor)
-        for stuff in self.panel:
+        for stuff in self.esc_stuff:
             destroy(stuff)
-        destroy(self.shut_down_btn)
-        destroy(self.key_description)
 
     def main_gen(self):
-        penal = WindowPanel()
-        bg = Entity(
-            parent=camera.ui,
-            model=Quad(scale=(10, 10), thickness=3, segments=0),
-            color=self.bg_color,
-            z=-0.1,
-        )
         frame = Entity(
             parent=camera.ui,
             model=Quad(scale=(0.5, 0.5), thickness=3, segments=3, mode="line"),
             color=color.color(0, 1, 1, 0.7),
         )
-        return (penal, bg, frame)
+        return (frame,)
+
+    @staticmethod
+    def screen_gen():
+        """ 다른 버튼의 클릭을 막는 투명판 , 가장 마지막에 호출되어야 한다. """
+        screen = Button(
+            parent=camera.ui,
+            model=Quad(scale=(10, 10), thickness=3, segments=0),
+            color=color.rgba(255, 255, 255, 0),
+        )
+        screen.highlight_color = screen.color
+        screen.pressed_color = screen.color
+        return screen
+
+    def bg_gen(self):
+        bg = Entity(
+            parent=camera.ui,
+            model=Quad(scale=(10, 10), thickness=3, segments=0),
+            color=self.bg_color,
+        )
+        return bg
 
     @staticmethod
     def shut_down_btn_gen():
