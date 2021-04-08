@@ -42,20 +42,21 @@ class Eye(Entity):
     ---
     """
 
-    def __init__(self, *, speed=12, position: tuple = (0, 0, 0), fav=90, limit=None):
+    def __init__(self, *, speed=4, position: tuple = (0, 0, 0), fav=90, limit=None):
         super().__init__()
         self.limit = limit
-        self.speed = speed
+        self.origin_speed = self.speed = speed
         self.sensitivity = 80
         camera.parent = self
         camera.position = position
         camera.rotation = (0, 0, 0)
         camera.fov = fav
         mouse.locked = True
+        self.fast_speed = self.speed * 6
 
     def update(self):
-        self.y += held_keys["shift"] * time.dt * self.speed
-        self.y -= held_keys["space"] * time.dt * self.speed
+        self.y += held_keys["space"] * time.dt * self.speed
+        self.y -= held_keys["alt"] * time.dt * self.speed
         self.rotation_y += mouse.velocity[0] * self.sensitivity
         self.rotation_x -= mouse.velocity[1] * self.sensitivity
         self.direction = Vec3(
@@ -67,6 +68,13 @@ class Eye(Entity):
             self.x = clamp(self.x, -self.limit / 2 + 2, self.limit / 2 - 2)
             self.y = clamp(self.y, -self.limit / 2 + 2, self.limit / 2 - 2)
             self.z = clamp(self.z, -self.limit / 2 + 2, self.limit / 2 - 2)
+
+    def input(self, key):
+        print(key)
+        if key == "left mouse down":
+            self.speed = self.fast_speed
+        if key == "left mouse up":
+            self.speed = self.origin_speed
 
 
 def react_roop(*args):
