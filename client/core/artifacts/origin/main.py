@@ -169,7 +169,7 @@ class Esc:
         with self.on_bg():
             self.esc_stuff.append(self.shut_down_btn_gen())
             self.esc_stuff.append(self.key_description_gen())
-            self.esc_stuff.extend(self.main_gen())
+            self.esc_stuff.append(self.main_gen())  # todo main_gen->아직None반환
             self.esc_stuff.extend(self.lang_btn_gen())
 
     def off(self):
@@ -180,12 +180,7 @@ class Esc:
             destroy(stuff)
 
     def main_gen(self):
-        frame = Entity(
-            parent=camera.ui,
-            model=Quad(scale=(0.5, 0.5), thickness=3, segments=3, mode="line"),
-            color=color.color(0, 1, 1, 0.7),
-        )
-        return (frame,)
+        return
 
     @staticmethod
     def screen_gen():
@@ -249,7 +244,8 @@ class Esc:
             if LANGUAGE.now != lang:
                 LANGUAGE.setting(lang)
                 self.off()
-                self.on()
+                invoke(self.on, delay=0.1)  # 다른 변경사항이 덮어쓰이지 않도록 하는 조치
+                # self.on()
 
         en_btn.highlight_color = color.white
         en_btn.pressed_color = color.black66
