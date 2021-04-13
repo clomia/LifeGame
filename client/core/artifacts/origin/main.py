@@ -5,6 +5,7 @@ from functools import wraps
 from contextlib import contextmanager
 from ursina import *
 from .setting import *
+from .tools import *
 
 
 def source_path(*, unix=False):
@@ -106,16 +107,9 @@ def react_roop(*args):
     return decorator
 
 
-class EscBg(Entity):
+class EscBg(FullUI):
     def __init__(self):
         super().__init__()
-        self.parent = camera.ui
-        self.origin = (-0.5, 0.5)
-        self.model = "quad"
-        x_ratio, y_ratio = window.screen_resolution
-        value = 1 / y_ratio
-        self.scale_x = x_ratio * value
-        self.scale_y = y_ratio * value
         self.texture = load_texture("source/esc_bg.jpg")
         self.alpha = 249
 
@@ -130,15 +124,9 @@ class Esc:
         invoke_time에 숫자를 입력하면 인스턴스 생성 후 해당 초 이후에 활성화됩니다.
         이것은 처음에만 적용됩니다.
         """
+
         self.mouse_locked = mouse_locked
         self.esc_stuff = []
-        self.parent = camera.ui
-        self.origin = (-0.5, 0.5)
-        self.model = "quad"
-        x_ratio, y_ratio = window.screen_resolution
-        value = 1 / y_ratio
-        self.scale_x = x_ratio * value
-        self.scale_y = y_ratio * value
 
         @react_roop(self.on, self.off)  # todo 이 사이에 다른 화면 삽입 가능
         def handler():

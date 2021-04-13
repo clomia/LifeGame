@@ -160,13 +160,13 @@ class InputGrid(Entity):
                 continue_text_origin = (-self.size / 5.5, self.size / 1.29)
                 execution_text_origin = (self.size / 5.5, self.size / 1.29)
                 continue_btn.text_entity = Text(
-                    text="창조",
+                    text="계속",
                     size=0.035,
                     origin=continue_text_origin,
                     alpha=150,
                 )
                 execution_btn.text_entity = Text(
-                    text="계속",
+                    text="창조",
                     size=0.035,
                     origin=execution_text_origin,
                     alpha=150,

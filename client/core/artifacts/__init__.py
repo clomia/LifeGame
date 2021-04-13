@@ -7,3 +7,4 @@ from .undeveloped_screen import *
 from .universe import *
 from .loading_screen import *
 from .node_cube import *
+from .simul_ui import *

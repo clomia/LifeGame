@@ -8,18 +8,11 @@ if not __name__ == "__main__":
     from .node_cube import *
 
 
-class LoadScreen(Entity):
+class LoadScreen(FullUI):
     def __init__(self, pipe_queue, simul_loading_complate_signal):
         super().__init__()
         self.pipe_queue = pipe_queue
         self.simul_loading_complate_signal = simul_loading_complate_signal
-        self.parent = camera.ui
-        self.origin = (-0.5, 0.5)
-        self.model = "quad"
-        x_ratio, y_ratio = window.screen_resolution
-        value = 1 / y_ratio
-        self.scale_x = x_ratio * value
-        self.scale_y = y_ratio * value
         self.texture = load_texture("source/load_screen.jpg")
         invoke(self.main_execute, delay=1)
 
@@ -52,18 +45,11 @@ class InputHandler(Entity):
                 self.pressed = True
 
 
-class SimulLoadWaiter(Entity):
+class SimulLoadWaiter(FullUI):
     def __init__(self, bprin_connect, cursor):
         super().__init__()
         self.bprin_connect = bprin_connect
         self.cursor = cursor
-        self.parent = camera.ui
-        self.origin = (-0.5, 0.5)
-        self.model = "quad"
-        x_ratio, y_ratio = window.screen_resolution
-        value = 1 / y_ratio
-        self.scale_x = x_ratio * value
-        self.scale_y = y_ratio * value
         if LANGUAGE.now == "ko":
             self.msg_texture = load_texture("source/wait_msg_ko.png")
         elif LANGUAGE.now == "en":
