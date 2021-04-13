@@ -8,3 +8,4 @@ from .universe import *
 from .loading_screen import *
 from .node_cube import *
 from .simul_ui import *
+from .simul_game import *

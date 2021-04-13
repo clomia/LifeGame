@@ -20,6 +20,7 @@ class CellController(Entity):
         self.scale = finite_space_size * self.cell_scale
         self.cubic(self, color.white10, thickness=1.5, segments=0)
         self.field = {}
+        self.cell_monitor = []
         self.queue = input_queue
         self.prophecy_fieldset = Queue()
 
@@ -34,6 +35,7 @@ class CellController(Entity):
             co = self.co_convert(co)
             if not number:
                 cell, cubic = self.field[co]
+                self.cell_monitor.remove(cell.number)
                 destroy(cell)
                 for outline in cubic.values():
                     destroy(outline)
@@ -59,20 +61,19 @@ class CellController(Entity):
                 del fieldset_list[-1]
                 for field in fieldset_list:
                     self.prophecy_fieldset.put(field)
-                self.input("space")
+                self.next()
 
-    def input(self, key):
-        if key == "space":
-            if not self.prophecy_fieldset.empty():
-                space_dict = self.prophecy_fieldset.get()
-                self.__call__(space_dict)
-            else:
-                # 멸망점
-                for cell, cubic in self.field.values():
-                    destroy(cell)
-                    for outline in cubic.values():
-                        destroy(outline)
-                self.field.clear()
+    def next(self):
+        if not self.prophecy_fieldset.empty():
+            space_dict = self.prophecy_fieldset.get()
+            self.__call__(space_dict)
+        else:
+            # 멸망점
+            for cell, cubic in self.field.values():
+                destroy(cell)
+                for outline in cubic.values():
+                    destroy(outline)
+            self.field.clear()
 
     def red_cell(self, co):
         cell = Entity(
@@ -81,6 +82,7 @@ class CellController(Entity):
             scale=self.cell_scale,
             position=co,
         )
+        cell.number = 2
         cubic_dict = self.fixed_cubic(cell, color.hex("aefff1"), self.cell_cubic_thickness)
         cell.rotation_z = -90
         cell.update = self.cell_moving(cell, creating=True)
@@ -89,6 +91,12 @@ class CellController(Entity):
             cell.update = self.cell_moving(cell)
 
         invoke(default_moving, delay=2)
+        try:
+            if self.field[co][0].number != cell.number:
+                self.cell_monitor.remove(1)
+                self.cell_monitor.append(cell.number)
+        except KeyError:
+            self.cell_monitor.append(cell.number)
         self.field[co] = (cell, cubic_dict)
 
     def blue_cell(self, co):
@@ -98,6 +106,7 @@ class CellController(Entity):
             scale=self.cell_scale,
             position=co,
         )
+        cell.number = 1
         cubic_dict = self.fixed_cubic(cell, color.hex("aef4ff"), self.cell_cubic_thickness)
         cell.rotation_z = -90
         cell.update = self.cell_moving(cell, creating=True)
@@ -106,6 +115,12 @@ class CellController(Entity):
             cell.update = self.cell_moving(cell)
 
         invoke(default_moving, delay=2)
+        try:
+            if self.field[co][0].number != cell.number:
+                self.cell_monitor.remove(2)
+                self.cell_monitor.append(cell.number)
+        except KeyError:
+            self.cell_monitor.append(cell.number)
         self.field[co] = (cell, cubic_dict)
 
     @staticmethod

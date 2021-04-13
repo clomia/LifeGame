@@ -22,9 +22,9 @@ class CacheManagementPipe(Queue):
         if self.cache_full():
             print(
                 f"[simul 프로세스][CacheManagementPipe]데이터 과부화(연산 프로세스의 데이터 제공) 방지중...\n",
-                f"------데이터 수신량:{self.cache_counter} X {PROPHECY_COUNT}\n",
+                f"------데이터 수신량:{self.cache_counter} X {PROPHECY_COUNT} = {self.cache_counter *PROPHECY_COUNT}\n",
                 f"------limit: {self.limit}\n",
-                f"------(프로세스 채널링 관리)감소된 연산 간격: {OPERATION_SPEED} + {SLOW_OPERATION_SPEED}초",
+                f"------(프로세스 채널링 관리)연산 간격: {OPERATION_SPEED} + {SLOW_OPERATION_SPEED}초",
             )
             time.sleep(SLOW_OPERATION_SPEED)
         super().put(item)

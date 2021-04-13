@@ -297,7 +297,6 @@ def bprin(*, debug=False):
     window.cog_button.visible = False
     window.exit_button.visible = False
     window.fps_counter.enabled = False
-    Text.default_resolution = 1080 * Text.size
     if debug:
         Text.default_font = "source/main_font.ttf"
     else:
@@ -321,7 +320,6 @@ def simul(*, debug=False):
     window.cog_button.visible = False
     window.exit_button.visible = False
     window.fps_counter.enabled = False
-    Text.default_resolution = 1080 * Text.size
     if debug:
         Text.default_font = "source/main_font.ttf"
     else:

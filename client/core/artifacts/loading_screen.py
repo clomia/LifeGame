@@ -1,11 +1,10 @@
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
-
-if not __name__ == "__main__":
-    from .universe import *
-    from .origin import *
-    from .cell_controll import *
-    from .node_cube import *
+from .universe import *
+from .origin import *
+from .cell_controll import *
+from .node_cube import *
+from .simul_game import *
 
 
 class LoadScreen(FullUI):
@@ -24,10 +23,14 @@ class LoadScreen(FullUI):
         }
         internal = Universe(walls, "source/universe.jpg")
         Eye(limit=internal.scale)
-        CellController(self.pipe_queue)
         MobiusNodeCube()
         destroy(self)
-        invoke(lambda: self.simul_loading_complate_signal.put(SIGNAL), delay=2.7)
+
+        def signal_after():
+            self.simul_loading_complate_signal.put(SIGNAL)
+            trigger(CellController(self.pipe_queue))
+
+        invoke(signal_after, delay=2.7)
 
 
 class InputHandler(Entity):
