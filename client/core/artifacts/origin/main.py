@@ -43,17 +43,21 @@ class Eye(Entity):
     ---
     """
 
-    def __init__(self, *, speed=4, position: tuple = (0, 0, 0), fav=90, limit=None):
-        super().__init__()
+    def __init__(self, *, speed=4, fav=90, limit=None, **kwargs):
+        super().__init__(**kwargs)
         self.limit = limit
         self.origin_speed = self.speed = speed
         self.sensitivity = 80
-        camera.parent = self
-        camera.position = position
         camera.rotation = (0, 0, 0)
+        camera.position = (0, 0, 0)
+        camera.parent = self
         camera.fov = fav
         mouse.locked = True
         self.fast_speed = self.speed * 6
+        self.origin_position = Vec3(5.438, 8.38817, -5.45506)
+        self.origin_rotation = Vec3(53.9495, 676.621, 0)
+        self.position = self.origin_position
+        self.rotation = self.origin_rotation
 
     def update(self):
         self.y += held_keys["space"] * time.dt * self.speed
@@ -71,11 +75,16 @@ class Eye(Entity):
             self.z = clamp(self.z, -self.limit / 2 + 2, self.limit / 2 - 2)
 
     def input(self, key):
-        print(key)
         if key == "left mouse down":
             self.speed = self.fast_speed
         if key == "left mouse up":
             self.speed = self.origin_speed
+        if key == "backspace":
+            self.position = self.origin_position
+            self.rotation = self.origin_rotation
+        # if key == "p":
+        # 위치,각도 캡쳐용
+        #    print(f"position={self.position}\nrotation={self.rotation}")
 
 
 def react_roop(*args):
