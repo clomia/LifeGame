@@ -85,141 +85,120 @@ class EscBg(FullUI):
         self.alpha = 249
 
 
-class Esc:
-    """ 커서가 잠겨있는 상태(3D환경) 에는 mouse_locked=True를 해주세요"""
+class EventScreen(Button):
+    def __init__(self):
+        """ 다른 버튼의 클릭을 막는 투명판 """
+        super().__init__()
+        self.scale = 10
+        self.model = "quad"
+        self.color = color.rgba(255, 255, 255, 0)
+        self.highlight_color = self.color
+        self.pressed_color = self.color
 
-    def __init__(self, mouse_locked=False):
-        """
-        mouse_locked = True 이면 simul , False이면 bprin으로 간주하고 작동합니다.
 
-        invoke_time에 숫자를 입력하면 인스턴스 생성 후 해당 초 이후에 활성화됩니다.
-        이것은 처음에만 적용됩니다.
-        """
+class ShutDownBtn(Button):
+    def __init__(self):
+        super().__init__()
+        self.color = color.gray
+        self.y = -0.4
+        self.scale_x = 0.4
+        self.scale_y = 0.05
+        self.model = Quad(thickness=1.3, segments=0, mode="line")
+        self.highlight_color = color.white
+        self.pressed_color = color.black66
+        self.on_click = application.quit
+        self.lang_setting()
 
-        self.mouse_locked = mouse_locked
-        self.esc_stuff = []
+    def ko_ver(self):
+        self.text = "게임 종료"
+
+    def en_ver(self):
+        self.text = "Game Exit"
+
+    def lang_setting(self):
         if LANGUAGE.now == "ko":
-            self.title = "설정"
+            self.ko_ver()
         elif LANGUAGE.now == "en":
-            self.title = "Setting"
+            self.en_ver()
 
-        self.ON = False
 
-    def handler(self):
-        if self.ON:
-            self.off()
-        else:
-            self.on()
+class LangBtnText(Text):
+    def __init__(self):
+        super().__init__()
+        self.y = 0.05
+        self.lang_setting()
 
-    @contextmanager
-    def on_bg(self):
-        """ursina특성상, 시각정보는 새로 만들어진 레이어가 위로,
-        버튼 이벤트 핸들러는 새로 만들어진 레이어가 아레로 쌓인다
-        위와 같은 레이어 반전때문에 증폭된 복잡도를 상쇄하는 함수이다."""
-        self.esc_stuff.append(EscBg())
-        try:
-            yield
-        finally:
-            self.esc_stuff.append(self.screen_gen())
+    def ko_ver(self):
+        self.text = "언어 설정"
+        self.x = -0.735
 
-    def on(self):
-        if self.mouse_locked:
-            mouse.locked = False
-            self.cursor = GameCursor()
-        with self.on_bg():
-            self.esc_stuff.append(self.shut_down_btn_gen())
-            self.esc_stuff.append(self.key_description_gen())
-            self.esc_stuff.append(self.main_gen())  # todo main_gen->아직None반환
-            self.esc_stuff.extend(self.lang_btn_gen())
-        self.ON = True
+    def en_ver(self):
+        self.text = "Language setting"
+        self.x = -0.8
 
-    def off(self):
-        if self.mouse_locked:
-            mouse.locked = True
-            destroy(self.cursor)
-        for stuff in self.esc_stuff:
-            destroy(stuff)
-        self.ON = False
-
-    def main_gen(self):
-        return
-
-    @staticmethod
-    def screen_gen():
-        """ 다른 버튼의 클릭을 막는 투명판 , 가장 마지막에 호출되어야 한다. """
-        screen = Button(
-            parent=camera.ui,
-            model=Quad(scale=(10, 10), thickness=3, segments=0),
-            color=color.rgba(255, 255, 255, 0),
-        )
-        screen.highlight_color = screen.color
-        screen.pressed_color = screen.color
-        return screen
-
-    @staticmethod
-    def shut_down_btn_gen():
+    def lang_setting(self):
         if LANGUAGE.now == "ko":
-            exit_text = "게임 종료"
+            self.ko_ver()
         elif LANGUAGE.now == "en":
-            exit_text = "Game Exit"
-        btn = Button(
-            text=exit_text,
-            color=color.gray,
-            y=-0.4,
-            scale_x=0.4,
-            scale_y=0.05,
-            model=Quad(thickness=1.3, segments=0, mode="line"),
-        )
-        btn.highlight_color = color.white
-        btn.pressed_color = color.black66
-        btn.on_click = application.quit
-        return btn
+            self.en_ver()
 
-    def lang_btn_gen(self):
-        if LANGUAGE.now == "ko":
-            descr = "언어 설정"
-            position_x = -0.735
-        elif LANGUAGE.now == "en":
-            descr = "Language setting"
-            position_x = -0.8
-        text = Text(descr, x=position_x, y=0.05)
-        en_btn = Button(
-            text="English",
-            color=color.gray,
-            y=-0.02,
-            x=-0.686,  # 위치 변경 주의
-            scale_x=0.25,
-            scale_y=0.05,
-            model=Quad(thickness=1.3, segments=0, mode="line"),
-        )
-        ko_btn = Button(
-            text="한국어",
-            color=color.gray,
-            y=-0.073,
-            x=-0.686,  # 위치 변경 주의
-            scale_x=0.25,
-            scale_y=0.05,
-            model=Quad(thickness=1.3, segments=0, mode="line"),
-        )
 
-        def event(lang: str):
-            if LANGUAGE.now != lang:
-                LANGUAGE.setting(lang)
-                self.off()
+class EnBtn(Button):
+    def __init__(self, text_entities, panel):
+        super().__init__()
+        self.panel = panel
+        self.text_entities = text_entities
+        self.color = color.gray
+        self.y = -0.02
+        self.x = -0.686
+        self.scale_x = 0.25
+        self.scale_y = 0.05
+        self.model = Quad(thickness=1.3, segments=0, mode="line")
+        self.text = "English"
+        self.highlight_color = color.white
+        self.pressed_color = color.black66
 
-        en_btn.highlight_color = color.white
-        en_btn.pressed_color = color.black66
-        ko_btn.highlight_color = color.white
-        ko_btn.pressed_color = color.black66
-        en_btn.on_click = lambda: event("en")
-        ko_btn.on_click = lambda: event("ko")
-        return (text, en_btn, ko_btn)
+    def on_click(self):
+        if LANGUAGE.now != "en":
+            LANGUAGE.setting("en")
+            for t in self.text_entities:
+                t.en_ver()
+            self.panel.off()
 
-    @staticmethod
-    def key_description_gen():
-        if LANGUAGE.now == "ko":
-            description = dedent(
-                """
+
+class KoBtn(Button):
+    def __init__(self, text_entities, panel):
+        self.panel = panel
+        super().__init__()
+        self.text_entities = text_entities
+        self.color = color.gray
+        self.y = -0.073
+        self.x = -0.686
+        self.scale_x = 0.25
+        self.scale_y = 0.05
+        self.model = Quad(thickness=1.3, segments=0, mode="line")
+        self.text = "한국어"
+        self.highlight_color = color.white
+        self.pressed_color = color.black66
+
+    def on_click(self):
+        if LANGUAGE.now != "ko":
+            LANGUAGE.setting("ko")
+            for t in self.text_entities:
+                t.ko_ver()
+            self.panel.off()
+
+
+class KeyDescription(Text):
+    def __init__(self):
+        super().__init__()
+        self.x = -0.8
+        self.y = 0.3
+        self.lang_setting()
+
+    def ko_ver(self):
+        self.text = dedent(
+            """
                 <white>[마우스 좌클릭] <light_gray>가속
                 <white>[w] <light_gray>앞으로 이동
                 <white>[a] <light_gray>왼쪽으로 이동
@@ -228,11 +207,11 @@ class Esc:
                 <white>[alt] <light_gray>하강
                 <white>[space] <light_gray>상승
                 """
-            ).strip()
-            return Text(description, x=-0.8, y=0.3)
-        elif LANGUAGE.now == "en":
-            description = dedent(
-                """
+        ).strip()
+
+    def en_ver(self):
+        self.text = dedent(
+            """
                 <white>[left click] <light_gray>Accelerate
                 <white>[w] <light_gray>Move Front
                 <white>[a] <light_gray>Move Left
@@ -241,8 +220,83 @@ class Esc:
                 <white>[alt] <light_gray>Move Down
                 <white>[space] <light_gray>Move Up
                 """
-            ).strip()
-            return Text(description, x=-0.8, y=0.3)
+        ).strip()
+
+    def lang_setting(self):
+        if LANGUAGE.now == "ko":
+            self.ko_ver()
+        elif LANGUAGE.now == "en":
+            self.en_ver()
+
+
+class Esc:
+    """ 커서가 잠겨있는 상태(3D환경) 에는 mouse_locked=True를 해주세요"""
+
+    def __init__(self, mouse_locked=False):
+        """
+        mouse_locked = True 이면 simul , False이면 bprin으로 간주하고 작동합니다.
+        """
+        self.mouse_locked = mouse_locked
+        self.ele_lst = []  # EventScreen
+        self.first_call = True
+        self.is_on = False
+
+    def create(self):
+        def disabled(class_or_ins):
+            if type(class_or_ins) == type:
+                entity = class_or_ins()
+            else:
+                entity = class_or_ins
+            entity.disable()
+            return entity
+
+        need_trans_lst = [LangBtnText(), KeyDescription(), ShutDownBtn()]
+        self.ele_lst.extend(
+            (
+                *(disabled(text_entity) for text_entity in need_trans_lst),
+                *(EnBtn(need_trans_lst, self), KoBtn(need_trans_lst, self)),
+            )
+        )
+
+    @contextmanager
+    def on_setting(self):
+        if self.mouse_locked:
+            mouse.locked = False
+            self.cursor = GameCursor()
+        if self.first_call:
+            self.create()
+            self.first_call = False
+        try:
+            yield
+        finally:
+            self.is_on = True
+
+    @contextmanager
+    def off_setting(self):
+        if self.mouse_locked:
+            mouse.locked = True
+            destroy(self.cursor)
+        try:
+            yield
+        finally:
+            self.is_on = False
+
+    def handler(self):
+        """ escape키 입력에 반응하는 함수"""
+        if self.is_on:
+            self.off()
+        else:
+            self.on()
+
+    def on(self):
+        with self.on_setting():
+            for entity in self.ele_lst:
+                entity.enabled = True
+
+    def off(self):
+        with self.off_setting():
+            for entity in self.ele_lst:
+                entity.enabled = False
 
 
 if __name__ == "__main__":
