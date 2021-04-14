@@ -78,9 +78,16 @@ class Eye(Entity):
             self.position, self.rotation = self.fixed_positions["right-top-default"]
 
 
-class EscBg(FullUI):
+class EscBg(Entity):
     def __init__(self):
         super().__init__()
+        self.parent = camera.ui
+        self.origin = (-0.5, 0.5)
+        self.model = "quad"
+        x_ratio, y_ratio = window.screen_resolution
+        value = 1 / y_ratio
+        self.scale_x = x_ratio * value
+        self.scale_y = y_ratio * value
         self.texture = load_texture("source/esc_bg.jpg")
         self.alpha = 249
 
@@ -237,7 +244,7 @@ class Esc:
         mouse_locked = True 이면 simul , False이면 bprin으로 간주하고 작동합니다.
         """
         self.mouse_locked = mouse_locked
-        self.ele_lst = []  # EventScreen
+        self.ele_lst = [EscBg]  # EventScreen
         self.first_call = True
         self.is_on = False
 
@@ -253,7 +260,8 @@ class Esc:
         need_trans_lst = [LangBtnText(), KeyDescription(), ShutDownBtn()]
         self.ele_lst.extend(
             (
-                *(disabled(text_entity) for text_entity in need_trans_lst),
+                *(disabled(entity) for entity in self.ele_lst),
+                *(disabled(entity) for entity in need_trans_lst),
                 *(EnBtn(need_trans_lst, self), KoBtn(need_trans_lst, self)),
             )
         )
