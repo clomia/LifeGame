@@ -1,36 +1,8 @@
 """ 컨트롤러, Esc 핸들러,한글 적용된 Text 클래스 등 기본적인 도구 """
-
-from itertools import cycle
-from functools import wraps
 from contextlib import contextmanager
 from ursina import *
 from .setting import *
 from .tools import *
-
-
-def source_path(*, unix=False):
-    """ source 디렉토리 절대경로를 리턴한다 """
-    root_dir = os.getcwd()
-    for (root, dirs, _) in os.walk(root_dir):
-        if "source" in dirs:
-            if not unix:
-                return f"{root}/source"
-            else:
-                return f"/c{root[2:]}/source"
-
-
-class GameCursor(Cursor):
-    """ 전용 커스텀 커서 """
-
-    def __init__(self, png_path="source/cursor.png", rotational_speed=1):
-        super().__init__(texture=load_texture(png_path))
-        self.rotational_speed = rotational_speed
-        self.scale = 0.025
-        mouse.visible = False
-
-    def update(self):
-        super().update()
-        self.rotation_z += self.rotational_speed * time.dt * 180
 
 
 class Eye(Entity):
@@ -54,12 +26,20 @@ class Eye(Entity):
         camera.fov = fav
         mouse.locked = True
         self.fast_speed = self.speed * 6
-        self.origin_position = Vec3(5.438, 8.38817, -5.45506)
-        self.origin_rotation = Vec3(53.9495, 676.621, 0)
-        self.position = self.origin_position
-        self.rotation = self.origin_rotation
+        self.fixed_positions = {  # x,y,z :position , rotation
+            "origin": (Vec3(4.8953, 4.06675, -3.83887), Vec3(-318.219, -1852.87, 0)),
+            "center": (Vec3(0, 0, 0), Vec3(0, 0, 0)),
+            "center-top": (Vec3(4.15159, 9.707, -0.0154717), Vec3(70.0086, -1169.88, 0)),
+            "center-bottom-center": (Vec3(8.85013, 1.31621, 0.0560277), Vec3(3.73638, -1889.11, 0)),
+            "left-bottom-default": (Vec3(6.1342, 5.44779, -5.43013), Vec3(-678.071, -5447.75, 0)),
+            "right-bottom-default": (Vec3(5.75278, 5.4826, 5.44936), Vec3(-317, -2652.83, 0)),
+            "left-top-default": (Vec3(-5.79788, 5.54591, -5.0487), Vec3(-677.139, -5712.55, 0)),
+            "right-top-default": (Vec3(-5.24484, 5.41471, 6.26402), Vec3(-677.55, -5621.68, 0)),
+        }
+        self.position, self.rotation = self.fixed_positions["origin"]
+        self.update = self.controller
 
-    def update(self):
+    def controller(self):
         self.y += held_keys["space"] * time.dt * self.speed
         self.y -= held_keys["alt"] * time.dt * self.speed
         self.rotation_y += mouse.velocity[0] * self.sensitivity
@@ -79,41 +59,23 @@ class Eye(Entity):
             self.speed = self.fast_speed
         if key == "left mouse up":
             self.speed = self.origin_speed
-        if key == "backspace":
-            self.position = self.origin_position
-            self.rotation = self.origin_rotation
         # if key == "p":
         # 위치,각도 캡쳐용
-        #    print(f"position={self.position}\nrotation={self.rotation}")
-
-
-def react_roop(*args):
-    """
-    함수들을 인자로 받아서 input에 대한 함수실행 루프를 만들어준다
-
-    ---
-    예시
-    ---
-    @react_roop(func1,func2,func3,func4)\n
-    def space_react():
-        pass
-
-    def input():
-        if key=='space':
-            space_react()
-
-    위와같이 구현하세요. (func1,func2,func3,func4)들이 cycle을 돌면서 space_react를 호출할때마다 하나씩 실행됩니다.
-    """
-    func_gen = cycle((func for func in args))
-
-    def decorator(function):
-        @wraps(function)
-        def wrapper():
-            next(func_gen)()
-
-        return wrapper
-
-    return decorator
+        # print(f"position={self.position}\nrotation={self.rotation}")
+        if key == "0":
+            self.position, self.rotation = self.fixed_positions["center"]
+        if key == "1":
+            self.position, self.rotation = self.fixed_positions["center-top"]
+        if key == "2":
+            self.position, self.rotation = self.fixed_positions["center-bottom-center"]
+        if key == "3":
+            self.position, self.rotation = self.fixed_positions["left-bottom-default"]
+        if key == "4":
+            self.position, self.rotation = self.fixed_positions["right-bottom-default"]
+        if key == "5":
+            self.position, self.rotation = self.fixed_positions["left-top-default"]
+        if key == "6":
+            self.position, self.rotation = self.fixed_positions["right-top-default"]
 
 
 class EscBg(FullUI):
@@ -136,17 +98,18 @@ class Esc:
 
         self.mouse_locked = mouse_locked
         self.esc_stuff = []
-
-        @react_roop(self.on, self.off)  # todo 이 사이에 다른 화면 삽입 가능
-        def handler():
-            pass
-
         if LANGUAGE.now == "ko":
             self.title = "설정"
         elif LANGUAGE.now == "en":
             self.title = "Setting"
 
-        self.handler = handler
+        self.ON = False
+
+    def handler(self):
+        if self.ON:
+            self.off()
+        else:
+            self.on()
 
     @contextmanager
     def on_bg(self):
@@ -168,6 +131,7 @@ class Esc:
             self.esc_stuff.append(self.key_description_gen())
             self.esc_stuff.append(self.main_gen())  # todo main_gen->아직None반환
             self.esc_stuff.extend(self.lang_btn_gen())
+        self.ON = True
 
     def off(self):
         if self.mouse_locked:
@@ -175,6 +139,7 @@ class Esc:
             destroy(self.cursor)
         for stuff in self.esc_stuff:
             destroy(stuff)
+        self.ON = False
 
     def main_gen(self):
         return
@@ -241,8 +206,6 @@ class Esc:
             if LANGUAGE.now != lang:
                 LANGUAGE.setting(lang)
                 self.off()
-                invoke(self.on, delay=0.1)  # 다른 변경사항이 덮어쓰이지 않도록 하는 조치
-                # self.on()
 
         en_btn.highlight_color = color.white
         en_btn.pressed_color = color.black66
@@ -280,80 +243,6 @@ class Esc:
                 """
             ).strip()
             return Text(description, x=-0.8, y=0.3)
-
-
-@contextmanager
-def bprin(*, debug=False):
-    """
-    준비된 환경을 제공한다.
-
-    core/artifacts 내부에서 디버깅용으로 사용시 True를 받아야 합니다
-    """
-    app = Ursina()
-    application.development_mode = False
-    cursor = GameCursor()
-    window.title = "Clomia Life Game"
-    window.fullscreen = True
-    window.cog_button.visible = False
-    window.exit_button.visible = False
-    window.fps_counter.enabled = False
-    if debug:
-        Text.default_font = "source/main_font.ttf"
-    else:
-        Text.default_font = "core/artifacts/source/main_font.ttf"
-    try:
-        yield cursor
-    finally:
-        app.run()
-
-
-@contextmanager
-def simul(*, debug=False):
-    """
-    3D 시뮬레이션 단계에서 사용하는 컨텍스트 구문이다
-
-    """
-    app = Ursina()
-    application.development_mode = False
-    window.title = "Clomia 3D Loader"
-    window.fullscreen = True
-    window.cog_button.visible = False
-    window.exit_button.visible = False
-    window.fps_counter.enabled = False
-    if debug:
-        Text.default_font = "source/main_font.ttf"
-    else:
-        Text.default_font = "core/artifacts/source/main_font.ttf"
-    try:
-        yield
-    finally:
-        app.run()
-
-
-class ColorSet:
-    """
-    주로 사용되는 color 인스턴스들을 정의해두는 곳
-
-    단일 인스턴스 = Snake Case 로 표기
-    colorize인자 dict = Camel Case 로 표기 (** 언패킹으로 사용하기)
-    """
-
-    redCell = {
-        "down": color.magenta,
-        "up": color.peach,
-        "left": color.peach,
-        "right": color.magenta,
-        "back": color.yellow,
-        "forward": color.blue,
-    }
-    redCell = {}
-
-    outline = color.rgba(196, 235, 232, 30)
-    background = color.rgb(45, 18, 35)
-    player_1 = color.rgb(75, 70, 136)
-    player_1_light = color.rgb(99, 205, 255)
-    player_2 = color.rgb(148, 148, 148)
-    player_2_light = color.rgb(255, 199, 224)
 
 
 if __name__ == "__main__":

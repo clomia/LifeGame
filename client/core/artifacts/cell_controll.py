@@ -21,6 +21,7 @@ class CellController(Entity):
         self.cubic(self, color.white10, thickness=1.5, segments=0)
         self.field = {}
         self.cell_monitor = []
+        self.generation = 0
         self.queue = input_queue
         self.prophecy_fieldset = Queue()
 
@@ -64,6 +65,7 @@ class CellController(Entity):
                 self.next()
 
     def next(self):
+        self.generation += 1
         if not self.prophecy_fieldset.empty():
             space_dict = self.prophecy_fieldset.get()
             self.__call__(space_dict)

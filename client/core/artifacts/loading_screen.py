@@ -22,13 +22,13 @@ class LoadScreen(FullUI):
             "left": "source/wall_front.jpg",
         }
         internal = Universe(walls, "source/universe.jpg")
-        Eye(limit=internal.scale)
+        eye = Eye(limit=internal.scale)
         MobiusNodeCube()
         destroy(self)
 
         def signal_after():
             self.simul_loading_complate_signal.put(SIGNAL)
-            trigger(CellController(self.pipe_queue))
+            trigger(CellController(self.pipe_queue), eye)
 
         invoke(signal_after, delay=2.7)
 

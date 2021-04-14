@@ -3,7 +3,7 @@ from ursina import *
 from .simul_ui import *
 
 
-def trigger(cell_controller):
+def trigger(cell_controller, eye):
     """ 모든 클래스를 이어주는 편의 함수"""
+    CountDown(cell_controller, count=10, pipe_func=IterStep(cell_controller, eye))
     CellMonitor(cell_controller)
-    CountDown(10, pipe_func=IterStep(cell_controller))
