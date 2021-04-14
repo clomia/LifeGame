@@ -237,7 +237,7 @@ class Esc:
         mouse_locked = True 이면 simul , False이면 bprin으로 간주하고 작동합니다.
         """
         self.mouse_locked = mouse_locked
-        self.ele_lst = []  # EscBg,EventScreen
+        self.ele_lst = [EscBg]  # EscBg,EventScreen
         self.first_call = True
         self.is_on = False
 
@@ -256,6 +256,7 @@ class Esc:
                 *(disabled(entity) for entity in self.ele_lst),
                 *(disabled(entity) for entity in need_trans_lst),
                 *(EnBtn(need_trans_lst, self), KoBtn(need_trans_lst, self)),
+                # disabled(EventScreen),
             )
         )
 
