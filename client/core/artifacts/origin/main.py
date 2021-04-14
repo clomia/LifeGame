@@ -78,16 +78,9 @@ class Eye(Entity):
             self.position, self.rotation = self.fixed_positions["right-top-default"]
 
 
-class EscBg(Entity):
+class EscBg(FullUI):
     def __init__(self):
         super().__init__()
-        self.parent = camera.ui
-        self.origin = (-0.5, 0.5)
-        self.model = "quad"
-        x_ratio, y_ratio = window.screen_resolution
-        value = 1 / y_ratio
-        self.scale_x = x_ratio * value
-        self.scale_y = y_ratio * value
         self.texture = load_texture("source/esc_bg.jpg")
         self.alpha = 249
 
@@ -206,26 +199,26 @@ class KeyDescription(Text):
     def ko_ver(self):
         self.text = dedent(
             """
-                <white>[마우스 좌클릭] <light_gray>가속
-                <white>[w] <light_gray>앞으로 이동
-                <white>[a] <light_gray>왼쪽으로 이동
-                <white>[s] <light_gray>뒤로 이동
-                <white>[d] <light_gray>오른쪽으로 이동
-                <white>[alt] <light_gray>하강
-                <white>[space] <light_gray>상승
+                [마우스 좌클릭] 가속
+                [w] 앞으로 이동
+                [a] 왼쪽으로 이동
+                [s] 뒤로 이동
+                [d] 오른쪽으로 이동
+                [alt] 하강
+                [space] 상승
                 """
         ).strip()
 
     def en_ver(self):
         self.text = dedent(
             """
-                <white>[left click] <light_gray>Accelerate
-                <white>[w] <light_gray>Move Front
-                <white>[a] <light_gray>Move Left
-                <white>[s] <light_gray>Move Back
-                <white>[d] <light_gray>Move Right
-                <white>[alt] <light_gray>Move Down
-                <white>[space] <light_gray>Move Up
+                [left click] Accelerate
+                [w] Move Front
+                [a] Move Left
+                [s] Move Back
+                [d] Move Right
+                [alt] Move Down
+                [space] Move Up
                 """
         ).strip()
 
@@ -244,7 +237,7 @@ class Esc:
         mouse_locked = True 이면 simul , False이면 bprin으로 간주하고 작동합니다.
         """
         self.mouse_locked = mouse_locked
-        self.ele_lst = [EscBg]  # EventScreen
+        self.ele_lst = []  # EscBg,EventScreen
         self.first_call = True
         self.is_on = False
 

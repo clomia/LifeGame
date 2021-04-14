@@ -8,16 +8,9 @@ else:
     from .origin import *
 
 
-class BackGround(Entity):
+class BackGround(FullUI):
     def __init__(self):
         super().__init__()
-        self.parent = camera.ui
-        self.origin = (-0.5, 0.5)
-        self.model = "quad"
-        x_ratio, y_ratio = window.screen_resolution
-        value = 1 / y_ratio
-        self.scale_x = x_ratio * value
-        self.scale_y = y_ratio * value
         self.texture = load_texture("source/home_bg.jpg")
 
 
