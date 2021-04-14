@@ -1,4 +1,6 @@
-""" 컨트롤러, Esc 핸들러,한글 적용된 Text 클래스 등 기본적인 도구 """
+""" 
+컨트롤러, Esc 핸들러,한글 적용된 Text 클래스 등 기본적인 도구
+"""
 from contextlib import contextmanager
 from ursina import *
 from .setting import *
@@ -83,17 +85,6 @@ class EscBg(FullUI):
         super().__init__()
         self.texture = load_texture("source/esc_bg.jpg")
         self.alpha = 249
-
-
-class EventScreen(Button):
-    def __init__(self):
-        """ 다른 버튼의 클릭을 막는 투명판 """
-        super().__init__()
-        self.scale = 10
-        self.model = "quad"
-        self.color = color.rgba(255, 255, 255, 0)
-        self.highlight_color = self.color
-        self.pressed_color = self.color
 
 
 class ShutDownBtn(Button):
@@ -230,7 +221,19 @@ class KeyDescription(Text):
 
 
 class Esc:
-    """ 커서가 잠겨있는 상태(3D환경) 에는 mouse_locked=True를 해주세요"""
+    """
+    커서가 잠겨있는 상태(3D환경) 에는 mouse_locked=True를 해주세요
+
+    ---
+    Esc패널 리펙토링 시 주의사항
+    ---
+    모든 요소는 클래스로 정의된것을 사용해야 한다.
+
+    동적 언어 설정을 위해서 text속성을 사용하는 모든 entity는 ko_ver,en_ver 함수를 가지고 있어야 하며
+    이 함수가 실행되면 언어에 맞게 객체가 변경되어야 한다.
+
+    또한 Text.text에 태그를 사용하면 레이어 버그가 발생하므로 사용하지 않도록 한다.
+    """
 
     def __init__(self, mouse_locked=False):
         """
@@ -242,6 +245,8 @@ class Esc:
         self.is_on = False
 
     def create(self):
+        """ 모든 객체를 생성,준비시킨다."""
+
         def disabled(class_or_ins):
             if type(class_or_ins) == type:
                 entity = class_or_ins()
@@ -256,7 +261,6 @@ class Esc:
                 *(disabled(entity) for entity in self.ele_lst),
                 *(disabled(entity) for entity in need_trans_lst),
                 *(EnBtn(need_trans_lst, self), KoBtn(need_trans_lst, self)),
-                # disabled(EventScreen),
             )
         )
 
@@ -271,6 +275,7 @@ class Esc:
         try:
             yield
         finally:
+            self.bg = self.screen_gen()
             self.is_on = True
 
     @contextmanager
@@ -281,7 +286,24 @@ class Esc:
         try:
             yield
         finally:
+            destroy(self.bg)
             self.is_on = False
+
+    @staticmethod
+    def screen_gen():
+        """
+        다른 버튼의 클릭을 막는 투명판 , 가장 마지막에 호출되어야 한다.
+        이것은 클래스를 호출하는것으로 생성한뒤 할당해야 의도대로 위치하게 된다.
+        또한 가장 나중에 만들어져야지 가장 밑에 깔려서 의도대로 작동하게 된다.
+        """
+        screen = Button(
+            parent=camera.ui,
+            model=Quad(scale=(10, 10), thickness=3, segments=0),
+            color=color.rgba(255, 255, 255, 0),
+        )
+        screen.highlight_color = screen.color
+        screen.pressed_color = screen.color
+        return screen
 
     def handler(self):
         """ escape키 입력에 반응하는 함수"""
