@@ -172,3 +172,6 @@ class ColorSet:
             "Dark": color.rgb(148, 148, 148),
         },
     }
+    Esc = {
+        "Text": color.hex("ced3da"),
+    }

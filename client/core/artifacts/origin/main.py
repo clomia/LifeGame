@@ -64,6 +64,8 @@ class Eye(Entity):
         # if key == "p":
         # 위치,각도 캡쳐용
         # print(f"position={self.position}\nrotation={self.rotation}")
+        if key == "backspace":
+            self.position, self.rotation = self.fixed_positions["origin"]
         if key == "0":
             self.position, self.rotation = self.fixed_positions["center"]
         if key == "1":
@@ -75,9 +77,9 @@ class Eye(Entity):
         if key == "4":
             self.position, self.rotation = self.fixed_positions["right-bottom-default"]
         if key == "5":
-            self.position, self.rotation = self.fixed_positions["left-top-default"]
-        if key == "6":
             self.position, self.rotation = self.fixed_positions["right-top-default"]
+        if key == "6":
+            self.position, self.rotation = self.fixed_positions["left-top-default"]
 
 
 class EscBg(FullUI):
@@ -85,6 +87,13 @@ class EscBg(FullUI):
         super().__init__()
         self.texture = load_texture("source/esc_bg.jpg")
         self.alpha = 249
+
+
+def lang_setting(self):
+    if LANGUAGE.now == "ko":
+        self.ko_ver()
+    elif LANGUAGE.now == "en":
+        self.en_ver()
 
 
 class ShutDownBtn(Button):
@@ -98,7 +107,8 @@ class ShutDownBtn(Button):
         self.highlight_color = color.white
         self.pressed_color = color.black66
         self.on_click = application.quit
-        self.lang_setting()
+        lang_setting(self)
+        self.text_color = ColorSet.Esc["Text"]
 
     def ko_ver(self):
         self.text = "게임 종료"
@@ -106,18 +116,13 @@ class ShutDownBtn(Button):
     def en_ver(self):
         self.text = "Game Exit"
 
-    def lang_setting(self):
-        if LANGUAGE.now == "ko":
-            self.ko_ver()
-        elif LANGUAGE.now == "en":
-            self.en_ver()
-
 
 class LangBtnText(Text):
     def __init__(self):
         super().__init__()
         self.y = 0.05
-        self.lang_setting()
+        self.color = ColorSet.Esc["Text"]
+        lang_setting(self)
 
     def ko_ver(self):
         self.text = "언어 설정"
@@ -126,12 +131,6 @@ class LangBtnText(Text):
     def en_ver(self):
         self.text = "Language setting"
         self.x = -0.8
-
-    def lang_setting(self):
-        if LANGUAGE.now == "ko":
-            self.ko_ver()
-        elif LANGUAGE.now == "en":
-            self.en_ver()
 
 
 class EnBtn(Button):
@@ -146,6 +145,7 @@ class EnBtn(Button):
         self.scale_y = 0.05
         self.model = Quad(thickness=1.3, segments=0, mode="line")
         self.text = "English"
+        self.text_color = ColorSet.Esc["Text"]
         self.highlight_color = color.white
         self.pressed_color = color.black66
 
@@ -169,6 +169,7 @@ class KoBtn(Button):
         self.scale_y = 0.05
         self.model = Quad(thickness=1.3, segments=0, mode="line")
         self.text = "한국어"
+        self.text_color = ColorSet.Esc["Text"]
         self.highlight_color = color.white
         self.pressed_color = color.black66
 
@@ -180,44 +181,64 @@ class KoBtn(Button):
             self.panel.off()
 
 
-class KeyDescription(Text):
-    def __init__(self):
-        super().__init__()
-        self.x = -0.8
-        self.y = 0.3
-        self.lang_setting()
+class KeyDescription:
+    class Move(Text):
+        def __init__(self):
+            super().__init__()
+            self.x = -0.8
+            self.y = 0.32
+            self.color = ColorSet.Esc["Text"]
+            lang_setting(self)
 
-    def ko_ver(self):
-        self.text = dedent(
-            """
-                [마우스 좌클릭] 가속
-                [w] 앞으로 이동
-                [a] 왼쪽으로 이동
-                [s] 뒤로 이동
-                [d] 오른쪽으로 이동
-                [alt] 하강
-                [space] 상승
+        def ko_ver(self):
+            self.text = dedent(
                 """
-        ).strip()
+                    [마우스 좌클릭] 가속
+                    [w] 앞으로 이동
+                    [a] 왼쪽으로 이동
+                    [s] 뒤로 이동
+                    [d] 오른쪽으로 이동
+                    [alt] 하강
+                    [space] 상승
+                    """
+            ).strip()
 
-    def en_ver(self):
-        self.text = dedent(
-            """
-                [left click] Accelerate
-                [w] Move Front
-                [a] Move Left
-                [s] Move Back
-                [d] Move Right
-                [alt] Move Down
-                [space] Move Up
+        def en_ver(self):
+            self.text = dedent(
                 """
-        ).strip()
+                    [left click] Accelerate
+                    [w] Move Front
+                    [a] Move Left
+                    [s] Move Back
+                    [d] Move Right
+                    [alt] Move Down
+                    [space] Move Up
+                    """
+            ).strip()
 
-    def lang_setting(self):
-        if LANGUAGE.now == "ko":
-            self.ko_ver()
-        elif LANGUAGE.now == "en":
-            self.en_ver()
+    class Position(Text):
+        def __init__(self):
+            super().__init__()
+            self.x = 0.47
+            self.y = 0.32
+            self.color = ColorSet.Esc["Text"]
+            lang_setting(self)
+
+        def ko_ver(self):
+            self.text = "위치 단축키"
+
+        def en_ver(self):
+            self.text = "Position shortcut"
+
+    class PositionImage(UI):
+        def __init__(self):
+            """ text속성이 없습니다"""
+            super().__init__()
+            self.x = 0.45
+            self.y = 0.15
+            self.scale = (0.4, 0.375)
+            self.model = "quad"
+            self.texture = load_texture("source/position_key.png")
 
 
 class Esc:
@@ -240,7 +261,7 @@ class Esc:
         mouse_locked = True 이면 simul , False이면 bprin으로 간주하고 작동합니다.
         """
         self.mouse_locked = mouse_locked
-        self.ele_lst = [EscBg]  # EscBg,EventScreen
+        self.ele_lst = [EscBg, KeyDescription.PositionImage]  # 동적 번역이 불필요한 객체들입니다.
         self.first_call = True
         self.is_on = False
 
@@ -255,7 +276,12 @@ class Esc:
             entity.disable()
             return entity
 
-        need_trans_lst = [LangBtnText(), KeyDescription(), ShutDownBtn()]
+        need_trans_lst = [
+            LangBtnText(),
+            KeyDescription.Move(),
+            ShutDownBtn(),
+            KeyDescription.Position(),
+        ]
         self.ele_lst.extend(
             (
                 *(disabled(entity) for entity in self.ele_lst),
