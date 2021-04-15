@@ -3,6 +3,7 @@
 from math import inf, isinf
 from itertools import chain
 from ursina import *
+from .origin.tools import ColorSet
 
 if __name__ == "__main__":
     from origin import *
@@ -41,16 +42,16 @@ class InputGrid(Entity):
         self.scale = 0.4
         self.player_1 = {
             "cell": 1,
-            "color": color.rgb(75, 70, 136),
+            "color": ColorSet.Bprin["Player-Blue"]["Dark"],
             "color_rgb": (75, 70, 136),
-            "hover_color": color.rgb(99, 205, 255),
+            "hover_color": ColorSet.Bprin["Player-Blue"]["Bright"],
             "hover_rgb": (99, 205, 255),
         }
         self.player_2 = {
             "cell": 2,
-            "color": color.rgb(148, 148, 148),
+            "color": ColorSet.Bprin["Player-Red"]["Dark"],
             "color_rgb": (148, 148, 148),
-            "hover_color": color.rgb(255, 199, 224),
+            "hover_color": ColorSet.Bprin["Player-Red"]["Bright"],
             "hover_rgb": (255, 199, 224),
         }
         self.player = self.player_1

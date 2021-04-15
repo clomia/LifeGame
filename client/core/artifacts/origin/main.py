@@ -248,7 +248,7 @@ class Esc:
         """ 모든 객체를 생성,준비시킨다."""
 
         def disabled(class_or_ins):
-            if type(class_or_ins) == type:
+            if isinstance(class_or_ins, type):
                 entity = class_or_ins()
             else:
                 entity = class_or_ins

@@ -153,24 +153,22 @@ def source_path(*, unix=False):
 class ColorSet:
     """
     주로 사용되는 color 인스턴스들을 정의해두는 곳
+    (어렵게 찾은 색들 보관하는곳)
 
-    단일 인스턴스 = Snake Case 로 표기
-    colorize인자 dict = Camel Case 로 표기 (** 언패킹으로 사용하기)
+    -앞글자 대문자, 띄어쓰기는 - 로 잇는다. , 공통인자는 앞에 쓰기-
     """
 
-    redCell = {
-        "down": color.magenta,
-        "up": color.peach,
-        "left": color.peach,
-        "right": color.magenta,
-        "back": color.yellow,
-        "forward": color.blue,
+    Cell = {
+        "Cubic-Red": color.hex("aefff1"),
+        "Cubic-Blue": color.hex("aef4ff"),
     }
-    redCell = {}
-
-    outline = color.rgba(196, 235, 232, 30)
-    background = color.rgb(45, 18, 35)
-    player_1 = color.rgb(75, 70, 136)
-    player_1_light = color.rgb(99, 205, 255)
-    player_2 = color.rgb(148, 148, 148)
-    player_2_light = color.rgb(255, 199, 224)
+    Bprin = {
+        "Player-Blue": {
+            "Bright": color.rgb(99, 205, 255),
+            "Dark": color.rgb(75, 70, 136),
+        },
+        "Player-Red": {
+            "Bright": color.rgb(255, 199, 224),
+            "Dark": color.rgb(148, 148, 148),
+        },
+    }

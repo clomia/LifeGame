@@ -1,6 +1,7 @@
 from queue import Queue
 from typing import Tuple, Union
 from ursina import *
+from .origin.tools import ColorSet
 
 Co = Union[Tuple[int, int, int], Tuple[int, int]]
 
@@ -85,7 +86,7 @@ class CellController(Entity):
             position=co,
         )
         cell.number = 2
-        cubic_dict = self.fixed_cubic(cell, color.hex("aefff1"), self.cell_cubic_thickness)
+        cubic_dict = self.fixed_cubic(cell, ColorSet.Cell["Cubic-Red"], self.cell_cubic_thickness)
         cell.rotation_z = -90
         cell.update = self.cell_moving(cell, creating=True)
 
@@ -109,7 +110,7 @@ class CellController(Entity):
             position=co,
         )
         cell.number = 1
-        cubic_dict = self.fixed_cubic(cell, color.hex("aef4ff"), self.cell_cubic_thickness)
+        cubic_dict = self.fixed_cubic(cell, ColorSet.Cell["Cubic-Blue"], self.cell_cubic_thickness)
         cell.rotation_z = -90
         cell.update = self.cell_moving(cell, creating=True)
 
