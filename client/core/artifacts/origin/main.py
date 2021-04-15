@@ -217,11 +217,10 @@ class KeyDescription:
             ).strip()
 
     class Position(Text):
-        def __init__(self):
+        def __init__(self, position=(0.47, 0.32)):
             super().__init__()
-            self.x = 0.47
-            self.y = 0.32
-            self.color = ColorSet.Esc["Text"]
+            self.position = position
+            self.color = color.light_gray  # ColorSet.Esc["Text"]
             lang_setting(self)
 
         def ko_ver(self):
@@ -231,12 +230,11 @@ class KeyDescription:
             self.text = "Position shortcut"
 
     class PositionImage(UI):
-        def __init__(self):
+        def __init__(self, position=(0.45, 0.15), scale=1):
             """ text속성이 없습니다"""
             super().__init__()
-            self.x = 0.45
-            self.y = 0.15
-            self.scale = (0.4, 0.375)
+            self.position = position
+            self.scale = tuple(scale * i for i in (0.4, 0.375))
             self.model = "quad"
             self.texture = load_texture("source/position_key.png")
 
