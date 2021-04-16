@@ -8,14 +8,14 @@ class CountDown(UI):
 
     def __init__(
         self,
-        cell_provider,
+        cell_controller,
         count: int = 10,
         pipe_func=lambda: print("함수가 실행됩니다"),
         reverse=False,
     ):
         """ 카운트 다운 종료 후의 실행을 pipe_func로 전달해주세요"""
         super().__init__()
-        self.cell_provider = cell_provider
+        self.cell_controller = cell_controller
         self.text_size = 1.5
         if not reverse:
             self.numbers = [str(count)]
@@ -44,7 +44,8 @@ class CountDown(UI):
             yield text
 
     def update(self):
-        if self.cell_provider.cell_monitor:
+        """ 세포가 배치되면 카운트다운을 시작하도록 폴링한다."""
+        if self.cell_controller.cell_monitor:
             self.update = lambda: None
             invoke(self.run, delay=1)
 
