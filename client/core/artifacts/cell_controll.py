@@ -10,6 +10,24 @@ class CellControllException(Exception):
     pass
 
 
+class Monitor:
+    """ Field에서 세포 숫자만 모니터링 하는데 사용하는 자료구조입니다."""
+
+    def __init__(self):
+        self.data = {1: 0, 2: 0}
+
+    def append(self, cell: int):
+        self.data[cell] += 1
+
+    def remove(self, cell: int):
+        if not self.data[cell]:
+            raise Exception("remove할 cell이 없습니다.")
+        self.data[cell] -= 1
+
+    def count(self, cell: int):
+        return self.data[cell]
+
+
 class CellController(Entity):
     """ 유의: 외부에서 cell이라고 부르는 숫자를 여기서는 number라고 부른다. """
 
@@ -21,10 +39,11 @@ class CellController(Entity):
         self.scale = finite_space_size * self.cell_scale
         self.cubic(self, color.white10, thickness=1.5, segments=0)
         self.field = {}
-        self.cell_monitor = []
+        self.cell_monitor = Monitor()
         self.generation = 0
         self.queue = input_queue
         self.prophecy_fieldset = Queue()
+        self.end = False
 
     def __call__(self, space_dict):
         """
@@ -69,14 +88,10 @@ class CellController(Entity):
         self.generation += 1
         if not self.prophecy_fieldset.empty():
             space_dict = self.prophecy_fieldset.get()
-            self.__call__(space_dict)
+            self(space_dict)
         else:
-            # 멸망점
-            for cell, cubic in self.field.values():
-                destroy(cell)
-                for outline in cubic.values():
-                    destroy(outline)
-            self.field.clear()
+            self.end = True
+            # 정물 if cell_monitor else 멸종
 
     def red_cell(self, co):
         cell = Entity(

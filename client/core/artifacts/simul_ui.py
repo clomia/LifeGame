@@ -53,58 +53,11 @@ class CountDown(UI):
         self.action.start()
 
 
-class IterStep:
-    """ 세대를 연속으로 진행시킨다."""
-
-    def __init__(self, cell_controller, eye, count: int = 19):
-        self.controller = cell_controller
-        self.eye = eye
-        self.init_setting()
-        self.seq = [Func(self.eye_controll_off), Func(self.show_position_shortcut)]
-        self.count = count
-        for _ in range(count):
-            self.seq.append(1)
-            self.seq.append(Func(self.controller.next))
-        self.seq.append(Func(self.eye_controll_on))
-
-    def __call__(self):
-        """ main execute"""
-        self.seq = Sequence(*self.seq)
-        self.seq.start()
-
-    def eye_controll_off(self):
-        self.eye.position, self.eye.rotation = self.eye.fixed_positions["origin"]
-        self.eye.update = lambda: None
-
-    def eye_controll_on(self):
-        self.eye.update = self.eye.controller
-
-    def show_position_shortcut(self):
-
-        self.keys_desc.fade_in(duration=2)
-        self.keys_img.fade_in(duration=2)
-
-        def delete():
-            self.keys_img.fade_out(duration=2)
-            self.keys_desc.fade_out(duration=2)
-            invoke(destroy, self.keys_img, delay=3)
-            invoke(destroy, self.keys_desc, delay=3)
-
-        invoke(delete, delay=10)
-
-    def init_setting(self):
-        self.keys_desc = KeyDescription.Position(position=(0.52, 0.35))
-        self.keys_img = KeyDescription.PositionImage(scale=0.8, position=(0.5, 0.2))
-        self.keys_desc.fade_out(duration=0)
-        self.keys_img.fade_out(duration=0)
-
-
 class CellMonitor(UI):
     def __init__(self, cell_controller):
         """ gen은 제너레이터가 아니라 제너레이션(세대)을 의미한다 """
         super().__init__()
         self.cell_controller = cell_controller
-        self.previous_cell_monitor = []
         self.scale_position = {
             "gen": (Vec2(0.3, 0.04), Vec2(UI.Top)),
             "left": (Vec2(0.15, 0.04), Vec2(UI.Top.x - 0.075, UI.Top.y - 0.04)),

@@ -109,3 +109,4 @@ class SimulConnect(Thread):
         while field_list := operator():
             self.sock.recv(4096)
             self.sock.sendall(str(field_list).encode())
+        #! 연산 완료 후 신호 끊기는 지점! (이후에 빈 리스트를 계속 준다거나 ..)
