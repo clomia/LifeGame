@@ -1,6 +1,8 @@
 """ 
 각 프로세스가 input함수로 할당할때 사용한다
 ex: input = react_handler(bprin_react_map)
+
+동적 재할당 등은 reat_map 딕셔너리의 키-값을 변경하는 코드로 구현하면 됩니다.
 """
 from .origin import *
 

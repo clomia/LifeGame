@@ -13,7 +13,6 @@ class BprinConnect(Thread):
     def __init__(self, queue, simul_loading_complate_signal: Queue, bprin_kill_signal: Queue):
         """ bprin프로세스의 응답을 self.queue에 담는다"""
         super().__init__()
-        self.local_host = socket.gethostbyname(socket.gethostname())
         self.port = BPRIN_PROC_PORT
         self.queue = queue
         self.simul_loading_complate_signal = simul_loading_complate_signal
@@ -23,7 +22,7 @@ class BprinConnect(Thread):
     def connect(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            sock.bind((self.local_host, self.port))
+            sock.bind(("localhost", self.port))
             sock.listen()
             self.sock, addr = sock.accept()
             fieldset = self.sock.recv(4096).decode()
@@ -76,7 +75,6 @@ class SimulConnect(Thread):
     ):
         """ 연산 그리드 클래스(ex: PropheticGrid)를 oper_grid인자로 입력받아 사용합니다 """
         super().__init__()
-        self.local_host = socket.gethostbyname(socket.gethostname())
         self.port = SIMUL_PROC_PORT
         self.queue = queue
         self.bprin_queue = bprin_queue
@@ -87,7 +85,7 @@ class SimulConnect(Thread):
     def connect(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            sock.bind((self.local_host, self.port))
+            sock.bind(("localhost", self.port))
             sock.listen()
             self.sock, addr = sock.accept()
             self.sock.setblocking(True)

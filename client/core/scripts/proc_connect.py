@@ -9,7 +9,6 @@ from .constant import *
 class BprinConnection(Thread):
     def __init__(self):
         super().__init__()
-        self.local_host = socket.gethostbyname(socket.gethostname())
         self.port = BPRIN_PROC_PORT
         self.queue = Queue()
         self.daemon = True
@@ -17,7 +16,7 @@ class BprinConnection(Thread):
 
     def run(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.connect((self.local_host, self.port))
+            sock.connect(("localhost", self.port))
             fieldset = self.queue.get()
             sock.sendall(str(fieldset).encode())
 
@@ -28,7 +27,6 @@ class BprinConnection(Thread):
 class SimulConnection(Thread):
     def __init__(self, queue, simul_loading_complate_signal: Queue):
         super().__init__()
-        self.local_host = socket.gethostbyname(socket.gethostname())
         self.port = SIMUL_PROC_PORT
         self.queue = queue
         self.daemon = True
@@ -49,7 +47,7 @@ class SimulConnection(Thread):
 
     def run(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.connect((self.local_host, self.port))
+            sock.connect(("localhost", self.port))
             self.simul_loading_complate_signal.get()
             sock.sendall("Loading Complate".encode("utf-8"))
             print("[simul프로세스]-로딩이 완료되서 메인 프로세스로 signal을 전송하였습니다")
