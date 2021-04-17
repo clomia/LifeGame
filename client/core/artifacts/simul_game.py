@@ -49,7 +49,7 @@ class IterStep:
         self.keys_img.fade_out(duration=0)
 
 
-class Judgment:
+class Judgment(Entity):
     """ 판정자 """
 
     def __init__(self, cell_controller):
@@ -57,9 +57,9 @@ class Judgment:
 
     def update(self):
         if (cc := self.cell_controller).end:
-            if cc.cell_monitor:
+            if cc.cell_monitor():
                 # * 정물
-                pass
+                self.execute()
             else:
                 # * 멸종
                 pass
@@ -71,7 +71,15 @@ class Judgment:
             pass
 
     def execute(self):
-        self.cell_controller.cell_monitor
+        if (data := self.cell_controller.cell_monitor.data)[1] > data[2]:
+            # * 1번(blue) 승리
+            pass
+        elif data[1] < data[2]:
+            # * 2번(red) 승리
+            pass
+        else:
+            # *무승부
+            pass
 
 
 def trigger(cell_controller, eye):

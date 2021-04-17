@@ -10,8 +10,11 @@ class CellControllException(Exception):
     pass
 
 
-class Monitor:
-    """ Field에서 세포 숫자만 모니터링 하는데 사용하는 자료구조입니다."""
+class CellCounter:
+    """
+    Field에서 세포 숫자만 모니터링 하는데 사용하는 객체입니다.
+    인스턴스를 호출하면 세포 존재 여부에 따라 bool을 반환합니다.
+    """
 
     def __init__(self):
         self.data = {1: 0, 2: 0}
@@ -27,6 +30,9 @@ class Monitor:
     def count(self, cell: int):
         return self.data[cell]
 
+    def __call__(self):
+        return True if self.data[1] or self.data[2] else False
+
 
 class CellController(Entity):
     """ 유의: 외부에서 cell이라고 부르는 숫자를 여기서는 number라고 부른다. """
@@ -39,7 +45,7 @@ class CellController(Entity):
         self.scale = finite_space_size * self.cell_scale
         self.cubic(self, color.white10, thickness=1.5, segments=0)
         self.field = {}
-        self.cell_monitor = Monitor()
+        self.cell_monitor = CellCounter()
         self.generation = 0
         self.queue = input_queue
         self.prophecy_fieldset = Queue()

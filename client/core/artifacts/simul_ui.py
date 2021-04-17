@@ -45,7 +45,7 @@ class CountDown(UI):
 
     def update(self):
         """ 세포가 배치되면 카운트다운을 시작하도록 폴링한다."""
-        if self.cell_controller.cell_monitor:
+        if self.cell_controller.cell_monitor():
             self.update = lambda: None
             invoke(self.run, delay=1)
 
