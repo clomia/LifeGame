@@ -12,6 +12,8 @@ outline = lambda obj, opacity: Entity(
 )
 
 SIGNAL = object()
+BLUECELL = 1
+REDCELL = 2
 
 
 class UI(Entity):

@@ -96,27 +96,6 @@ def lang_setting(self):
         self.en_ver()
 
 
-class ShutDownBtn(Button):
-    def __init__(self):
-        super().__init__()
-        self.color = color.gray
-        self.y = -0.4
-        self.scale_x = 0.4
-        self.scale_y = 0.05
-        self.model = Quad(thickness=1.3, segments=0, mode="line")
-        self.highlight_color = color.white
-        self.pressed_color = color.black66
-        self.on_click = application.quit
-        lang_setting(self)
-        self.text_color = ColorSet.Esc["Text"]
-
-    def ko_ver(self):
-        self.text = "게임 종료"
-
-    def en_ver(self):
-        self.text = "Game Exit"
-
-
 class LangBtnText(Text):
     def __init__(self):
         super().__init__()
@@ -157,21 +136,12 @@ class EnBtn(Button):
             self.panel.off()
 
 
-class KoBtn(Button):
+class KoBtn(EnBtn):
     def __init__(self, text_entities, panel):
-        self.panel = panel
-        super().__init__()
-        self.text_entities = text_entities
-        self.color = color.gray
+        super().__init__(text_entities, panel)
         self.y = -0.073
         self.x = -0.686
-        self.scale_x = 0.25
-        self.scale_y = 0.05
-        self.model = Quad(thickness=1.3, segments=0, mode="line")
         self.text = "한국어"
-        self.text_color = ColorSet.Esc["Text"]
-        self.highlight_color = color.white
-        self.pressed_color = color.black66
 
     def on_click(self):
         if LANGUAGE.now != "ko":
@@ -239,9 +209,44 @@ class KeyDescription:
             self.texture = load_texture("source/position_key.png")
 
 
+class ShutDownBtn(Button):
+    def __init__(self):
+        super().__init__()
+        self.color = color.gray
+        self.y = -0.4
+        self.scale_x = 0.4
+        self.scale_y = 0.05
+        self.model = Quad(thickness=1.3, segments=0, mode="line")
+        self.highlight_color = color.white
+        self.pressed_color = color.black66
+        self.on_click = application.quit
+        lang_setting(self)
+        self.text_color = ColorSet.Esc["Text"]
+        self.text_entity.y -= 0.04
+
+    def ko_ver(self):
+        self.text = "게임 종료"
+
+    def en_ver(self):
+        self.text = "Game Exit"
+
+
+class LeaveBtn(ShutDownBtn):
+    def __init__(self):
+        super().__init__()
+        self.y = -0.33
+        self.on_click = application.quit
+
+    def ko_ver(self):
+        self.text = "로비로 돌아가기"
+
+    def en_ver(self):
+        self.text = "Return to the lobby"
+
+
 class Esc:
     """
-    커서가 잠겨있는 상태(3D환경) 에는 mouse_locked=True를 해주세요
+    커서가 잠겨있는 상태(3D환경) 에는 simul=True를 해주세요
 
     ---
     Esc패널 리펙토링 시 주의사항
@@ -254,12 +259,15 @@ class Esc:
     또한 Text.text에 태그를 사용하면 레이어 버그가 발생하므로 사용하지 않도록 한다.
     """
 
-    def __init__(self, mouse_locked=False):
+    def __init__(self, simul=False):
         """
-        mouse_locked = True 이면 simul , False이면 bprin으로 간주하고 작동합니다.
+        simul = True 이면 simul , False이면 bprin으로 간주하고 작동합니다.
         """
-        self.mouse_locked = mouse_locked
+        self.mouse_locked = simul
         self.ele_lst = [EscBg, KeyDescription.PositionImage]  # 동적 번역이 불필요한 객체들입니다.
+        self.other_trans_lst = []  # 상속,변경시 동적 번역이 필요한 객체를 여기에 추가하세요
+        if simul:
+            self.other_trans_lst.append(LeaveBtn)
         self.first_call = True
         self.is_on = False
 
@@ -279,6 +287,7 @@ class Esc:
             KeyDescription.Move(),
             ShutDownBtn(),
             KeyDescription.Position(),
+            *[cls() for cls in self.other_trans_lst],
         ]
         self.ele_lst.extend(
             (

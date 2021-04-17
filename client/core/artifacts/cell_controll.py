@@ -1,7 +1,7 @@
 from queue import Queue
 from typing import Tuple, Union
 from ursina import *
-from .origin.tools import ColorSet
+from .origin.tools import *
 
 Co = Union[Tuple[int, int, int], Tuple[int, int]]
 
@@ -17,21 +17,21 @@ class CellCounter:
     """
 
     def __init__(self):
-        self.data = {1: 0, 2: 0}
+        self.counter = {BLUECELL: 0, REDCELL: 0}
 
     def append(self, cell: int):
-        self.data[cell] += 1
+        self.counter[cell] += 1
 
     def remove(self, cell: int):
-        if not self.data[cell]:
+        if not self.counter[cell]:
             raise Exception("remove할 cell이 없습니다.")
-        self.data[cell] -= 1
+        self.counter[cell] -= 1
 
     def count(self, cell: int):
-        return self.data[cell]
+        return self.counter[cell]
 
     def __call__(self):
-        return True if self.data[1] or self.data[2] else False
+        return True if self.counter[BLUECELL] or self.counter[REDCELL] else False
 
 
 class CellController(Entity):
@@ -67,9 +67,9 @@ class CellController(Entity):
                 for outline in cubic.values():
                     destroy(outline)
                 del self.field[co]
-            elif number == 1:
+            elif number == BLUECELL:
                 self.blue_cell(co)
-            elif number == 2:
+            elif number == REDCELL:
                 self.red_cell(co)
             else:
                 CellControllException("세포값이 잘못되었습니다")

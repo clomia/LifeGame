@@ -13,7 +13,7 @@ bprin_react_map: dict = {
 }
 
 simul_react_map: dict = {
-    "escape": Esc(mouse_locked=True).handler,
+    "escape": Esc(simul=True).handler,
 }
 
 

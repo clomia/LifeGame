@@ -1,6 +1,7 @@
 """ 카운트다운, 점수판, 게임 로직등에 필요한 ui도구 모듈 | CellController클래스를 다루는 모듈이다."""
 from ursina import *
 from .origin import *
+from .react_map import simul_react_map
 
 
 class CountDown(UI):
@@ -85,11 +86,11 @@ class CellMonitor(UI):
         self.position_maintain(self.gen)
 
     def blue_monitoring(self):
-        self.blue.text = str(self.cell_controller.cell_monitor.count(1))
+        self.blue.text = str(self.cell_controller.cell_monitor.count(BLUECELL))
         self.position_maintain(self.blue)
 
     def red_monitoring(self):
-        self.red.text = str(self.cell_controller.cell_monitor.count(2))
+        self.red.text = str(self.cell_controller.cell_monitor.count(REDCELL))
         self.position_maintain(self.red)
 
     @staticmethod
@@ -139,3 +140,91 @@ class CellMonitor(UI):
             Vec2(left.x, left.y),
             Vec2(right.x, right.y),
         )
+
+
+class ResultPanel(UI):
+    def __init__(self, eye, *, winner=None):
+        super().__init__()
+        self.winner = winner
+        mouse.locked = False
+        self.esc_react = simul_react_map["escape"]
+        simul_react_map["escape"] = lambda: None
+        self.eye = eye
+        self.eye.enabled = False
+        self.cursor = GameCursor()
+        self.scale = (0.5, 0.2)
+        self.inner_color = Entity(
+            parent=self,
+            model="quad",
+        )
+        self.model = Quad(
+            mode="line",
+            radius=0,
+            thickness=1,
+        )
+        if not winner:
+            self.inner_color.color = color.white10
+        elif winner == BLUECELL:
+            self.inner_color.color = color.rgba(0, 0, 255, 80)
+        elif winner == REDCELL:
+            self.inner_color.color = color.rgba(255, 0, 0, 80)
+        else:
+            raise Exception()
+
+        if LANGUAGE.now == "ko":
+            self.text_entity = Text(text="승리!", x=-0.052, y=0.015, scale=2)
+            self.leave_text = "로비로 돌아가기"
+            self.stay_text = "필드에 남기"
+        elif LANGUAGE.now == "en":
+            self.text_entity = Text(text="WIN!", x=-0.058, y=0.015, scale=2)
+            self.leave_text = "Return to home page"
+            self.stay_text = "Stay in field"
+        self.text_entity.resolution = 100
+        self.btn_generator()
+
+    def destroy(self):
+        destroy(self.inner_color)
+        destroy(self.leave_btn)
+        destroy(self.stay_btn)
+        destroy(self.text_entity)
+        destroy(self.cursor)
+        mouse.locked = True
+        self.eye.enabled = True
+        simul_react_map["escape"] = self.esc_react
+        destroy(self)
+
+    def btn_generator(self):
+        btn_size = Vec2(self.scale_x, self.scale_y)
+        left = self.x - btn_size.x / 4
+        right = -left
+        y = self.y - btn_size.y / 1.32
+
+        def _btn_gen(*, x, text, on_click):
+            class Btn(Button):
+                def __init__(self):
+                    super().__init__()
+                    self.model = Quad(mode="line", radius=0)
+                    self.scale = (btn_size.x / 2, btn_size.y / 2)
+                    self.x = x
+                    self.y = y
+                    self.color = color.white
+                    self.highlight_color = color.white
+                    self.pressed_color = color.white33
+                    self.inner_color = Entity(
+                        parent=self,
+                        model="quad",
+                        color=color.rgba(0, 0, 0, 50),
+                    )
+                    self.on_click = on_click
+                    self.text = text
+
+                def on_mouse_enter(self):
+                    self.inner_color.color = color.white33
+
+                def on_mouse_exit(self):
+                    self.inner_color.color = color.white10
+
+            return Btn
+
+        self.leave_btn = _btn_gen(x=left, text=self.leave_text, on_click=print)()
+        self.stay_btn = _btn_gen(x=right, text=self.stay_text, on_click=self.destroy)()

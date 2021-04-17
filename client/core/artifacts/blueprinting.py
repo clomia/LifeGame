@@ -41,14 +41,14 @@ class InputGrid(Entity):
         self.grid = {(x, y): self.btn((x, y)) for y in axis() for x in axis()}
         self.scale = 0.4
         self.player_1 = {
-            "cell": 1,
+            "cell": BLUECELL,
             "color": ColorSet.Bprin["Player-Blue"]["Dark"],
             "color_rgb": (75, 70, 136),
             "hover_color": ColorSet.Bprin["Player-Blue"]["Bright"],
             "hover_rgb": (99, 205, 255),
         }
         self.player_2 = {
-            "cell": 2,
+            "cell": REDCELL,
             "color": ColorSet.Bprin["Player-Red"]["Dark"],
             "color_rgb": (148, 148, 148),
             "hover_color": ColorSet.Bprin["Player-Red"]["Bright"],

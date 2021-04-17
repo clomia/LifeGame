@@ -52,37 +52,44 @@ class IterStep:
 class Judgment(Entity):
     """ 판정자 """
 
-    def __init__(self, cell_controller):
+    def __init__(self, cell_controller, eye):
+        super().__init__()
         self.cell_controller = cell_controller
+        self.eye = eye
+
+    def winner(self, player):
+        ResultPanel(self.eye, winner=player)
+        self.update = lambda: None
 
     def update(self):
+        """ 세포가 배치될때까지 대기한다."""
+        if self.cell_controller.cell_monitor():
+            self.update = self.main
+
+    def main(self):
         if (cc := self.cell_controller).end:
             if cc.cell_monitor():
                 # * 정물
                 self.execute()
             else:
                 # * 멸종
-                pass
-        elif not cc.cell_monitor.count(1):
-            # * 1번(blue) 패배
-            pass
-        elif not cc.cell_monitor.count(2):
-            # * 2번(red) 패배
-            pass
+                self.winner(None)
+        elif not cc.cell_monitor.count(REDCELL):
+            self.winner(BLUECELL)
+        elif not cc.cell_monitor.count(BLUECELL):
+            self.winner(REDCELL)
 
     def execute(self):
-        if (data := self.cell_controller.cell_monitor.data)[1] > data[2]:
-            # * 1번(blue) 승리
-            pass
-        elif data[1] < data[2]:
-            # * 2번(red) 승리
-            pass
+        if (counter := self.cell_controller.cell_monitor.counter)[BLUECELL] > counter[REDCELL]:
+            self.winner(BLUECELL)
+        elif counter[BLUECELL] < counter[REDCELL]:
+            self.winner(REDCELL)
         else:
-            # *무승부
-            pass
+            self.winner(None)
 
 
 def trigger(cell_controller, eye):
     """ 모든 클래스를 이어주는 편의 함수"""
     CountDown(cell_controller, count=10, pipe_func=IterStep(cell_controller, eye))
     CellMonitor(cell_controller)
+    Judgment(cell_controller, eye)
