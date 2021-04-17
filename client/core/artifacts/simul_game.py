@@ -7,7 +7,7 @@ from .simul_ui import *
 class IterStep:
     """ 세대를 연속으로 진행시킨다."""
 
-    def __init__(self, cell_controller, eye, count: int = GameConfig.Iter_Step_Count):
+    def __init__(self, cell_controller, eye, count: int = GameConfig.IterStep_Count):
         self.controller = cell_controller
         self.eye = eye
         self.init_setting()
@@ -74,6 +74,7 @@ class Judgment(Entity):
                 self.execute()
             else:
                 # * 멸종
+                print("야호")
                 self.winner(None)
         elif not cc.cell_monitor.count(REDCELL):
             self.winner(BLUECELL)

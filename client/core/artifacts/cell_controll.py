@@ -97,7 +97,6 @@ class CellController(Entity):
             self(space_dict)
         else:
             self.end = True
-            # 정물 if cell_monitor else 멸종
 
     def red_cell(self, co):
         cell = Entity(
@@ -106,7 +105,7 @@ class CellController(Entity):
             scale=self.cell_scale,
             position=co,
         )
-        cell.number = 2
+        cell.number = REDCELL
         cubic_dict = self.fixed_cubic(cell, ColorSet.Cell["Cubic-Red"], self.cell_cubic_thickness)
         cell.rotation_z = -90
         cell.update = self.cell_moving(cell, creating=True)
@@ -117,7 +116,7 @@ class CellController(Entity):
         invoke(default_moving, delay=2)
         try:
             if self.field[co][0].number != cell.number:
-                self.cell_monitor.remove(1)
+                self.cell_monitor.remove(BLUECELL)
                 self.cell_monitor.append(cell.number)
         except KeyError:
             self.cell_monitor.append(cell.number)
@@ -130,7 +129,7 @@ class CellController(Entity):
             scale=self.cell_scale,
             position=co,
         )
-        cell.number = 1
+        cell.number = BLUECELL
         cubic_dict = self.fixed_cubic(cell, ColorSet.Cell["Cubic-Blue"], self.cell_cubic_thickness)
         cell.rotation_z = -90
         cell.update = self.cell_moving(cell, creating=True)
@@ -141,7 +140,7 @@ class CellController(Entity):
         invoke(default_moving, delay=2)
         try:
             if self.field[co][0].number != cell.number:
-                self.cell_monitor.remove(2)
+                self.cell_monitor.remove(REDCELL)
                 self.cell_monitor.append(cell.number)
         except KeyError:
             self.cell_monitor.append(cell.number)

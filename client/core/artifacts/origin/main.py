@@ -241,7 +241,7 @@ class LeaveBtn(ShutDownBtn):
         self.text = "로비로 돌아가기"
 
     def en_ver(self):
-        self.text = "Return to the lobby"
+        self.text = "Back to Lobby"
 
 
 class Esc:

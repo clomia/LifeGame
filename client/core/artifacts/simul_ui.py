@@ -177,7 +177,7 @@ class ResultPanel(UI):
             self.stay_text = "필드에 남기"
         elif LANGUAGE.now == "en":
             self.text_entity = Text(text="WIN!", x=-0.058, y=0.015, scale=2)
-            self.leave_text = "Return to home page"
+            self.leave_text = "Back to Lobby"
             self.stay_text = "Stay in field"
         self.text_entity.resolution = 100
         self.btn_generator()
@@ -222,7 +222,7 @@ class ResultPanel(UI):
                     self.inner_color.color = color.white33
 
                 def on_mouse_exit(self):
-                    self.inner_color.color = color.white10
+                    self.inner_color.color = color.rgba(0, 0, 0, 50)
 
             return Btn
 
