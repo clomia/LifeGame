@@ -1,12 +1,13 @@
 """ 주요 게임 로직이다, UI는 simul_ui의 객체들을 사용한다."""
 from ursina import *
+from .origin import GameConfig
 from .simul_ui import *
 
 
 class IterStep:
     """ 세대를 연속으로 진행시킨다."""
 
-    def __init__(self, cell_controller, eye, count: int = 19):
+    def __init__(self, cell_controller, eye, count: int = GameConfig.Iter_Step_Count):
         self.controller = cell_controller
         self.eye = eye
         self.init_setting()

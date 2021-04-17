@@ -27,4 +27,18 @@ class Language:
 
 
 LANGUAGE = Language()
-__all__ = ["LANGUAGE"]
+
+
+class GameConfig:
+    """
+    게임 벨런스에 큰 영향을 주는 변수 모음이다.
+    벨런스 조정시 사용하는 클래스이다.
+
+    변수명은 대문자 시작+'_'로 띄어쓰기
+    """
+
+    Bprin_Handicap_Count: int = 3
+    Iter_Step_Count: int = 19
+
+
+__all__ = ["LANGUAGE", "GameConfig"]

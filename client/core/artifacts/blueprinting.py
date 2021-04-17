@@ -23,7 +23,7 @@ class InputGrid(Entity):
         size: int = 15,
         bg_image: str = f"source/blueprint_bg.jpg",
         pipe_func=lambda x: print(x),
-        final_input_count=3,
+        final_input_count=GameConfig.Bprin_Handicap_Count,
     ):
         """
         size는 홀수여야 한다
