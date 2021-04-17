@@ -1,7 +1,13 @@
-## 콘웨이의 Life Game을 기반으로 PVP 온라인 게임 + 3(+N)차원으로 새롭게 구현하기  
-### -- 게임을 완성시켜서 출시하기
-### -- (두뇌 구현 시각화를 위한 기반 프로젝트)  
-### [Notion Link](https://www.notion.so/LifeGame-326024ece4404f18b527259659b58c6c)
+## 셀룰러 오토마타([cellular automata](https://en.wikipedia.org/wiki/Cellular_automaton))를 기반 만든 PVP게임
+> 2차원 모드에서는 존 호턴 콘웨이의 라이프게임 규칙을 적용합니다.  
+> 3차원 모드에서 어떤 규칙을 적용해야 할지 고민중입니다.  
+>   
+> 두뇌 신경구조는 cellular automata 모형과 매우 유사하다고 생각합니다.  
+> 차후 두뇌 모방 프로그램을 작성하게 될때 큰 도움이 되기를 바라면서 프로젝트를 시작하게 되었습니다.  
+> 
+> 사용된 디자인 툴은 Adobe Illustrator, Adobe Photoshop, Adobe Premiere 입니다.  
+> 로고디자인,인트로 영상제작,우주 그래픽 디자인 등에 사용하고있습니다.  
+> 프로그래밍 언어는 Python을 메인으로 사용하고 있습니다.  
 ---
 ![](client/core/artifacts/source/undeveloped_screen.jpg)  
 ![](media/env.jpg)
