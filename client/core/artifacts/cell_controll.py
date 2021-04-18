@@ -33,6 +33,12 @@ class CellCounter:
     def __call__(self):
         return True if self.counter[BLUECELL] or self.counter[REDCELL] else False
 
+    def __str__(self):
+        return str(self.counter)
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
 
 class CellController(Entity):
     """ 유의: 외부에서 cell이라고 부르는 숫자를 여기서는 number라고 부른다. """
@@ -96,6 +102,7 @@ class CellController(Entity):
             space_dict = self.prophecy_fieldset.get()
             self(space_dict)
         else:
+            # info: end처리는 즉각적이지 않기 때문에 멸종 판정에는 사용할 수 없다
             self.end = True
 
     def red_cell(self, co):

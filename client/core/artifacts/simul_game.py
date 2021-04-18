@@ -4,10 +4,14 @@ from .origin import GameConfig
 from .simul_ui import *
 
 
-class IterStep:
-    """ 세대를 연속으로 진행시킨다."""
+class IterStep(Entity):
+    """
+    세대를 연속으로 진행시킨다.
+    정물이나 멸종에 다다르면 멈춘다.
+    """
 
     def __init__(self, cell_controller, eye, count: int = GameConfig.IterStep_Count):
+        super().__init__()
         self.controller = cell_controller
         self.eye = eye
         self.init_setting()
@@ -22,6 +26,13 @@ class IterStep:
         """ main execute"""
         self.seq = Sequence(*self.seq)
         self.seq.start()
+        self.update = self.end_check
+
+    def end_check(self):
+        if self.controller.end:
+            self.seq.kill()
+            self.eye_controll_on()
+            destroy(self)
 
     def eye_controll_off(self):
         self.eye.position, self.eye.rotation = self.eye.fixed_positions["origin"]
@@ -58,36 +69,40 @@ class Judgment(Entity):
         self.cell_controller = cell_controller
         self.eye = eye
 
-    def winner(self, player):
-        ResultPanel(self.eye, winner=player)
+    def winner(self, player, info=None):
+        ResultPanel(self.eye, winner=player, more_info=info)
         self.update = lambda: None
 
     def update(self):
-        """ 세포가 배치될때까지 대기한다."""
+        """ 세포가 배치되면 CellController를 주시하기 시작한다."""
         if self.cell_controller.cell_monitor():
             self.update = self.main
 
     def main(self):
-        if (cc := self.cell_controller).end:
-            if cc.cell_monitor():
-                # * 정물
-                self.execute()
-            else:
-                # * 멸종
-                print("야호")
-                self.winner(None)
-        elif not cc.cell_monitor.count(REDCELL):
+        cc = self.cell_controller
+        field_state = {
+            "still_life": cc.end and cc.cell_monitor(),
+            "red_empty": not cc.cell_monitor.count(REDCELL),
+            "blue_empty": not cc.cell_monitor.count(BLUECELL),
+        }
+        if field_state["still_life"]:
+            # * 정물
+            self.execute(info=STILL_LIFE)
+        elif field_state["red_empty"] and field_state["blue_empty"]:
+            # * 멸종
+            self.winner(None, info=EXTINCTION)
+        elif field_state["red_empty"]:
             self.winner(BLUECELL)
-        elif not cc.cell_monitor.count(BLUECELL):
+        elif field_state["blue_empty"]:
             self.winner(REDCELL)
 
-    def execute(self):
+    def execute(self, info=None):
         if (counter := self.cell_controller.cell_monitor.counter)[BLUECELL] > counter[REDCELL]:
-            self.winner(BLUECELL)
+            self.winner(BLUECELL, info)
         elif counter[BLUECELL] < counter[REDCELL]:
-            self.winner(REDCELL)
+            self.winner(REDCELL, info)
         else:
-            self.winner(None)
+            self.winner(None, info)
 
 
 def trigger(cell_controller, eye):

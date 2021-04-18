@@ -142,8 +142,78 @@ class CellMonitor(UI):
         )
 
 
+class MoreInfo(UI):
+    def __init__(self, result_type):
+        super().__init__()
+        self._position = Vec2(-0.55, 0.307)
+        random_number = random.randint(100_000_000, 1000_000_000)
+        random_sign = random.choice(("α", "λ", "δ", "Ω", "Φ"))
+        self.frame = Entity(
+            parent=self,
+            model=Quad(mode="line", radius=0),
+            scale=(0.5, 0.15),
+            position=self._position,
+        )
+        bottom_y = self._position.y - 0.02
+        if LANGUAGE.now == "ko":
+            self.top_text = Text(
+                text="실험 종료",
+                x=self._position.x - 0.04,
+                y=self._position.y + 0.05,
+                scale=0.9,
+            )
+            if result_type is EXTINCTION:
+                self.bottom_text = Text(
+                    text="두 세포 종이 모두 멸종되었습니다.",
+                    x=self._position.x - 0.2,
+                    y=bottom_y,
+                    scale=1.1,
+                )
+            elif result_type is STILL_LIFE:
+                self.bottom_text = Text(
+                    text="생명활동이 정지되었습니다.",
+                    x=self._position.x - 0.164,
+                    y=bottom_y,
+                    scale=1.1,
+                )
+        elif LANGUAGE.now == "en":
+            self.top_text = Text(
+                text="End Experiment",
+                x=self._position.x - 0.09,
+                y=self._position.y + 0.05,
+                scale=0.9,
+            )
+            if result_type is EXTINCTION:
+                self.bottom_text = Text(
+                    text="Both cell species are extinct.",
+                    x=self._position.x - 0.195,
+                    y=bottom_y,
+                    scale=1.1,
+                )
+            elif result_type is STILL_LIFE:
+                self.bottom_text = Text(
+                    text="Life phenomenon has been stopped.",
+                    x=self._position.x - 0.215,
+                    y=bottom_y,
+                    scale=0.95,
+                )
+        self.code_text = Text(
+            text=f"Experiment No.{random_number}°inf/{random_sign}",
+            x=self._position.x - 0.13,
+            y=self._position.y + 0.02,
+            scale=0.65,
+        )
+
+    def destroy(self):
+        destroy(self.frame)
+        destroy(self.top_text)
+        destroy(self.bottom_text)
+        destroy(self.code_text)
+        destroy(self)
+
+
 class ResultPanel(UI):
-    def __init__(self, eye, *, winner=None):
+    def __init__(self, eye, *, winner=None, more_info=None):
         super().__init__()
         self.winner = winner
         mouse.locked = False
@@ -163,7 +233,7 @@ class ResultPanel(UI):
             thickness=1,
         )
         if not winner:
-            self.inner_color.color = color.white10
+            self.inner_color.color = color.rgba(0, 0, 0, 50)
         elif winner == BLUECELL:
             self.inner_color.color = color.rgba(0, 0, 255, 80)
         elif winner == REDCELL:
@@ -172,15 +242,24 @@ class ResultPanel(UI):
             raise Exception()
 
         if LANGUAGE.now == "ko":
-            self.text_entity = Text(text="승리!", x=-0.052, y=0.015, scale=2)
+            if self.winner:
+                self.text_entity = Text(text="승리!", x=-0.052, y=0.015, scale=2)
+            else:
+                self.text_entity = Text(text="무승부", x=-0.073, y=0.015, scale=2)
             self.leave_text = "로비로 돌아가기"
             self.stay_text = "필드에 남기"
         elif LANGUAGE.now == "en":
-            self.text_entity = Text(text="WIN!", x=-0.058, y=0.015, scale=2)
+            if self.winner:
+                self.text_entity = Text(text="WIN!", x=-0.052, y=0.015, scale=2)
+            else:
+                self.text_entity = Text(text="DRAW", x=-0.073, y=0.015, scale=2)
             self.leave_text = "Back to Lobby"
             self.stay_text = "Stay in field"
         self.text_entity.resolution = 100
         self.btn_generator()
+        self.more_panel = None
+        if more_info:
+            self.more_panel = MoreInfo(result_type=more_info)
 
     def destroy(self):
         destroy(self.inner_color)
@@ -188,13 +267,15 @@ class ResultPanel(UI):
         destroy(self.stay_btn)
         destroy(self.text_entity)
         destroy(self.cursor)
+        if self.more_panel:
+            self.more_panel.destroy()
         mouse.locked = True
         self.eye.enabled = True
         simul_react_map["escape"] = self.esc_react
         destroy(self)
 
     def btn_generator(self):
-        btn_size = Vec2(self.scale_x, self.scale_y)
+        btn_size = self.scale
         left = self.x - btn_size.x / 4
         right = -left
         y = self.y - btn_size.y / 1.32

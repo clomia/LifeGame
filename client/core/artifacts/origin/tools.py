@@ -1,3 +1,4 @@
+""" 상수,함수,부모클래스 """
 from itertools import cycle
 from functools import wraps
 from contextlib import contextmanager
@@ -10,10 +11,15 @@ outline = lambda obj, opacity: Entity(
     color=color.rgba(196, 235, 232, opacity),
     z=-0.01,
 )
-
+# -------Const----------
 SIGNAL = object()
+# -----------------
 BLUECELL = 1
 REDCELL = 2
+# -----------------
+EXTINCTION = object()
+STILL_LIFE = object()
+# -----------------
 
 
 class UI(Entity):
