@@ -61,6 +61,38 @@ class IterStep(Entity):
         self.keys_img.fade_out(duration=0)
 
 
+class IterController(Entity):
+    """
+    게임이 끝난 후 필드를 둘러볼때 실행되는 컨트롤러입니다.
+    마우스 우클릭을 통해 재생,일시정지를 지원합니다.
+    """
+
+    def __init__(self, cell_controller, eye):
+        super().__init__()
+        self.eye = eye
+        self.controller = cell_controller
+        self.playing = False
+        self.seq = Sequence(Func(self.controller.next), 1, loop=True)
+
+    def start(self):
+        # self.eye.position, self.eye.rotation = self.eye.fixed_positions["origin"]
+        self.eye.update = lambda: None
+        self.seq.start()
+
+    def pause(self):
+        self.eye.update = self.eye.controller
+        self.seq.pause()
+
+    def input(self, key):
+        if key == "right mouse down" and self.controller.generation >= GameConfig.IterStep_Count:
+            if not self.playing:
+                self.start()
+                self.playing = True
+            else:
+                self.pause()
+                self.playing = False
+
+
 class Judgment(Entity):
     """ 판정자 """
 
@@ -70,7 +102,12 @@ class Judgment(Entity):
         self.eye = eye
 
     def winner(self, player, info=None):
-        ResultPanel(self.eye, winner=player, more_info=info)
+        ResultPanel(
+            self.eye,
+            winner=player,
+            more_info=info,
+            pipe_func=lambda: IterController(self.cell_controller, self.eye),
+        )
         self.update = lambda: None
 
     def update(self):

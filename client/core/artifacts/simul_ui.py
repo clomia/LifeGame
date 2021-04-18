@@ -213,7 +213,8 @@ class MoreInfo(UI):
 
 
 class ResultPanel(UI):
-    def __init__(self, eye, *, winner=None, more_info=None):
+    def __init__(self, eye, *, winner=None, more_info=None, pipe_func=None):
+        """ 필드에 남기를 선택한 경우 pipe_func를 실행합니다"""
         super().__init__()
         self.winner = winner
         mouse.locked = False
@@ -260,6 +261,7 @@ class ResultPanel(UI):
         self.more_panel = None
         if more_info:
             self.more_panel = MoreInfo(result_type=more_info)
+        self.pipe_func = pipe_func
 
     def destroy(self):
         destroy(self.inner_color)
@@ -273,6 +275,7 @@ class ResultPanel(UI):
         self.eye.enabled = True
         simul_react_map["escape"] = self.esc_react
         destroy(self)
+        self.pipe_func()
 
     def btn_generator(self):
         btn_size = self.scale

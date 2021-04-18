@@ -18,6 +18,7 @@ class CellCounter:
 
     def __init__(self):
         self.counter = {BLUECELL: 0, REDCELL: 0}
+        self.__repr__ = self.__str__
 
     def append(self, cell: int):
         self.counter[cell] += 1
@@ -35,9 +36,6 @@ class CellCounter:
 
     def __str__(self):
         return str(self.counter)
-
-    def __repr__(self) -> str:
-        return self.__str__()
 
 
 class CellController(Entity):
