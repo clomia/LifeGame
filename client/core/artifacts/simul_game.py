@@ -4,6 +4,73 @@ from .origin import GameConfig
 from .simul_ui import *
 
 
+class SelectInfo:
+    """ 오프라인 모드일때 두 패널의 정보를 취합-실행하는 객체"""
+
+    def __init__(self, continue_func, execute_func):
+        self.now = {
+            BLUECELL: None,
+            REDCELL: None,
+        }
+        self.continue_func = continue_func
+        self.execute_func = execute_func
+
+    def select(self, cell, value):
+        if self.now[cell] is None:
+            self.now[cell] = value
+            state = list(self.now.values())
+            if not None in state:
+                if not True in state:
+                    self.continue_func()
+                elif not False in state:
+                    self.execute_func()
+                else:
+                    raise Exception()
+
+
+class ExcuteStep:
+    """ self.select_info 에서 False는 continue, True는 execute를 의미합니다."""
+
+    def __init__(self, cell_controller, referee):
+        self.cell_controller = cell_controller
+        self.referee = referee
+        self.select_info = SelectInfo(continue_func=self._continue, execute_func=self._excute)
+        self.first_panel()
+
+    def _continue(self):
+        self.cell_controller.next()
+
+    def _excute(self):
+        self.referee.execute()
+
+    def first_panel(self):
+        ExecutionPenal(
+            continue_func=self.continue_handler(BLUECELL),
+            execute_func=self.execution_handler(BLUECELL),
+            player=BLUECELL,
+            pipe_func=self.second_panel,
+        )
+
+    def second_panel(self):
+        ExecutionPenal(
+            continue_func=self.continue_handler(REDCELL),
+            execute_func=self.execution_handler(REDCELL),
+            player=REDCELL,
+        )
+
+    def continue_handler(self, player):
+        def func():
+            self.select_info.select(player, False)
+
+        return func
+
+    def execution_handler(self, player):
+        def func():
+            self.select_info.select(player, True)
+
+        return func
+
+
 class IterStep(Entity):
     """
     세대를 연속으로 진행시킨다.
@@ -104,12 +171,13 @@ class Judgment(Entity):
     def pipe_func(self):
         IterController(self.cell_controller, self.eye)
 
-    def winner(self, player, info=None):
+    def winner(self, player, info=None, after_iter=True):
         ResultPanel(
             self.eye,
             winner=player,
             more_info=info,
             pipe_func=self.pipe_func,
+            after_iter=after_iter,
         )
         self.update = lambda: None
 
@@ -130,7 +198,7 @@ class Judgment(Entity):
             self.execute(info=STILL_LIFE)
         elif field_state["red_empty"] and field_state["blue_empty"]:
             # * 멸종
-            self.winner(None, info=EXTINCTION)
+            self.winner(None, info=EXTINCTION, after_iter=False)
         elif field_state["red_empty"]:
             self.winner(BLUECELL)
         elif field_state["blue_empty"]:

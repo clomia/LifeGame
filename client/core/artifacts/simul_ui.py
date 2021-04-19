@@ -213,10 +213,14 @@ class MoreInfo(UI):
 
 
 class ResultPanel(UI):
-    def __init__(self, eye, *, winner=None, more_info=None, pipe_func=None):
-        """ 필드에 남기를 선택한 경우 pipe_func를 실행합니다"""
+    def __init__(self, eye, *, winner=None, more_info=None, pipe_func=None,after_iter=True):
+        """ 
+        필드에 남기를 선택한 경우 pipe_func를 실행합니다
+        after_iter에 False를 넘기면 사후 이터레이션 기능을 제공하지 않습니다
+        """
         super().__init__()
         self.winner = winner
+        self.after_iter = after_iter
         mouse.locked = False
         self.esc_react = simul_react_map["escape"]
         simul_react_map["escape"] = lambda: None
@@ -271,8 +275,9 @@ class ResultPanel(UI):
         if self.more_panel:
             self.more_panel.destroy()
         destroy(self)
-        IterControllerGuide(self.eye, self.esc_react, self.cursor)
-        self.pipe_func()
+        if self.after_iter:
+            IterControllerGuide(self.eye, self.esc_react, self.cursor)
+            self.pipe_func()
 
     def btn_generator(self):
         btn_size = self.scale
@@ -477,3 +482,65 @@ class ExecutionPenal(UI):
         ]
         self.execute_btn.text = "Execute"
         self.continue_btn.text = "Pass"
+
+
+class ExecutionWaiter(UI):
+    def __init__(self, sec, func):
+        """ sec 초 이후 func를 실행합니다"""
+        super().__init__()
+        self._position = Vec2(UI.Right.x - 0.2, UI.Top.y - 0.2)
+        self.frame = Entity(
+            parent=self,
+            model=Quad(mode="line", radius=0),
+            scale=(0.3, 0.1),
+            position=self._position,
+        )
+        self.background_color = Entity(
+            parent=self,
+            model="quad",
+            scale=self.frame.scale,
+            color=color.black10,
+            position=self._position,
+        )
+        self.lang_setting()
+        self.seq = Sequence()
+        for s in range(sec, 0, -1):
+            self.seq.append(Func(self.sec_text, s))
+            self.seq.append(1)
+        self.seq.append(Func(self.sec_text, 0))
+        self.seq.append(0.5)
+        self.seq.append(Func(self.destroy))
+        self.seq.append(Func(func))
+        self.seq.start()
+
+    def destroy(self):
+        destroy(self.frame)
+        destroy(self.background_color)
+        destroy(self.desc)
+        destroy(self.sec)
+
+    def lang_setting(self):
+        if LANGUAGE.now == "ko":
+            self.desc = Text(
+                "선택까지 남은 시간",
+                position=(self._position.x - 0.073, self._position.y + 0.03),
+                scale=0.7,
+            )
+            self.sec = Text(
+                y=self._position.y - 0.007,
+                scale=1,
+            )
+            self.now_lang = "ko"
+        elif LANGUAGE.now == "en":
+            self.desc = Text(
+                "Time left until select",
+                position=(self._position.x - 0.088, self._position.y + 0.03),
+                scale=0.7,
+            )
+            self.sec = Text(
+                y=self._position.y - 0.007,
+                scale=1,
+            )
+            self.now_lang = "en"
+
+    def sec_text(self, sec):
