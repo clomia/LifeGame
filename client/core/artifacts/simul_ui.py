@@ -268,13 +268,10 @@ class ResultPanel(UI):
         destroy(self.leave_btn)
         destroy(self.stay_btn)
         destroy(self.text_entity)
-        destroy(self.cursor)
         if self.more_panel:
             self.more_panel.destroy()
-        mouse.locked = True
-        self.eye.enabled = True
-        simul_react_map["escape"] = self.esc_react
         destroy(self)
+        IterControllerGuide(self.eye, self.esc_react, self.cursor)
         self.pipe_func()
 
     def btn_generator(self):
@@ -312,3 +309,76 @@ class ResultPanel(UI):
 
         self.leave_btn = _btn_gen(x=left, text=self.leave_text, on_click=print)()
         self.stay_btn = _btn_gen(x=right, text=self.stay_text, on_click=self.destroy)()
+
+
+class IterControllerGuide(UI):
+    """ ResultPanel과 연결되어 실행되는 클래스"""
+
+    def __init__(self, eye, default_esc, cursor):
+        super().__init__()
+        self.esc_react = default_esc
+        self.cursor = cursor
+        self.eye = eye
+        self.eye.enabled = False
+        self.frame = Entity(
+            parent=self,
+            model=Quad(mode="line", radius=0, thickness=1),
+            color=color.white,
+            scale=(0.5, 0.1),
+        )
+        self.frame_color = Entity(
+            parent=self,
+            model="quad",
+            color=color.black10,
+            scale=(0.5, 0.1),
+        )
+        self.btn = Button(
+            model="quad",
+            scale=0.1,
+            y=self.frame.y,
+            x=self.frame.x + 0.2,
+            color=color.black33,
+        )
+        self.btn.on_click = self.destroy
+        self.btn_frame = Entity(
+            parent=self,
+            model=Quad(radius=0, mode="line"),
+            scale=0.1,
+            position=self.btn.position,
+            z=-0.1,
+        )
+        self.lang_setting()
+        # esc버튼이 잠겨서 update로 동적 언어변경 지원할 필요 없다
+
+    def lang_setting(self):
+        if LANGUAGE.now == "ko":
+            self.ko_ver()
+        elif LANGUAGE.now == "en":
+            self.en_ver()
+
+    def ko_ver(self):
+        self.text = Text("마우스 우클릭으로 재생/일시정지", x=self.frame.x - 0.23, y=self.frame.y + 0.01)
+        self.btn.text = "확인"
+        self.now_lang = "ko"
+
+    def en_ver(self):
+        self.text = Text(
+            "Play/Pause with right mouse click",
+            x=self.frame.x - 0.242,
+            y=self.frame.y + 0.01,
+            scale=0.93,
+        )
+        self.btn.text = "OK"
+        self.now_lang = "en"
+
+    def destroy(self):
+        destroy(self.text)
+        destroy(self.btn)
+        destroy(self.btn_frame)
+        destroy(self.frame_color)
+        destroy(self.frame)
+        destroy(self.cursor)
+        self.eye.enabled = True
+        mouse.locked = True
+        simul_react_map["escape"] = self.esc_react
+        destroy(self)

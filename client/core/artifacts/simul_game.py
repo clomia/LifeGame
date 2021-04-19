@@ -101,12 +101,15 @@ class Judgment(Entity):
         self.cell_controller = cell_controller
         self.eye = eye
 
+    def pipe_func(self):
+        IterController(self.cell_controller, self.eye)
+
     def winner(self, player, info=None):
         ResultPanel(
             self.eye,
             winner=player,
             more_info=info,
-            pipe_func=lambda: IterController(self.cell_controller, self.eye),
+            pipe_func=self.pipe_func,
         )
         self.update = lambda: None
 
