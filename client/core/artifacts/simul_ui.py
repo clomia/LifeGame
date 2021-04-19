@@ -382,3 +382,98 @@ class IterControllerGuide(UI):
         mouse.locked = True
         simul_react_map["escape"] = self.esc_react
         destroy(self)
+
+
+class ExecutionPenal(UI):
+    def __init__(self, continue_func, execute_func):
+        super().__init__()
+        self.top_frame = Entity(
+            parent=self,
+            model=Quad(mode="line", radius=0),
+            scale=(0.6, 0.1),
+            y=0.2,
+        )
+        self.top_color = Entity(
+            parent=self,
+            model="quad",
+            scale=self.top_frame.scale,
+            color=color.black10,
+            y=0.2,
+        )
+        self.left_frame = Entity(
+            parent=self,
+            model=Quad(mode="line", radius=0),
+            scale=(0.3, 0.2),
+            y=0.05,
+            x=-0.15,
+        )
+        self.right_frame = Entity(
+            parent=self,
+            model=Quad(mode="line", radius=0),
+            scale=(0.3, 0.2),
+            y=0.05,
+            x=0.15,
+        )
+        self.execute_btn = Button(parent=self.left_frame, model="quad", color=color.black10)
+        self.continue_btn = Button(parent=self.right_frame, model="quad", color=color.black10)
+        self.execute_btn.on_click = lambda: self.destroy() and execute_func()
+        self.continue_btn.on_click = lambda: self.destroy() and continue_func()
+        self.lang_setting()
+
+    def destroy(self):
+        destroy(self.top_frame)
+        destroy(self.top_color)
+        destroy(self.left_frame)
+        destroy(self.right_frame)
+        destroy(self.top_text)
+        for desc in self.top_descs:
+            destroy(desc)
+        destroy(self.execute_btn)
+        destroy(self.continue_btn)
+        return True
+
+    def lang_setting(self):
+        if LANGUAGE.now == "ko":
+            self.ko_ver()
+        elif LANGUAGE.now == "en":
+            self.en_ver()
+
+    def ko_ver(self):
+        self.top_text = Text(
+            "선택",
+            x=self.top_frame.x - 0.033,
+            y=self.top_frame.y + 0.022,
+        )
+        self.top_descs = [
+            Text(
+                "집행을 선택하면 다음턴에 세포가 더 많은 쪽이 승리합니다.",
+                x=self.top_frame.x - 0.223,
+                y=self.top_frame.y - 0.02,
+                scale=0.7,
+            )
+        ]
+        self.execute_btn.text = "집행"
+        self.continue_btn.text = "패스"
+
+    def en_ver(self):
+        self.top_text = Text(
+            "Choose",
+            x=self.top_frame.x - 0.05,
+            y=self.top_frame.y + 0.022,
+        )
+        self.top_descs = [
+            Text(
+                "If you choose execute,",
+                x=self.top_frame.x - 0.083,
+                y=self.top_frame.y - 0.014,
+                scale=0.6,
+            ),
+            Text(
+                "on next turn win by the player with more cells.",
+                x=self.top_frame.x - 0.176,
+                y=self.top_frame.y - 0.028,
+                scale=0.6,
+            ),
+        ]
+        self.execute_btn.text = "Execute"
+        self.continue_btn.text = "Pass"

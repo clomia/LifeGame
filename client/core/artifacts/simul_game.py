@@ -145,8 +145,14 @@ class Judgment(Entity):
             self.winner(None, info)
 
 
+class ExcuteStep:
+    def __init__(self, cell_controller, referee):
+        self.cell_controller = cell_controller
+        self.referee = referee
+
+
 def trigger(cell_controller, eye):
-    """ 모든 클래스를 이어주는 편의 함수"""
+    """ simul_game 과 simul_ui 를 묶어서 만든 실행자."""
     CountDown(cell_controller, count=10, pipe_func=IterStep(cell_controller, eye))
     CellMonitor(cell_controller)
     Judgment(cell_controller, eye)
