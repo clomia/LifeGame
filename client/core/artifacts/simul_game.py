@@ -16,35 +16,47 @@ class SelectInfo:
         self.execute_func = execute_func
 
     def select(self, cell, value):
+        """
+        적용한 뒤 검사해서 실행한다.
+        execute가 하나라도 있으면 집행을 실행,
+        모두 continue일때만 pass.
+        """
         if self.now[cell] is None:
             self.now[cell] = value
             state = list(self.now.values())
             if not None in state:
-                if not True in state:
-                    self.continue_func()
-                elif not False in state:
+                if True in state:
                     self.execute_func()
                 else:
-                    raise Exception()
+                    self.now[BLUECELL] = None
+                    self.now[REDCELL] = None
+                    self.continue_func()
 
 
 class ExcuteStep:
     """ self.select_info 에서 False는 continue, True는 execute를 의미합니다."""
 
-    def __init__(self, cell_controller, referee):
+    def __init__(self, eye, cell_controller, referee):
         self.cell_controller = cell_controller
         self.referee = referee
+        self.eye = eye
         self.select_info = SelectInfo(continue_func=self._continue, execute_func=self._excute)
-        self.first_panel()
+        ExecutionWaiter(GameConfig.Execution_Iter_Delay, self.first_panel)
 
     def _continue(self):
         self.cell_controller.next()
+        ExecutionWaiter(GameConfig.Execution_Iter_Delay, self.first_panel)
 
     def _excute(self):
+        self.cell_controller.next()
         self.referee.execute()
 
     def first_panel(self):
+        self.eye.position, self.eye.rotation = self.eye.fixed_positions["center-top"]
+        self.esc_func = simul_react_map["escape"]
+        simul_react_map["escape"] = lambda: None
         ExecutionPenal(
+            self.eye,
             continue_func=self.continue_handler(BLUECELL),
             execute_func=self.execution_handler(BLUECELL),
             player=BLUECELL,
@@ -52,10 +64,17 @@ class ExcuteStep:
         )
 
     def second_panel(self):
+        def after_clean():
+            """ 화면이 흔들리기때문에 눈 위치를 다시 바로잡고, esc패널을 사용가능한 상태로 복구한다"""
+            self.eye.position, self.eye.rotation = self.eye.fixed_positions["center-top"]
+            simul_react_map["escape"] = self.esc_func
+
         ExecutionPenal(
+            self.eye,
             continue_func=self.continue_handler(REDCELL),
             execute_func=self.execution_handler(REDCELL),
             player=REDCELL,
+            pipe_func=after_clean,
         )
 
     def continue_handler(self, player):
@@ -77,9 +96,10 @@ class IterStep(Entity):
     정물이나 멸종에 다다르면 멈춘다.
     """
 
-    def __init__(self, cell_controller, eye, count: int = GameConfig.IterStep_Count):
+    def __init__(self, cell_controller, eye, referee, count: int = GameConfig.IterStep_Count):
         super().__init__()
         self.controller = cell_controller
+        self.referee = referee
         self.eye = eye
         self.init_setting()
         self.seq = [Func(self.eye_controll_off), Func(self.show_position_shortcut)]
@@ -88,6 +108,10 @@ class IterStep(Entity):
             self.seq.append(1)
             self.seq.append(Func(self.controller.next))
         self.seq.append(Func(self.eye_controll_on))
+        self.seq.append(Func(self.excute_step))
+
+    def excute_step(self):
+        ExcuteStep(self.eye, self.controller, self.referee)
 
     def __call__(self):
         """ main execute"""
@@ -213,14 +237,8 @@ class Judgment(Entity):
             self.winner(None, info)
 
 
-class ExcuteStep:
-    def __init__(self, cell_controller, referee):
-        self.cell_controller = cell_controller
-        self.referee = referee
-
-
 def trigger(cell_controller, eye):
     """ simul_game 과 simul_ui 를 묶어서 만든 실행자."""
-    CountDown(cell_controller, count=10, pipe_func=IterStep(cell_controller, eye))
+    referee = Judgment(cell_controller, eye)
+    CountDown(cell_controller, count=10, pipe_func=IterStep(cell_controller, eye, referee))
     CellMonitor(cell_controller)
-    Judgment(cell_controller, eye)

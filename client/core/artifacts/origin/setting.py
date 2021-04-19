@@ -39,6 +39,7 @@ class GameConfig:
 
     Bprin_Handicap_Count: int = 3
     IterStep_Count: int = 19
+    Execution_Iter_Delay: int = 10
 
 
 __all__ = ["LANGUAGE", "GameConfig"]

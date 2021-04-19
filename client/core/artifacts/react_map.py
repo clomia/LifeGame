@@ -9,11 +9,11 @@ from .origin import *
 default_react_map: dict = {}
 
 bprin_react_map: dict = {
-    "escape": Esc().handler,
+    "escape": B_ESC.handler,
 }
 
 simul_react_map: dict = {
-    "escape": Esc(simul=True).handler,
+    "escape": S_ESC.handler,
 }
 
 

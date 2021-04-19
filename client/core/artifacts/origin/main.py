@@ -87,6 +87,7 @@ class EscBg(FullUI):
         super().__init__()
         self.texture = load_texture("source/esc_bg.jpg")
         self.alpha = 249
+        self.z = -0.001
 
 
 def lang_setting(self):
@@ -100,6 +101,7 @@ class LangBtnText(Text):
     def __init__(self):
         super().__init__()
         self.y = 0.05
+        self.z = -0.01
         self.color = ColorSet.Esc["Text"]
         lang_setting(self)
 
@@ -120,6 +122,7 @@ class EnBtn(Button):
         self.color = color.gray
         self.y = -0.02
         self.x = -0.686
+        self.z = -0.01
         self.scale_x = 0.25
         self.scale_y = 0.05
         self.model = Quad(thickness=1.3, segments=0, mode="line")
@@ -141,6 +144,7 @@ class KoBtn(EnBtn):
         super().__init__(text_entities, panel)
         self.y = -0.073
         self.x = -0.686
+        self.z = -0.01
         self.text = "한국어"
 
     def on_click(self):
@@ -157,6 +161,7 @@ class KeyDescription:
             super().__init__()
             self.x = -0.8
             self.y = 0.32
+            self.z = -0.01
             self.color = ColorSet.Esc["Text"]
             lang_setting(self)
 
@@ -190,6 +195,7 @@ class KeyDescription:
         def __init__(self, position=(0.47, 0.32)):
             super().__init__()
             self.position = position
+            self.z = -0.01
             self.color = color.light_gray  # ColorSet.Esc["Text"]
             lang_setting(self)
 
@@ -204,6 +210,7 @@ class KeyDescription:
             """ text속성이 없습니다"""
             super().__init__()
             self.position = position
+            self.z = -0.01
             self.scale = tuple(scale * i for i in (0.4, 0.375))
             self.model = "quad"
             self.texture = load_texture("source/position_key.png")
@@ -214,6 +221,7 @@ class ShutDownBtn(Button):
         super().__init__()
         self.color = color.gray
         self.y = -0.4
+        self.z = -0.01
         self.scale_x = 0.4
         self.scale_y = 0.05
         self.model = Quad(thickness=1.3, segments=0, mode="line")
@@ -235,6 +243,7 @@ class LeaveBtn(ShutDownBtn):
     def __init__(self):
         super().__init__()
         self.y = -0.33
+        self.z = -0.01
         self.on_click = application.quit
 
     def ko_ver(self):
@@ -355,6 +364,9 @@ class Esc:
             for entity in self.ele_lst:
                 entity.enabled = False
 
+
+S_ESC = Esc(simul=True)
+B_ESC = Esc()
 
 if __name__ == "__main__":
     from ursina import *

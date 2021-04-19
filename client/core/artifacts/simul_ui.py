@@ -213,12 +213,14 @@ class MoreInfo(UI):
 
 
 class ResultPanel(UI):
-    def __init__(self, eye, *, winner=None, more_info=None, pipe_func=None,after_iter=True):
-        """ 
+    def __init__(self, eye, *, winner=None, more_info=None, pipe_func=None, after_iter=True):
+        """
         필드에 남기를 선택한 경우 pipe_func를 실행합니다
         after_iter에 False를 넘기면 사후 이터레이션 기능을 제공하지 않습니다
         """
         super().__init__()
+        if S_ESC.is_on:
+            S_ESC.off()
         self.winner = winner
         self.after_iter = after_iter
         mouse.locked = False
@@ -289,7 +291,6 @@ class ResultPanel(UI):
             class Btn(Button):
                 def __init__(self):
                     super().__init__()
-                    self.model = Quad(mode="line", radius=0)
                     self.scale = (btn_size.x / 2, btn_size.y / 2)
                     self.x = x
                     self.y = y
@@ -301,6 +302,7 @@ class ResultPanel(UI):
                         model="quad",
                         color=color.rgba(0, 0, 0, 50),
                     )
+                    self.model = Quad(mode="line", radius=0)
                     self.on_click = on_click
                     self.text = text
 
@@ -321,20 +323,22 @@ class IterControllerGuide(UI):
 
     def __init__(self, eye, default_esc, cursor):
         super().__init__()
+        if S_ESC.is_on:
+            S_ESC.off()
         self.esc_react = default_esc
         self.cursor = cursor
         self.eye = eye
         self.eye.enabled = False
-        self.frame = Entity(
-            parent=self,
-            model=Quad(mode="line", radius=0, thickness=1),
-            color=color.white,
-            scale=(0.5, 0.1),
-        )
         self.frame_color = Entity(
             parent=self,
             model="quad",
             color=color.black10,
+            scale=(0.5, 0.1),
+        )
+        self.frame = Entity(
+            parent=self,
+            model=Quad(mode="line", radius=0, thickness=1),
+            color=color.white,
             scale=(0.5, 0.1),
         )
         self.btn = Button(
@@ -344,6 +348,15 @@ class IterControllerGuide(UI):
             x=self.frame.x + 0.2,
             color=color.black33,
         )
+
+        def _on_mouse_enter():
+            self.btn.color = color.white33
+
+        def _on_mouse_exit():
+            self.btn.color = color.black33
+
+        self.btn.on_mouse_enter = _on_mouse_enter
+        self.btn.on_mouse_exit = _on_mouse_exit
         self.btn.on_click = self.destroy
         self.btn_frame = Entity(
             parent=self,
@@ -390,8 +403,15 @@ class IterControllerGuide(UI):
 
 
 class ExecutionPenal(UI):
-    def __init__(self, continue_func, execute_func):
+    def __init__(self, eye, continue_func, execute_func, player=None, pipe_func=None):
         super().__init__()
+        if S_ESC.is_on:
+            S_ESC.off()
+        self.eye = eye
+        self.eye.enabled = False
+        mouse.locked = False
+        self.cursor = GameCursor()
+        self.pipe_func = pipe_func
         self.top_frame = Entity(
             parent=self,
             model=Quad(mode="line", radius=0),
@@ -405,6 +425,11 @@ class ExecutionPenal(UI):
             color=color.black10,
             y=0.2,
         )
+        if player:
+            if player == BLUECELL:
+                self.top_color.color = color.rgba(0, 0, 255, 70)
+            elif player == REDCELL:
+                self.top_color.color = color.rgba(255, 0, 0, 70)
         self.left_frame = Entity(
             parent=self,
             model=Quad(mode="line", radius=0),
@@ -419,13 +444,33 @@ class ExecutionPenal(UI):
             y=0.05,
             x=0.15,
         )
+
+        def _on_mouse_enter(btn):
+            def func():
+                btn.color = color.white33
+
+            return func
+
+        def _on_mouse_exit(btn):
+            def func():
+                btn.color = color.black10
+
+            return func
+
         self.execute_btn = Button(parent=self.left_frame, model="quad", color=color.black10)
         self.continue_btn = Button(parent=self.right_frame, model="quad", color=color.black10)
         self.execute_btn.on_click = lambda: self.destroy() and execute_func()
+        self.execute_btn.on_mouse_enter = _on_mouse_enter(self.execute_btn)
+        self.execute_btn.on_mouse_exit = _on_mouse_exit(self.execute_btn)
         self.continue_btn.on_click = lambda: self.destroy() and continue_func()
+        self.continue_btn.on_mouse_enter = _on_mouse_enter(self.continue_btn)
+        self.continue_btn.on_mouse_exit = _on_mouse_exit(self.continue_btn)
         self.lang_setting()
 
     def destroy(self):
+        self.eye.enabled = True
+        mouse.locked = True
+        destroy(self.cursor)
         destroy(self.top_frame)
         destroy(self.top_color)
         destroy(self.left_frame)
@@ -435,6 +480,8 @@ class ExecutionPenal(UI):
             destroy(desc)
         destroy(self.execute_btn)
         destroy(self.continue_btn)
+        if self.pipe_func:
+            self.pipe_func()
         return True
 
     def lang_setting(self):
@@ -518,6 +565,7 @@ class ExecutionWaiter(UI):
         destroy(self.background_color)
         destroy(self.desc)
         destroy(self.sec)
+        destroy(self)
 
     def lang_setting(self):
         if LANGUAGE.now == "ko":
@@ -544,3 +592,13 @@ class ExecutionWaiter(UI):
             self.now_lang = "en"
 
     def sec_text(self, sec):
+        sec_x = self._position.x - 0.03
+        if self.now_lang == "ko":
+            sec_x += 0.007
+            self.sec.text = f"{sec}초"
+        elif self.now_lang == "en":
+            self.sec.text = f"{sec}sec"
+        if len(str(sec)) == 2:
+            self.sec.x = sec_x - 0.0025
+        else:
+            self.sec.x = sec_x
