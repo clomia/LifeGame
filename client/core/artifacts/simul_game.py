@@ -117,7 +117,8 @@ class IterStep(Entity):
         self.seq.append(Func(self.excute_step))
 
     def excute_step(self):
-        ExcuteStep(self.eye, self.controller, self.referee)
+        if not self.controller.judged:
+            ExcuteStep(self.eye, self.controller, self.referee)
 
     def __call__(self):
         """ main execute"""
