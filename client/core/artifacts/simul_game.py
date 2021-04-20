@@ -45,7 +45,13 @@ class ExcuteStep:
 
     def _continue(self):
         self.cell_controller.next()
-        ExecutionWaiter(GameConfig.Execution_Iter_Delay, self.first_panel)
+
+        def check():
+            """ 판정객체가 cell_controller에 대해 자동 심판을 할 여유시간을 주기 위함."""
+            if not self.cell_controller.judged:
+                ExecutionWaiter(GameConfig.Execution_Iter_Delay, self.first_panel)
+
+        invoke(check, delay=0.2)
 
     def _excute(self):
         self.cell_controller.next()
@@ -156,11 +162,14 @@ class IterController(Entity):
     """
     게임이 끝난 후 필드를 둘러볼때 실행되는 컨트롤러입니다.
     마우스 우클릭을 통해 재생,일시정지를 지원합니다.
+    기본적으로 초기 이터레이션이 종료 되었을때만 작동합니다.
+    absolute=True인 경우 무시하고 반드시 작동합니다.
     """
 
-    def __init__(self, cell_controller, eye):
+    def __init__(self, cell_controller, eye, absolute=False):
         super().__init__()
         self.eye = eye
+        self.absolute = absolute
         self.controller = cell_controller
         self.playing = False
         self.seq = Sequence(Func(self.controller.next), 1, loop=True)
@@ -174,14 +183,24 @@ class IterController(Entity):
         self.eye.update = self.eye.controller
         self.seq.pause()
 
+    def progress(self):
+        if not self.playing:
+            self.start()
+            self.playing = True
+        else:
+            self.pause()
+            self.playing = False
+
     def input(self, key):
-        if key == "right mouse down" and self.controller.generation >= GameConfig.IterStep_Count:
-            if not self.playing:
-                self.start()
-                self.playing = True
-            else:
-                self.pause()
-                self.playing = False
+        if not self.absolute:
+            if (
+                key == "right mouse down"
+                and self.controller.generation >= GameConfig.IterStep_Count
+            ):
+                self.progress()
+        else:
+            if key == "right mouse down":
+                self.progress()
 
 
 class Judgment(Entity):
@@ -196,14 +215,16 @@ class Judgment(Entity):
         IterController(self.cell_controller, self.eye)
 
     def winner(self, player, info=None, after_iter=True):
-        ResultPanel(
-            self.eye,
-            winner=player,
-            more_info=info,
-            pipe_func=self.pipe_func,
-            after_iter=after_iter,
-        )
-        self.update = lambda: None
+        if not self.cell_controller.judged:
+            self.cell_controller.judged = True
+            ResultPanel(
+                self.eye,
+                winner=player,
+                more_info=info,
+                pipe_func=self.pipe_func,
+                after_iter=after_iter,
+            )
+            self.update = lambda: None
 
     def update(self):
         """ 세포가 배치되면 CellController를 주시하기 시작한다."""
@@ -219,6 +240,7 @@ class Judgment(Entity):
         }
         if field_state["still_life"]:
             # * 정물
+            self.pipe_func = lambda: IterController(self.cell_controller, self.eye, absolute=True)
             self.execute(info=STILL_LIFE)
         elif field_state["red_empty"] and field_state["blue_empty"]:
             # * 멸종

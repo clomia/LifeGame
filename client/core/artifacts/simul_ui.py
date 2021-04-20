@@ -280,6 +280,11 @@ class ResultPanel(UI):
         if self.after_iter:
             IterControllerGuide(self.eye, self.esc_react, self.cursor)
             self.pipe_func()
+        else:
+            self.eye.enabled = True
+            mouse.locked = True
+            simul_react_map["escape"] = self.esc_react
+            destroy(self.cursor)
 
     def btn_generator(self):
         btn_size = self.scale

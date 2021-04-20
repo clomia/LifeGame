@@ -54,6 +54,7 @@ class CellController(Entity):
         self.queue = input_queue
         self.prophecy_fieldset = Queue()
         self.end = False
+        self.judged = False
 
     def __call__(self, space_dict):
         """

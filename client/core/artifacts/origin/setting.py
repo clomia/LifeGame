@@ -38,7 +38,7 @@ class GameConfig:
     """
 
     Bprin_Handicap_Count: int = 3
-    IterStep_Count: int = 19
+    IterStep_Count: int = 1
     Execution_Iter_Delay: int = 10
 
 
