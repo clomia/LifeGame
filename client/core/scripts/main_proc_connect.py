@@ -49,6 +49,9 @@ class Operator:
         self.propheticgrid_iter = iter(propheticgrid)
         self.close = False
 
+    def first_call(self):
+        return self.iteration(FIRST_PROPHECY_COUNT)
+
     def __call__(self):
         if not self.close:
             return self.iteration(PROPHECY_COUNT)
@@ -101,7 +104,7 @@ class SimulConnect(Thread):
         assert isinstance(init_fieldset, dict)
         p_grid = self.oper_grid(init_fieldset)
         operator = Operator(p_grid)
-        field_list = operator()
+        field_list = operator.first_call()
         field_list[0] = init_fieldset
         field_list.append({})  # 구분자
         self.sock.sendall(str(field_list).encode())

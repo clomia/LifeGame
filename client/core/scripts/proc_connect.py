@@ -34,14 +34,17 @@ class SimulConnection(Thread):
         self.simul_loading_complate_signal = simul_loading_complate_signal
         self.oper_counter = 0
 
-    def responser(self, sock):
+    def responser(self, sock, first_call=False):
         fieldset_list = sock.recv(1048576)
         fieldset_list = literal_eval(fieldset_list.decode())
         assert isinstance(fieldset_list, list)
         self.queue.put(fieldset_list)
         self.oper_counter += 1
         print(f"[simul프로세스]-연산을 제공받았습니다-제공받은 정보량: 총 [{self.oper_counter*PROPHECY_COUNT}]세대")
-        time.sleep(OPERATION_SPEED)
+        if first_call:
+            time.sleep(FIRST_OPERATION_SPEED)
+        else:
+            time.sleep(OPERATION_SPEED)
         sock.sendall("need next".encode("utf-8"))
         return fieldset_list
 
@@ -51,6 +54,6 @@ class SimulConnection(Thread):
             self.simul_loading_complate_signal.get()
             sock.sendall("Loading Complate".encode("utf-8"))
             print("[simul프로세스]-로딩이 완료되서 메인 프로세스로 signal을 전송하였습니다")
-            self.responser(sock)
+            self.responser(sock, first_call=True)
             while len(self.responser(sock)) >= PROPHECY_COUNT:
                 pass
