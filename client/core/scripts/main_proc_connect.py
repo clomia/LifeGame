@@ -112,4 +112,12 @@ class SimulConnect(Thread):
         while field_list := operator():
             self.sock.recv(4096)
             self.sock.sendall(str(field_list).encode())
+        if self.sock.recv(4096).decode() == PROPHECY_COMPLETE_SIGNAL:
+            print(
+                "[main 프로세스]-연산 제공이 모두 완료된것을 확인하였습니다.",
+                "[main 프로세스]-BPRIN_BOOTING_REQUEST를 소캣에서 대기합니다...",
+            )
+            self.sock.sendall(PROPHECY_COMPLETE_SIGNAL)
+        if self.sock.recv(4096).decode() == BPRIN_BOOTING_REQUEST:
+            print("[main 프로세스]-BPRIN_BOOTING_REQUEST를 수신하였습니다.")
         #! 연산 완료 후 신호 끊기는 지점! (이후에 빈 리스트를 계속 준다거나 ..)

@@ -21,6 +21,9 @@ simul 게임로직쪽에서 연산요청을 보내고 그것에 응답하는 방
 """
 # -------------------------------
 SIGNAL = object()
+PROPHECY_REQUEST = "prophecy".encode("utf-8")
+BPRIN_BOOTING_REQUEST = "bprin,booting".encode("utf-8")
+PROPHECY_COMPLETE_SIGNAL = "prophecy,complete".encode("utf-8")
 # -------------------------------
 # todo 여기서 포트번호 검사 & 설정하기
 BPRIN_PROC_PORT: int = 40000

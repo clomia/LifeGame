@@ -25,13 +25,16 @@ class BprinConnection(Thread):
 
 
 class SimulConnection(Thread):
-    def __init__(self, queue, simul_loading_complate_signal: Queue):
+    def __init__(
+        self, queue, simul_loading_complate_signal: Queue, bprin_booting_signal_pipe: Queue
+    ):
         super().__init__()
         self.port = SIMUL_PROC_PORT
         self.queue = queue
         self.daemon = True
         self.name = "[Sub Process]-(simul connection)"
         self.simul_loading_complate_signal = simul_loading_complate_signal
+        self.bprin_booting_signal_pipe = bprin_booting_signal_pipe
         self.oper_counter = 0
 
     def responser(self, sock, first_call=False):
@@ -40,20 +43,32 @@ class SimulConnection(Thread):
         assert isinstance(fieldset_list, list)
         self.queue.put(fieldset_list)
         self.oper_counter += 1
-        print(f"[simul프로세스]-연산을 제공받았습니다-제공받은 정보량: 총 [{self.oper_counter*PROPHECY_COUNT}]세대")
+        print(f"[simul 프로세스]-연산을 제공받았습니다-제공받은 정보량: 총 [{self.oper_counter*PROPHECY_COUNT}]세대")
         if first_call:
             time.sleep(FIRST_OPERATION_SPEED)
         else:
             time.sleep(OPERATION_SPEED)
-        sock.sendall("need next".encode("utf-8"))
-        return fieldset_list
+        if len(fieldset_list) >= PROPHECY_COUNT:
+            sock.sendall(PROPHECY_REQUEST)
+            return True
+        else:
+            print("[simul 프로세스]-연산을 모두 제공받았습니다.")
+            sock.sendall(PROPHECY_COMPLETE_SIGNAL)
+            return False
 
     def run(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.connect(("localhost", self.port))
             self.simul_loading_complate_signal.get()
-            sock.sendall("Loading Complate".encode("utf-8"))
+            sock.sendall("LoadingComplate".encode("utf-8"))
             print("[simul프로세스]-로딩이 완료되서 메인 프로세스로 signal을 전송하였습니다")
             self.responser(sock, first_call=True)
-            while len(self.responser(sock)) >= PROPHECY_COUNT:
+            while self.responser():
                 pass
+            if self.sock.recv(4096).decode() == PROPHECY_COMPLETE_SIGNAL:
+                print(
+                    "[simul 프로세스]-main프로세스의 연산 완료 확인을 확인하였습니다.",
+                    "[simul 프로세스]-BPRIN_BOOTING_REQUEST를 Queue(큐)에서 대기합니다...",
+                )
+            self.bprin_booting_signal_pipe.get()
+            self.sock.sendall(PROPHECY_COMPLETE_SIGNAL)

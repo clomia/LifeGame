@@ -213,7 +213,16 @@ class MoreInfo(UI):
 
 
 class ResultPanel(UI):
-    def __init__(self, eye, *, winner=None, more_info=None, pipe_func=None, after_iter=True):
+    def __init__(
+        self,
+        eye,
+        *,
+        winner=None,
+        more_info=None,
+        pipe_func=None,
+        after_iter=True,
+        bprin_booting_signal_pipe=None,
+    ):
         """
         필드에 남기를 선택한 경우 pipe_func를 실행합니다
         after_iter에 False를 넘기면 사후 이터레이션 기능을 제공하지 않습니다
@@ -221,6 +230,7 @@ class ResultPanel(UI):
         super().__init__()
         if S_ESC.is_on:
             S_ESC.off()
+        self.bprin_booting_signal_pipe = bprin_booting_signal_pipe
         self.winner = winner
         self.after_iter = after_iter
         mouse.locked = False
@@ -319,7 +329,11 @@ class ResultPanel(UI):
 
             return Btn
 
-        self.leave_btn = _btn_gen(x=left, text=self.leave_text, on_click=print)()
+        self.leave_btn = _btn_gen(
+            x=left,
+            text=self.leave_text,
+            on_click=lambda: print(f"{self.bprin_booting_signal_pipe}에 신호넣기!!!"),
+        )()
         self.stay_btn = _btn_gen(x=right, text=self.stay_text, on_click=self.destroy)()
 
 

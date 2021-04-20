@@ -207,9 +207,10 @@ class IterController(Entity):
 class Judgment(Entity):
     """ 판정자 """
 
-    def __init__(self, cell_controller, eye):
+    def __init__(self, cell_controller, eye, bprin_booting_signal_pipe):
         super().__init__()
         self.cell_controller = cell_controller
+        self.bprin_booting_signal_pipe = bprin_booting_signal_pipe
         self.eye = eye
 
     def pipe_func(self):
@@ -224,6 +225,7 @@ class Judgment(Entity):
                 more_info=info,
                 pipe_func=self.pipe_func,
                 after_iter=after_iter,
+                bprin_booting_signal_pipe=self.bprin_booting_signal_pipe,
             )
             self.update = lambda: None
 
@@ -260,8 +262,8 @@ class Judgment(Entity):
             self.winner(None, info)
 
 
-def trigger(cell_controller, eye):
+def trigger(cell_controller, eye, bprin_booting_signal_pipe):
     """ simul_game 과 simul_ui 를 묶어서 만든 실행자."""
-    referee = Judgment(cell_controller, eye)
+    referee = Judgment(cell_controller, eye, bprin_booting_signal_pipe)
     CountDown(cell_controller, count=10, pipe_func=IterStep(cell_controller, eye, referee))
     CellMonitor(cell_controller)

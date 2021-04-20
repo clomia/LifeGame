@@ -8,10 +8,11 @@ from .simul_game import *
 
 
 class LoadScreen(FullUI):
-    def __init__(self, pipe_queue, simul_loading_complate_signal):
+    def __init__(self, pipe_queue, simul_loading_complate_signal, bprin_booting_signal_pipe):
         super().__init__()
         self.pipe_queue = pipe_queue
         self.simul_loading_complate_signal = simul_loading_complate_signal
+        self.bprin_booting_signal_pipe = bprin_booting_signal_pipe
         self.texture = load_texture("source/load_screen.jpg")
         invoke(self.main_execute, delay=1)
 
@@ -28,7 +29,7 @@ class LoadScreen(FullUI):
 
         def signal_after():
             self.simul_loading_complate_signal.put(SIGNAL)
-            trigger(CellController(self.pipe_queue), eye)
+            trigger(CellController(self.pipe_queue), eye, self.bprin_booting_signal_pipe)
 
         invoke(signal_after, delay=2.7)
 

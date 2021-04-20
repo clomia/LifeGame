@@ -240,11 +240,13 @@ class ShutDownBtn(Button):
 
 
 class LeaveBtn(ShutDownBtn):
+    bprin_booting_signal_pipe = None
+
     def __init__(self):
         super().__init__()
         self.y = -0.33
         self.z = -0.01
-        self.on_click = application.quit
+        self.on_click = lambda: print(f"{self.bprin_booting_signal_pipe}에 신호넣기기기기기")
 
     def ko_ver(self):
         self.text = "로비로 돌아가기"
@@ -271,14 +273,19 @@ class Esc:
     def __init__(self, simul=False):
         """
         simul = True 이면 simul , False이면 bprin으로 간주하고 작동합니다.
+        simul인 경우, init이후 pipe_setting 함수를 실행해주세요 또는 LeaveBtn클래스를 사용해도 됩니다.
         """
         self.mouse_locked = simul
         self.ele_lst = [EscBg, KeyDescription.PositionImage]  # 동적 번역이 불필요한 객체들입니다.
         self.other_trans_lst = []  # 상속,변경시 동적 번역이 필요한 객체를 여기에 추가하세요
         if simul:
-            self.other_trans_lst.append(LeaveBtn)
+            self.leave_btn = LeaveBtn
+            self.other_trans_lst.append(self.leave_btn)
         self.first_call = True
         self.is_on = False
+
+    def pipe_setting(self, bprin_booting_signal_pipe):
+        self.leave_btn.bprin_booting_signal_pipe = bprin_booting_signal_pipe
 
     def create(self):
         """ 모든 객체를 생성,준비시킨다."""
