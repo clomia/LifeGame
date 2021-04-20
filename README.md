@@ -1,3 +1,4 @@
+[![wakatime](https://wakatime.com/badge/github/clomia/LifeGame.svg)](https://wakatime.com/badge/github/clomia/LifeGame)
 ## 셀룰러 오토마타([cellular automata](https://en.wikipedia.org/wiki/Cellular_automaton))를 기반으로 하는 만든 PVP게임
 > 2차원 모드에서는 존 호턴 콘웨이의 라이프게임 규칙을 적용합니다.  
 > 3차원 모드에서 어떤 규칙을 적용해야 할지 고민중입니다.  

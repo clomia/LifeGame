@@ -365,9 +365,6 @@ class Esc:
                 entity.enabled = False
 
 
-S_ESC = Esc(simul=True)
-B_ESC = Esc()
-
 if __name__ == "__main__":
     from ursina import *
 

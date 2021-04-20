@@ -330,12 +330,3 @@ def score_panel(provider):
     기본 is_complete = False 이며 True가 되면 destroy(score number)를 수행합니다
     """
     Score(InfoPanel(), provider)
-
-
-if __name__ == "__main__":
-    from origin.main import artifacts, esc_handler
-
-    with artifacts(debug=True):
-        blue_printing = InputGrid()
-        score_panel(blue_printing)
-        input = esc_handler()
