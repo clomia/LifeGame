@@ -332,7 +332,7 @@ class ResultPanel(UI):
         self.leave_btn = _btn_gen(
             x=left,
             text=self.leave_text,
-            on_click=lambda: print(f"{self.bprin_booting_signal_pipe}에 신호넣기!!!"),
+            on_click=lambda: self.bprin_booting_signal_pipe.put(SIGNAL),
         )()
         self.stay_btn = _btn_gen(x=right, text=self.stay_text, on_click=self.destroy)()
 

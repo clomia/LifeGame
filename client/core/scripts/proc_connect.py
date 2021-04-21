@@ -25,16 +25,13 @@ class BprinConnection(Thread):
 
 
 class SimulConnection(Thread):
-    def __init__(
-        self, queue, simul_loading_complate_signal: Queue, bprin_booting_signal_pipe: Queue
-    ):
+    def __init__(self, queue, simul_loading_complate_signal: Queue):
         super().__init__()
         self.port = SIMUL_PROC_PORT
         self.queue = queue
         self.daemon = True
         self.name = "[Sub Process]-(simul connection)"
         self.simul_loading_complate_signal = simul_loading_complate_signal
-        self.bprin_booting_signal_pipe = bprin_booting_signal_pipe
         self.oper_counter = 0
 
     def responser(self, sock, first_call=False):
@@ -64,5 +61,20 @@ class SimulConnection(Thread):
             try:
                 while self.responser(sock):
                     pass
-            except ConnectionAbortedError:
+            finally:
                 print("[simul 프로세스]-메인 프로세스로부터 모든 연산을 제공받아서. 연산 제공 채널이 사라졌습니다.")
+
+
+class SimulSignalConnection(Thread):
+    """ simul 프로세스가 bprin 부팅 신호를 전송하는 채널"""
+
+    def __init__(self, bprin_booting_signal_pipe):
+        super().__init__()
+        self.bprin_booting_signal_pipe = bprin_booting_signal_pipe
+        self.name = "[simul Process]-(simul signal connection)"
+
+    def run(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.connect(("localhost", SIMUL_PROC_PORT_2))
+            self.bprin_booting_signal_pipe.get()
+            sock.sendall(BPRIN_BOOTING_REQUEST)

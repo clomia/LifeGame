@@ -127,6 +127,9 @@ def home_screen(cursor, offline_pipe, online_pipe=None, intro=False):
 
         invoke(visible, delay=3.5)
         invoke(text_visible, delay=4)
+    else:
+        print("여기 되고있어!@ㅇㄴㄻㄹㅇㅁㄻㄻㅇㄴ")
+        home_stuff = (bg, online_btn, offline_btn)
 
 
 __all__ = ["home_screen"]
@@ -135,4 +138,4 @@ if __name__ == "__main__":
     from origin import *
 
     with bprin(debug=True) as cursor:
-        home_screen(cursor, lambda: print("click!"), intro=True)
+        home_screen(cursor, lambda: print("click!"), intro=False)

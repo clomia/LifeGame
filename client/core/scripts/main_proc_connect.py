@@ -18,6 +18,7 @@ class BprinConnect(Thread):
         self.simul_loading_complate_signal = simul_loading_complate_signal
         self.bprin_kill_signal = bprin_kill_signal
         self.name = "[Main Process]-(bprin connection)"
+        self.daemon = True
 
     def connect(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -84,6 +85,7 @@ class SimulConnect(Thread):
         self.simul_loading_complate_signal = simul_loading_complate_signal
         self.oper_grid = oper_grid
         self.name = "[Main Process]-(simul connection)"
+        self.daemon = True
 
     def connect(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -113,3 +115,24 @@ class SimulConnect(Thread):
             self.sock.recv(4096)
             self.sock.sendall(str(field_list).encode())
         print("[main 프로세스]-simul 프로세스에게 연산 제공을 완료하여, 연산 채널을 종료합니다.")
+
+
+class SimulSignalConnect(Thread):
+    """ 메인 프로세스가 bprin 부팅 신호를 대기하는 채널"""
+
+    def __init__(self, bprin_booting_signal: Queue):
+        super().__init__()
+        self.bprin_booting_signal = bprin_booting_signal
+        self.name = "[Main Process]-(simul signal connection)"
+
+    def run(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            sock.bind(("localhost", SIMUL_PROC_PORT_2))
+            sock.listen()
+            self.sock, addr = sock.accept()
+            self.sock.setblocking(True)
+            signal = self.sock.recv(4096)
+            if signal == BPRIN_BOOTING_REQUEST:
+                print("나 메인인데 이제 bprin부팅을 할거야!!")
+                self.bprin_booting_signal.put(signal)

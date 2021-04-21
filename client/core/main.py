@@ -14,25 +14,43 @@ class ProcControll:
         self.bprin_queue = Queue()
         self.simul_loading_complate_signal = Queue()
         self.bprin_kill_signal = Queue()
+        self.bprin_booting_request = Queue()
 
     def main(self):
         """ 모든것을 실행합니다"""
-        bprin_connect = BprinConnect(
+        self.bprin_connect = BprinConnect(
             self.bprin_queue,
             self.simul_loading_complate_signal,
             self.bprin_kill_signal,
         )
-        simul_connect = SimulConnect(
+        self.simul_connect = SimulConnect(
             Queue(),
             self.bprin_queue,
             self.simul_loading_complate_signal,
         )
-        bprin_connect.start()
-        simul_connect.start()
+        self.bprin_connect.start()
+        self.simul_connect.start()
+        print(self.bprin_connect)
+        SimulSignalConnect(self.bprin_booting_request).start()
         self.simul_process = subprocess.Popen([sys.executable, "core/simul_proc.py"])
         time.sleep(0.1)
         self.bprin_process = subprocess.Popen([sys.executable, "core/bprin_proc.py"])
         for method in self.threading_helper():
+            Thread(target=method, daemon=True).start()
+
+    def bprin_starter(self):
+        self.bprin_booting_request.get()
+        print(
+            f"simul_connect: {self.simul_connect} , bprin_connect: {self.bprin_connect} -< 현재 상태ㅇ!!"
+        )
+        BprinConnect(
+            self.bprin_queue,
+            self.simul_loading_complate_signal,
+            self.bprin_kill_signal,
+        ).start()
+        self.bprin_process = subprocess.Popen([sys.executable, "core/bprin_proc.py", "reboot"])
+
+        for method in [self.bprin_proc_check]:
             Thread(target=method, daemon=True).start()
 
     def threading_helper(self):
@@ -40,6 +58,7 @@ class ProcControll:
         yield self.bprin_proc_check
         yield self.shutdown
         yield self.bprin_killer
+        yield self.bprin_starter
 
     def bprin_proc_check(self):
         """ 프로세스가 죽으면 큐에 신호를 넣습니다"""

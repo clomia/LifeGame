@@ -246,7 +246,7 @@ class LeaveBtn(ShutDownBtn):
         super().__init__()
         self.y = -0.33
         self.z = -0.01
-        self.on_click = lambda: print(f"{self.bprin_booting_signal_pipe}에 신호넣기기기기기")
+        self.on_click = lambda: self.bprin_booting_signal_pipe.put(SIGNAL)
 
     def ko_ver(self):
         self.text = "로비로 돌아가기"
