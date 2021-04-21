@@ -37,17 +37,22 @@ class ProcControll:
         self.bprin_process = subprocess.Popen([sys.executable, "core/bprin_proc.py"])
         for method in self.threading_helper():
             Thread(target=method, daemon=True).start()
+        Thread(target=self.bprin_starter).start()
 
     def bprin_starter(self):
+        """ 이 함수를 실행하는 쓰레드 자체가 문제다"""
         self.bprin_booting_request.get()
         print(
             f"simul_connect: {self.simul_connect} , bprin_connect: {self.bprin_connect} -< 현재 상태ㅇ!!"
         )
+
+        print("커넥션 실행 이전!")
         BprinConnect(
             self.bprin_queue,
             self.simul_loading_complate_signal,
             self.bprin_kill_signal,
         ).start()
+        print("커넥션 실행 완료!")
         self.bprin_process = subprocess.Popen([sys.executable, "core/bprin_proc.py", "reboot"])
 
         for method in [self.bprin_proc_check]:
@@ -58,7 +63,6 @@ class ProcControll:
         yield self.bprin_proc_check
         yield self.shutdown
         yield self.bprin_killer
-        yield self.bprin_starter
 
     def bprin_proc_check(self):
         """ 프로세스가 죽으면 큐에 신호를 넣습니다"""
