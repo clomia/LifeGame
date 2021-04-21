@@ -43,18 +43,16 @@ class SimulConnection(Thread):
         assert isinstance(fieldset_list, list)
         self.queue.put(fieldset_list)
         self.oper_counter += 1
-        print(f"[simul 프로세스]-연산을 제공받았습니다-제공받은 정보량: 총 [{self.oper_counter*PROPHECY_COUNT}]세대")
+        data_scale = (self.oper_counter - 1) * PROPHECY_COUNT + FIRST_PROPHECY_COUNT
+        print(
+            f"[simul 프로세스]-연산을 제공받았습니다-제공받은 정보량: 총 [{data_scale if not first_call else FIRST_PROPHECY_COUNT}]세대"
+        )
         if first_call:
             time.sleep(FIRST_OPERATION_SPEED)
         else:
             time.sleep(OPERATION_SPEED)
-        if len(fieldset_list) >= PROPHECY_COUNT:
-            sock.sendall(PROPHECY_REQUEST)
-            return True
-        else:
-            print("[simul 프로세스]-연산을 모두 제공받았습니다.")
-            sock.sendall(PROPHECY_COMPLETE_SIGNAL)
-            return False
+        sock.sendall(PROPHECY_REQUEST)
+        return True
 
     def run(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -63,12 +61,8 @@ class SimulConnection(Thread):
             sock.sendall("LoadingComplate".encode("utf-8"))
             print("[simul프로세스]-로딩이 완료되서 메인 프로세스로 signal을 전송하였습니다")
             self.responser(sock, first_call=True)
-            while self.responser():
-                pass
-            if self.sock.recv(4096).decode() == PROPHECY_COMPLETE_SIGNAL:
-                print(
-                    "[simul 프로세스]-main프로세스의 연산 완료 확인을 확인하였습니다.",
-                    "[simul 프로세스]-BPRIN_BOOTING_REQUEST를 Queue(큐)에서 대기합니다...",
-                )
-            self.bprin_booting_signal_pipe.get()
-            self.sock.sendall(PROPHECY_COMPLETE_SIGNAL)
+            try:
+                while self.responser(sock):
+                    pass
+            except ConnectionAbortedError:
+                print("[simul 프로세스]-메인 프로세스로부터 모든 연산을 제공받아서. 연산 제공 채널이 사라졌습니다.")

@@ -97,7 +97,7 @@ class CellMonitor(UI):
     def position_maintain(entity: Text):
         """ Text.update로써 중앙정렬을 유지해준다"""
         length = len(entity.text)
-        entity.x = entity.x_origin - (length / 156 - 1 / 156)
+        entity.x = entity.x_origin - (length / 156)
 
     def frame_gen(self):
         gen_bg = Entity(

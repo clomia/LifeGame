@@ -292,8 +292,62 @@ if __name__ == "__main__":
             bprin[(-i, i)] = 2
     print(f"FieldSet-> {bprin}")
     """
-    iterator = PropheticGrid(
-        {(-1, -2): 1, (-6, -7): 2, (7, -7): 1, (-2, -2): 2, (0, -2): 2, (1, -2): 2}
-    )
-    for (delta, space) in iterator:
-        print(f"space->{space} \ndelta->{delta}")
+    infinity_pattern = {
+        (1, 1): 1,
+        (2, 2): 2,
+        (3, 1): 1,
+        (3, 2): 2,
+        (4, 3): 1,
+        (5, 1): 2,
+        (5, 2): 1,
+        (5, 3): 2,
+        (5, 5): 1,
+        (1, 4): 2,
+        (1, 5): 1,
+        (2, 5): 2,
+        (3, 5): 1,
+        (1001, 1): 1,
+        (1002, 2): 2,
+        (1003, 1): 1,
+        (1003, 2): 2,
+        (1004, 3): 1,
+        (1005, 1): 2,
+        (1005, 2): 1,
+        (1005, 3): 2,
+        (1005, 5): 1,
+        (1001, 4): 2,
+        (1001, 5): 1,
+        (1002, 5): 2,
+        (1003, 5): 1,
+    }
+    iterator = PropheticGrid(infinity_pattern)
+    count = 0
+    count_count = 0
+    import time
+
+    counter = int(input("이터레이션 횟수 입력: "))
+    start = pre_now = time.time()
+    for (delta, space), _ in zip(iterator, range(counter)):
+        # print(delta)
+        count += 1
+        if count < 20:
+            print(count + count_count * 20, end=",")
+        else:
+            now = time.time()
+            time_delta = now - pre_now
+            pre_now = now
+            print(
+                count + count_count * 20,
+                f" || {count + count_count * 20}세대에서의 세포 갯수: {space.state()[1] + space.state()[2]}, 20세대 연산하는데 걸린 시간: {time_delta:.3f}초, 1세대 연산시간 평균: {time_delta/20:.4f}초",
+            )
+            count = 0
+            count_count += 1
+    finish = time.time()
+    print(f"{counter}세대 이터레이션 하는데 걸린 시간: {finish-start}초")
+    """ 
+    1000번 이터레이션 
+    평균 3.7초
+    10000번 이터레이션
+    178초 
+    :위 패턴의 경우 세포 수가 70개로 시작해서 10000세대에에서는 2460개가 된다.
+    """
