@@ -32,11 +32,8 @@ class ProcControll:
         self.simul_process = subprocess.Popen([sys.executable, "core/simul_proc.py"])
         time.sleep(0.1)
         self.bprin_process = subprocess.Popen([sys.executable, "core/bprin_proc.py"])
-        self.lst = []
         for method in self.threading_helper():
-            a = Thread(target=method, daemon=True)
-            self.lst.append(a)
-            a.start()
+            Thread(target=method, daemon=True).start()
         Thread(target=self.bprin_starter).start()
 
     def bprin_starter(self):
@@ -46,15 +43,18 @@ class ProcControll:
         """
         self.bprin_booting_request.get()
         print(f"[main 프로세스]-BPRIN_BOOTING_REQUEST을 수신하였습니다. bprin 프로세스를 리부팅합니다.")
+        self.bprin_queue = Queue()
+        self.simul_loading_complate_signal = Queue()
+        self.bprin_kill_signal = Queue()
         BprinConnect(
             self.bprin_queue,
             self.simul_loading_complate_signal,
             self.bprin_kill_signal,
         ).start()
         time.sleep(0.1)
-        bprin_process = subprocess.Popen([sys.executable, "core/bprin_proc.py", "reboot"])
+        self.bprin_process = subprocess.Popen([sys.executable, "core/bprin_proc.py", "reboot"])
         Thread(target=self.bprin_killer, daemon=True).start()
-        Thread(target=self.bprin_proc_check, args=(bprin_process,), daemon=True).start()
+        Thread(target=self.bprin_proc_check, daemon=True).start()
 
     def threading_helper(self):
         yield self.simul_proc_check
@@ -62,18 +62,11 @@ class ProcControll:
         yield self.shutdown
         yield self.bprin_killer
 
-    def bprin_proc_check(self, proc=None):
+    def bprin_proc_check(self):
         """ 프로세스가 죽으면 큐에 신호를 넣습니다"""
-        if not proc:
-            self.bprin_process.wait()
-            if self.bprin_queue.empty():
-                self.shutdown_request.put(SIGNAL)
-        else:
-            proc.wait()
-            print("종룡ㅁㄻㄴㄻ", self.bprin_queue)
-            #! 두번쨰부터 이게 안되 채크가 안됨
-            if self.bprin_queue.empty():
-                self.shutdown_request.put(SIGNAL)
+        self.bprin_process.wait()
+        if self.bprin_queue.empty():
+            self.shutdown_request.put(SIGNAL)
 
     def bprin_killer(self):
         self.bprin_kill_signal.get()

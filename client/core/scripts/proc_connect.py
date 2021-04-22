@@ -10,7 +10,6 @@ class BprinConnection(Thread):
     def __init__(self):
         super().__init__()
         self.queue = Queue()
-        self.daemon = True
         self.name = "[Sub Process]-(bprin connection)"
 
     def run(self):

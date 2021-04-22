@@ -22,7 +22,6 @@ class BprinConnect(Thread):
         self.simul_loading_complate_signal = simul_loading_complate_signal
         self.bprin_kill_signal = bprin_kill_signal
         self.name = "[Main Process]-(bprin connection)"
-        self.daemon = True
 
     def connect(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
