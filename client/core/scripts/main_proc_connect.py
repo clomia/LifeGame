@@ -28,9 +28,7 @@ class BprinConnect(Thread):
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             sock.bind(("localhost", BPRIN_PROC_PORT))
             sock.listen()
-            print("나 메인프로세스!!!!!", sock)
             self.sock, addr = sock.accept()  # * 서브프로세스 첫 신호받는곳 Bloking!
-            print("메인-엑셉트 함", self.sock)
             fieldset = self.sock.recv(4096).decode()
             sock.close()
             del sock
@@ -92,7 +90,6 @@ class SimulConnect(Thread):
         self.simul_loading_complate_signal = simul_loading_complate_signal
         self.oper_grid = oper_grid
         self.name = "[Main Process]-(simul connection)"
-        self.daemon = True
 
     def connect(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:

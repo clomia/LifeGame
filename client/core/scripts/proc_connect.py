@@ -13,19 +13,10 @@ class BprinConnection(Thread):
         self.name = "[Sub Process]-(bprin connection)"
 
     def run(self):
-        def func():
-            try:
-                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-                    print("나 서브프로세스", sock, "연결시도!", BPRIN_PROC_PORT)
-                    sock.connect(("localhost", BPRIN_PROC_PORT))
-                    fieldset = self.queue.get()
-                    sock.sendall(str(fieldset).encode())
-            except ConnectionRefusedError:
-                raise
-                print("나 서브프로세스! 될때까지 한다!")
-                func()
-
-        func()
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.connect(("localhost", BPRIN_PROC_PORT))
+            fieldset = self.queue.get()
+            sock.sendall(str(fieldset).encode())
 
     def send(self, fieldset):
         self.queue.put(fieldset)
@@ -35,7 +26,6 @@ class SimulConnection(Thread):
     def __init__(self, queue, simul_loading_complate_signal: Queue):
         super().__init__()
         self.queue = queue
-        self.daemon = True
         self.name = "[Sub Process]-(simul connection)"
         self.simul_loading_complate_signal = simul_loading_complate_signal
         self.oper_counter = 0
