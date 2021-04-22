@@ -18,45 +18,43 @@ class ProcControll:
 
     def main(self):
         """ 모든것을 실행합니다"""
-        self.bprin_connect = BprinConnect(
-            self.bprin_queue,
-            self.simul_loading_complate_signal,
-            self.bprin_kill_signal,
-        )
-        self.simul_connect = SimulConnect(
-            Queue(),
-            self.bprin_queue,
-            self.simul_loading_complate_signal,
-        )
-        self.bprin_connect.start()
-        self.simul_connect.start()
-        print(self.bprin_connect)
-        SimulSignalConnect(self.bprin_booting_request).start()
-        self.simul_process = subprocess.Popen([sys.executable, "core/simul_proc.py"])
-        time.sleep(0.1)
-        self.bprin_process = subprocess.Popen([sys.executable, "core/bprin_proc.py"])
-        for method in self.threading_helper():
-            Thread(target=method, daemon=True).start()
-        Thread(target=self.bprin_starter).start()
-
-    def bprin_starter(self):
-        """ 이 함수를 실행하는 쓰레드 자체가 문제다"""
-        self.bprin_booting_request.get()
-        print(
-            f"simul_connect: {self.simul_connect} , bprin_connect: {self.bprin_connect} -< 현재 상태ㅇ!!"
-        )
-
-        print("커넥션 실행 이전!")
         BprinConnect(
             self.bprin_queue,
             self.simul_loading_complate_signal,
             self.bprin_kill_signal,
         ).start()
-        print("커넥션 실행 완료!")
-        self.bprin_process = subprocess.Popen([sys.executable, "core/bprin_proc.py", "reboot"])
+        SimulConnect(
+            Queue(),
+            self.bprin_queue,
+            self.simul_loading_complate_signal,
+        ).start()
+        SimulSignalConnect(self.bprin_booting_request).start()
+        self.simul_process = subprocess.Popen([sys.executable, "core/simul_proc.py"])
+        time.sleep(0.1)
+        self.bprin_process = subprocess.Popen([sys.executable, "core/bprin_proc.py"])
+        self.lst = []
+        for method in self.threading_helper():
+            a = Thread(target=method, daemon=True)
+            self.lst.append(a)
+            a.start()
+        Thread(target=self.bprin_starter).start()
 
-        for method in [self.bprin_proc_check]:
-            Thread(target=method, daemon=True).start()
+    def bprin_starter(self):
+        """
+        이 함수를 실행하는 쓰레드는 데몬이면 안된다!
+        쓰레드를 실행하는 쓰레드인것이 원인일 수 있다.
+        """
+        self.bprin_booting_request.get()
+        print(f"[main 프로세스]-BPRIN_BOOTING_REQUEST을 수신하였습니다. bprin 프로세스를 리부팅합니다.")
+        BprinConnect(
+            self.bprin_queue,
+            self.simul_loading_complate_signal,
+            self.bprin_kill_signal,
+        ).start()
+        time.sleep(0.1)
+        bprin_process = subprocess.Popen([sys.executable, "core/bprin_proc.py", "reboot"])
+        Thread(target=self.bprin_killer, daemon=True).start()
+        Thread(target=self.bprin_proc_check, args=(bprin_process,), daemon=True).start()
 
     def threading_helper(self):
         yield self.simul_proc_check
@@ -64,11 +62,18 @@ class ProcControll:
         yield self.shutdown
         yield self.bprin_killer
 
-    def bprin_proc_check(self):
+    def bprin_proc_check(self, proc=None):
         """ 프로세스가 죽으면 큐에 신호를 넣습니다"""
-        self.bprin_process.wait()
-        if self.bprin_queue.empty():
-            self.shutdown_request.put(SIGNAL)
+        if not proc:
+            self.bprin_process.wait()
+            if self.bprin_queue.empty():
+                self.shutdown_request.put(SIGNAL)
+        else:
+            proc.wait()
+            print("종룡ㅁㄻㄴㄻ", self.bprin_queue)
+            #! 두번쨰부터 이게 안되 채크가 안됨
+            if self.bprin_queue.empty():
+                self.shutdown_request.put(SIGNAL)
 
     def bprin_killer(self):
         self.bprin_kill_signal.get()

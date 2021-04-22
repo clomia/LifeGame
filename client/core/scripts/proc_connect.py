@@ -9,16 +9,24 @@ from .constant import *
 class BprinConnection(Thread):
     def __init__(self):
         super().__init__()
-        self.port = BPRIN_PROC_PORT
         self.queue = Queue()
         self.daemon = True
         self.name = "[Sub Process]-(bprin connection)"
 
     def run(self):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.connect(("localhost", self.port))
-            fieldset = self.queue.get()
-            sock.sendall(str(fieldset).encode())
+        def func():
+            try:
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                    print("나 서브프로세스", sock, "연결시도!", BPRIN_PROC_PORT)
+                    sock.connect(("localhost", BPRIN_PROC_PORT))
+                    fieldset = self.queue.get()
+                    sock.sendall(str(fieldset).encode())
+            except ConnectionRefusedError:
+                raise
+                print("나 서브프로세스! 될때까지 한다!")
+                func()
+
+        func()
 
     def send(self, fieldset):
         self.queue.put(fieldset)
@@ -27,7 +35,6 @@ class BprinConnection(Thread):
 class SimulConnection(Thread):
     def __init__(self, queue, simul_loading_complate_signal: Queue):
         super().__init__()
-        self.port = SIMUL_PROC_PORT
         self.queue = queue
         self.daemon = True
         self.name = "[Sub Process]-(simul connection)"
@@ -53,7 +60,7 @@ class SimulConnection(Thread):
 
     def run(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.connect(("localhost", self.port))
+            sock.connect(("localhost", SIMUL_PROC_PORT))
             self.simul_loading_complate_signal.get()
             sock.sendall("LoadingComplate".encode("utf-8"))
             print("[simul프로세스]-로딩이 완료되서 메인 프로세스로 signal을 전송하였습니다")
@@ -61,7 +68,7 @@ class SimulConnection(Thread):
             try:
                 while self.responser(sock):
                     pass
-            finally:
+            except:
                 print("[simul 프로세스]-메인 프로세스로부터 모든 연산을 제공받아서. 연산 제공 채널이 사라졌습니다.")
 
 

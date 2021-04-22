@@ -10,10 +10,14 @@ from .prophecy import *
 class BprinConnect(Thread):
     """ 메인 프로세스가 Bprin프로세스와 가지는 연결"""
 
-    def __init__(self, queue, simul_loading_complate_signal: Queue, bprin_kill_signal: Queue):
+    def __init__(
+        self,
+        queue,
+        simul_loading_complate_signal: Queue,
+        bprin_kill_signal: Queue,
+    ):
         """ bprin프로세스의 응답을 self.queue에 담는다"""
         super().__init__()
-        self.port = BPRIN_PROC_PORT
         self.queue = queue
         self.simul_loading_complate_signal = simul_loading_complate_signal
         self.bprin_kill_signal = bprin_kill_signal
@@ -23,10 +27,15 @@ class BprinConnect(Thread):
     def connect(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            sock.bind(("localhost", self.port))
+            sock.bind(("localhost", BPRIN_PROC_PORT))
             sock.listen()
-            self.sock, addr = sock.accept()
+            print("나 메인프로세스!!!!!", sock)
+            self.sock, addr = sock.accept()  # * 서브프로세스 첫 신호받는곳 Bloking!
+            print("메인-엑셉트 함", self.sock)
             fieldset = self.sock.recv(4096).decode()
+            sock.close()
+            del sock
+
         return fieldset
 
     def run(self):
@@ -79,7 +88,6 @@ class SimulConnect(Thread):
     ):
         """ 연산 그리드 클래스(ex: PropheticGrid)를 oper_grid인자로 입력받아 사용합니다 """
         super().__init__()
-        self.port = SIMUL_PROC_PORT
         self.queue = queue
         self.bprin_queue = bprin_queue
         self.simul_loading_complate_signal = simul_loading_complate_signal
@@ -90,7 +98,7 @@ class SimulConnect(Thread):
     def connect(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            sock.bind(("localhost", self.port))
+            sock.bind(("localhost", SIMUL_PROC_PORT))
             sock.listen()
             self.sock, addr = sock.accept()
             self.sock.setblocking(True)
@@ -134,5 +142,4 @@ class SimulSignalConnect(Thread):
             self.sock.setblocking(True)
             signal = self.sock.recv(4096)
             if signal == BPRIN_BOOTING_REQUEST:
-                print("나 메인인데 이제 bprin부팅을 할거야!!")
                 self.bprin_booting_signal.put(signal)

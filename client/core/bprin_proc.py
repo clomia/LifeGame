@@ -3,7 +3,6 @@ from artifacts import *
 from scripts import *
 
 script, *option = sys.argv
-
 connect = BprinConnection()
 connect.start()
 
