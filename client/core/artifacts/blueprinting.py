@@ -17,6 +17,20 @@ class HomeBtn(Button):
 
     def __init__(self):
         super().__init__()
+        self.position = Vec2(UI.Bottom_Left.x + 0.2, UI.Bottom_Left.y)
+        self.model = "quad"
+        self.scale = (0.3, 0.1)
+        self.color = color.black33
+        self.frame_color = Entity(
+            parent=self,
+            model="quad",
+            color=color.black10,
+        )
+        self.frame = Entity(
+            parent=self,
+            model=Quad(mode="line", radius=0, thickness=1),
+            color=color.white,
+        )
 
     def on_click(self):
         for entity in HomeBtn.erase_entities:
@@ -235,10 +249,12 @@ class InputGrid(Entity):
         return execution_btn, continue_btn
 
     def background(self):
+        x_ratio, y_ratio = window.screen_resolution
+        value = 1 / y_ratio
         self.bg = Entity(
             parent=scene,
-            scale_x=3.84 * 5,
-            scale_y=2.40 * 5,
+            scale_x=x_ratio * value * 8.2,
+            scale_y=y_ratio * value * 8.2,
             model="quad",
             texture=load_texture(self.bg_image),
         )
