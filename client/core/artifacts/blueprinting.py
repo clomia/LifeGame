@@ -17,20 +17,53 @@ class HomeBtn(Button):
 
     def __init__(self):
         super().__init__()
-        self.position = Vec2(UI.Bottom_Left.x + 0.2, UI.Bottom_Left.y)
+        self.position = Vec2(-1.2, UI.Bottom_Left.y + 0.034)
+        self.x_origin = -1.2
         self.model = "quad"
-        self.scale = (0.3, 0.1)
-        self.color = color.black33
-        self.frame_color = Entity(
-            parent=self,
-            model="quad",
-            color=color.black10,
-        )
+        self.scale = (0.8, 0.0718)
+        self.color = color.rgba(0, 0, 0, 0)
         self.frame = Entity(
             parent=self,
             model=Quad(mode="line", radius=0, thickness=1),
             color=color.white,
         )
+        self.arrow = Text(text="<", y=self.y + 0.01, x=-0.85)
+        self.text_origin = Vec2(0.3, 0)
+        self.now_lang = LANGUAGE.now
+        self.lang_setting()
+
+    def lang_setting(self):
+        if LANGUAGE.now == "ko":
+            self.text = "로비로 돌아가기"
+        elif LANGUAGE.now == "en":
+            self.text = "Back to Lobby"
+
+    def lang_update(self):
+        if self.now_lang != LANGUAGE.now:
+            self.lang_setting()
+            self.now_lang = LANGUAGE.now
+
+    def showing(self, limit=-1):
+        self.lang_update()
+        if self.x < limit:
+            self.x += time.dt * 1
+
+    def hiding(self):
+        self.lang_update()
+        if self.x > self.x_origin:
+            self.x -= time.dt * 1
+
+    def on_mouse_enter(self):
+        self.color = color.white10
+        self.update = self.showing
+        self.arrow.visible = False
+        self.text_origin = Vec2(0.4, 0)
+
+    def on_mouse_exit(self):
+        self.color = color.rgba(0, 0, 0, 0)
+        self.update = self.hiding
+        self.arrow.visible = True
+        self.text_origin = Vec2(0.3, 0)
 
     def on_click(self):
         for entity in HomeBtn.erase_entities:
@@ -109,7 +142,7 @@ class InputGrid(Entity):
         button = Button(parent=self, position=co, scale=1)
         button.color = self.btn_color
         button.is_clicked = False
-        self.outline(button, 20)
+        self.outline(button, 100)
 
         def mouse_hover():
             if not button.is_clicked:
@@ -204,13 +237,13 @@ class InputGrid(Entity):
                     text="계속",
                     size=0.035,
                     origin=continue_text_origin,
-                    alpha=150,
+                    alpha=200,
                 )
                 execution_btn.text_entity = Text(
-                    text="창조",
+                    text="제작",
                     size=0.035,
                     origin=execution_text_origin,
-                    alpha=150,
+                    alpha=200,
                 )
                 self.nowlang = "ko"
             elif lang == "en" and self.nowlang != "en":
@@ -222,13 +255,13 @@ class InputGrid(Entity):
                     text="continue",
                     size=0.035,
                     origin=continue_text_origin,
-                    alpha=150,
+                    alpha=200,
                 )
                 execution_btn.text_entity = Text(
                     text="create",
                     size=0.035,
                     origin=execution_text_origin,
-                    alpha=150,
+                    alpha=200,
                 )
                 self.nowlang = "en"
 
@@ -238,14 +271,14 @@ class InputGrid(Entity):
         continue_btn.on_mouse_exit = mouse_exit(continue_btn)
         continue_btn.on_click = continue_henble
         continue_btn.update = lambda: lang_conf(LANGUAGE.now)
-        self.outline(continue_btn, 60)
+        self.outline(continue_btn, 200)
 
         execution_btn.color = self.btn_color
         execution_btn.on_mouse_enter = mouse_hover(execution_btn)
         execution_btn.on_mouse_exit = mouse_exit(execution_btn)
         execution_btn.on_click = submit
         execution_btn.update = lambda: lang_conf(LANGUAGE.now)
-        self.outline(execution_btn, 60)
+        self.outline(execution_btn, 200)
         return execution_btn, continue_btn
 
     def background(self):
@@ -272,8 +305,8 @@ class InfoPanel(Entity):
         """
         super().__init__()
         # self.parent = camera.ui
-        self.text_opacity = 170
-        self.outline_opacity = 60
+        self.text_opacity = 200
+        self.outline_opacity = 200
         self.x, self.y = xy
         self.player_1 = Entity(
             x=self.x,
@@ -338,13 +371,13 @@ class Score(Entity):
                 text="0",
                 x=self.x_origin,
                 y=panel.player_1.y / 8,
-                alpha=panel.text_opacity,
+                alpha=200,
             ),
             2: Text(
                 text="0",
                 x=self.x_origin,
                 y=panel.player_1.y / 9,
-                alpha=panel.text_opacity,
+                alpha=200,
             ),
         }
         HomeBtn.erase_entities.extend(self.player.values())
