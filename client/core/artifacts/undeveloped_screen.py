@@ -9,7 +9,7 @@ class BackGround(FullUI):
 
 
 class GoBackBtn(Button):
-    def __init__(self, cursor, bg):
+    def __init__(self, cursor, *bg):
         super().__init__()
         self.background = bg
         self.cursor = cursor
@@ -44,15 +44,33 @@ class GoBackBtn(Button):
 
     def on_click(self):
         super().on_click()
-        destroy(self.background)
+        for ele in self.background:
+            destroy(ele)
         destroy(self)
+
+
+def screen_gen():
+    """
+    다른 버튼의 클릭을 막는 투명판 , 가장 마지막에 호출되어야 한다.
+    이것은 클래스를 호출하는것으로 생성한뒤 할당해야 의도대로 위치하게 된다.
+    또한 가장 나중에 만들어져야지 가장 밑에 깔려서 의도대로 작동하게 된다.
+    """
+    screen = Button(
+        parent=camera.ui,
+        model=Quad(scale=(10, 10), thickness=3, segments=0),
+        color=color.rgba(255, 255, 255, 0),
+    )
+    screen.highlight_color = screen.color
+    screen.pressed_color = screen.color
+    return screen
 
 
 def undeveloped_window(cursor):
     """ 미개발 안내창을 위 레이어에 띄운다. """
     cursor.rotational_speed = 1
     bg = BackGround()
-    GoBackBtn(cursor, bg)
+    _bg = screen_gen()
+    GoBackBtn(cursor, bg, _bg)
 
 
 __all__ = ["undeveloped_window"]
