@@ -34,28 +34,14 @@ class ProcControll:
         self.bprin_process = subprocess.Popen([sys.executable, "core/bprin_proc.py"])
         for method in self.threading_helper():
             Thread(target=method).start()
-        Thread(target=self.bprin_starter).start()
+        Thread(target=self.rebooting).start()
 
-    def bprin_starter(self):
-        """
-        이 함수를 실행하는 쓰레드는 데몬이면 안된다!
-        쓰레드를 실행하는 쓰레드인것이 원인일 수 있다.
-        """
+    def rebooting(self):
         self.bprin_booting_request.get()
-        print(f"[main 프로세스]-BPRIN_BOOTING_REQUEST을 수신하였습니다. bprin 프로세스를 리부팅합니다.")
-        self.bprin_queue = Queue()
-        self.simul_loading_complate_signal = Queue()
-        self.bprin_kill_signal = Queue()
-        BprinConnect(
-            self.bprin_queue,
-            self.simul_loading_complate_signal,
-            self.bprin_kill_signal,
-        ).start()
-        time.sleep(0.1)
-        self.bprin_process = subprocess.Popen([sys.executable, "core/bprin_proc.py", "reboot"])
-        Thread(target=self.bprin_killer).start()
-        Thread(target=self.bprin_proc_check).start()
-        Thread(target=self.shutdown).start()
+        print("[main 프로세스]-rebooting을 시작합니다...")
+        ProcControll().main()
+        self.bprin_process.kill()
+        self.simul_process.kill()
 
     def threading_helper(self):
         yield self.simul_proc_check
@@ -85,7 +71,7 @@ class ProcControll:
         self.shutdown_request.put(SIGNAL) 를 할 때 이 함수가 실행됩니다!
         """
         self.shutdown_request.get()
-        print("shotdown실행됨 쓰레드 이제 뒤짐")  #!이 쓰레드는 정상 작동한다. 문제는 각 프로세스의 종료 버튼 트리거에 있다
+        # print("shotdown실행됨 쓰레드 이제 뒤짐")  #!이 쓰레드는 정상 작동한다. 문제는 각 프로세스의 종료 버튼 트리거에 있다
         if self.bprin_queue.empty():
             print("[main 프로세스]-shutdown signal을 수신하였습니다. 프로세스들을 모두 죽입니다.")
             self.bprin_process.kill()

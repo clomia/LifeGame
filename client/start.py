@@ -1,5 +1,4 @@
 import core
 
 
-with core.ProcControll().execute():
-    pass
+core.ProcControll().main()

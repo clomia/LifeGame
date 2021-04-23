@@ -40,9 +40,9 @@ class BprinConnect(Thread):
         print("[main프로세스]-bprin프로세스로부터 fieldset을 제공받았습니다.")
         self.simul_loading_complate_signal.get()
         print("[main프로세스]-simul프로세스의 로딩 완료 signal이 들어온것을 확인하였습니다.")
-        self.bprin_kill_signal.put(SIGNAL)
         self.queue.put(fieldset)
         self.queue.put(SIGNAL)
+        self.bprin_kill_signal.put(SIGNAL)
         # * core/main.ProcControll.bprin_proc_check의 if문->fieldset수신 확인때 인터셉팅 대응용
 
 
