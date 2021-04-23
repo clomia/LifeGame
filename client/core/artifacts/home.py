@@ -1,11 +1,6 @@
 from ursina import *
-
-if __name__ == "__main__":
-    from undeveloped_screen import *
-    from origin import *
-else:
-    from .undeveloped_screen import *
-    from .origin import *
+from .undeveloped_screen import *
+from .origin import *
 
 
 class BackGround(FullUI):
@@ -31,9 +26,6 @@ class OfflineBtn(Button):
         self.hide_color = color.rgba(255, 255, 255, 15)
         self.text_color = self.show_color
 
-    def lazy__init__(self, *other_entities):
-        self.other_entities = other_entities
-
     def on_mouse_enter(self):
         self.color = color.cyan
         self.cursor.rotational_speed = 8
@@ -46,9 +38,8 @@ class OfflineBtn(Button):
 
     def on_click(self):
         self.cursor.rotational_speed = 1
-        for entity in self.other_entities:
-            destroy(entity)
-        destroy(self)
+        self.enabled = False
+        HomeEntities.disable()
         self.pipe_func()
 
 
@@ -69,9 +60,6 @@ class OnlineBtn(Button):
         self.show_color = color.hex("697e8f")
         self.hide_color = color.rgba(255, 255, 255, 15)
         self.text_color = self.show_color
-
-    def lazy__init__(self, *other_entities):
-        self.other_entities = other_entities
 
     def on_mouse_enter(self):
         self.color = color.cyan
@@ -98,12 +86,31 @@ class Intro(FullUI):
         self.texture = "source/intro.mp4"
 
 
+class HomeEntities:
+    """
+    Home 패이지를 소멸,복구하는것을 도와주는 클래스
+
+    만약 simul설계에 처음부터 이런것을 도입했다면...
+    """
+
+    all_entities = []
+
+    @classmethod
+    def disable(cls):
+        for ele in cls.all_entities:
+            ele.enabled = False
+
+    @classmethod
+    def enable(cls):
+        for ele in cls.all_entities:
+            ele.enabled = True
+
+
 def home_screen(cursor, offline_pipe, online_pipe=None, intro=False):
     bg = BackGround()
     online_btn = OnlineBtn(cursor, online_pipe)
     offline_btn = OfflineBtn(cursor, offline_pipe)
-    online_btn.lazy__init__(bg, offline_btn)
-    offline_btn.lazy__init__(bg, online_btn)
+    HomeEntities.all_entities.extend((bg, online_btn, offline_btn))
     if intro:
         home_stuff = (bg, online_btn, offline_btn)
         for entity in home_stuff:

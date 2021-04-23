@@ -4,11 +4,25 @@ from math import inf, isinf
 from itertools import chain
 from ursina import *
 from .origin.tools import ColorSet
+from .home import HomeEntities
 
 if __name__ == "__main__":
     from origin import *
 else:
     from .origin import *
+
+
+class HomeBtn(Button):
+    erase_entities = []
+
+    def __init__(self):
+        super().__init__()
+
+    def on_click(self):
+        for entity in HomeBtn.erase_entities:
+            destroy(entity)
+        HomeEntities.enable()
+        destroy(self)
 
 
 class InputGrid(Entity):
@@ -65,6 +79,17 @@ class InputGrid(Entity):
 
         self.background()
         self.click_counter = -inf
+        HomeBtn.erase_entities.extend(
+            (
+                self,
+                self.execution_btn,
+                self.continue_btn,
+                self.execution_btn.text_entity,
+                self.continue_btn.text_entity,
+                self.bg,
+            )
+        )
+        HomeBtn()
 
     def btn(self, co):
         button = Button(parent=self, position=co, scale=1)
@@ -113,6 +138,7 @@ class InputGrid(Entity):
         button.on_mouse_enter = mouse_hover
         button.on_mouse_exit = mouse_exit
         button.on_click = click
+        HomeBtn.erase_entities.append(button)
         return button
 
     def decision_btn(self, lang):
@@ -233,12 +259,6 @@ class InfoPanel(Entity):
         self.text_opacity = 170
         self.outline_opacity = 60
         self.x, self.y = xy
-        self.outline = lambda obj, opacity: Entity(
-            parent=obj,
-            model=Quad(segments=0, mode="line", thickness=2),
-            color=color.rgba(196, 235, 232, opacity),
-            z=-0.01,
-        )
         self.player_1 = Entity(
             x=self.x,
             y=self.y,
@@ -268,11 +288,23 @@ class InfoPanel(Entity):
             x=self.player_2.x + self.player_2.scale_x * 3,
             y=self.player_2.y,
         )
-
-        tools.outline(self.player_1, self.outline_opacity)
-        tools.outline(self.player_1_number_screen, self.outline_opacity)
-        tools.outline(self.player_2, self.outline_opacity)
-        tools.outline(self.player_2_number_screen, self.outline_opacity)
+        HomeBtn.erase_entities.extend(
+            (
+                self,
+                self.player_1,
+                self.player_1_number_screen,
+                self.player_2,
+                self.player_2_number_screen,
+            )
+        )
+        HomeBtn.erase_entities.extend(
+            (
+                tools.outline(self.player_1, self.outline_opacity),
+                tools.outline(self.player_1_number_screen, self.outline_opacity),
+                tools.outline(self.player_2, self.outline_opacity),
+                tools.outline(self.player_2_number_screen, self.outline_opacity),
+            )
+        )
 
 
 class Score(Entity):
@@ -299,6 +331,8 @@ class Score(Entity):
                 alpha=panel.text_opacity,
             ),
         }
+        HomeBtn.erase_entities.extend(self.player.values())
+        HomeBtn.erase_entities.append(self)
 
     def number_updater(self, player: int, number: int):
         """ numder을 업데이트하면서 텍스트 정렬을 위해서 x좌표를 수정합니다"""
