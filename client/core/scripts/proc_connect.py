@@ -52,13 +52,13 @@ class SimulConnection(Thread):
             sock.connect(("localhost", SIMUL_PROC_PORT))
             self.simul_loading_complate_signal.get()
             sock.sendall("LoadingComplate".encode("utf-8"))
-            print("[simul프로세스]-로딩이 완료되서 메인 프로세스로 signal을 전송하였습니다")
+            print("[simul프로세스]-로딩이 완료되서 [main 프로세스]로 signal을 전송하였습니다")
             self.responser(sock, first_call=True)
             try:
                 while self.responser(sock):
                     pass
             except:
-                print("[simul 프로세스]-메인 프로세스로부터 모든 연산을 제공받아서. 연산 제공 채널이 사라졌습니다.")
+                print("[simul 프로세스]-[main 프로세스]로부터 모든 연산을 제공받아서. 연산 제공 채널이 사라졌습니다.")
 
 
 class SimulSignalConnection(Thread):
@@ -73,4 +73,34 @@ class SimulSignalConnection(Thread):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.connect(("localhost", SIMUL_PROC_PORT_2))
             self.bprin_booting_signal_pipe.get()
+            sock.sendall(BPRIN_BOOTING_REQUEST)
+
+
+class SimulShutdownConnection(Thread):
+    """ simul 프로세스가 shutdown 요청 신호를 전송하는 채널"""
+
+    def __init__(self, simul_shutdown_signal_pipe):
+        super().__init__()
+        self.simul_shutdown_signal_pipe = simul_shutdown_signal_pipe
+        self.name = "[simul Process]-(simul shutdown connection)"
+
+    def run(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.connect(("localhost", SIMUL_PROC_PORT_3))
+            self.simul_shutdown_signal_pipe.get()
+            sock.sendall(BPRIN_BOOTING_REQUEST)
+
+
+class BprinShutdownConnection(Thread):
+    """ bprin 프로세스가 shutdown 요청 신호를 전송하는 채널"""
+
+    def __init__(self, bprin_shutdown_signal_pipe):
+        super().__init__()
+        self.bprin_shutdown_signal_pipe = bprin_shutdown_signal_pipe
+        self.name = "[bprin Process]-(bprin shutdown connection)"
+
+    def run(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.connect(("localhost", BPRIN_PROC_PORT_2))
+            self.bprin_shutdown_signal_pipe.get()
             sock.sendall(BPRIN_BOOTING_REQUEST)

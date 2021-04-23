@@ -16,4 +16,6 @@ PROPHECY_COMPLETE_SIGNAL = "prophecy,complete".encode("utf-8")
 # todo 여기서 포트번호 검사 & 설정하기
 SIMUL_PROC_PORT: int = 12000
 SIMUL_PROC_PORT_2: int = 12001
-BPRIN_PROC_PORT: int = 12002
+SIMUL_PROC_PORT_3: int = 12002
+BPRIN_PROC_PORT: int = 12003
+BPRIN_PROC_PORT_2: int = 12004

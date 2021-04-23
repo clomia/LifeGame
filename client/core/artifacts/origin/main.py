@@ -217,7 +217,10 @@ class KeyDescription:
 
 
 class ShutDownBtn(Button):
+    shut_down_func = None
+
     def __init__(self):
+        """ shut down 버튼이 눌렸을때 func가 실행됩니다."""
         super().__init__()
         self.color = color.gray
         self.y = -0.4
@@ -227,10 +230,10 @@ class ShutDownBtn(Button):
         self.model = Quad(thickness=1.3, segments=0, mode="line")
         self.highlight_color = color.white
         self.pressed_color = color.black66
-        self.on_click = application.quit
         lang_setting(self)
         self.text_color = ColorSet.Esc["Text"]
         self.text_entity.y -= 0.04
+        self.on_click = self.shut_down_func
 
     def ko_ver(self):
         self.text = "게임 종료"

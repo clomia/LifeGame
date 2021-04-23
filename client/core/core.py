@@ -15,6 +15,7 @@ class ProcControll:
         self.simul_loading_complate_signal = Queue()
         self.bprin_kill_signal = Queue()
         self.bprin_booting_request = Queue()
+        self.shutdown_signal_pipe = Queue()
 
     def main(self):
         """ 모든것을 실행합니다"""
@@ -29,19 +30,29 @@ class ProcControll:
             self.simul_loading_complate_signal,
         ).start()
         SimulSignalConnect(self.bprin_booting_request).start()
+        SimulShutdownConnect(self.shutdown_signal_pipe).start()
+        BprinShutdownConnect(self.shutdown_signal_pipe).start()
         self.simul_process = subprocess.Popen([sys.executable, "core/simul_proc.py"])
         time.sleep(0.1)
         self.bprin_process = subprocess.Popen([sys.executable, "core/bprin_proc.py"])
         for method in self.threading_helper():
             Thread(target=method).start()
         Thread(target=self.rebooting).start()
+        Thread(target=self.shut_down_listener).start()
+
+    def _shut_down(self):
+        self.bprin_process.kill()
+        self.simul_process.kill()
+
+    def shut_down_listener(self):
+        self.shutdown_signal_pipe.get()
+        self._shut_down()
 
     def rebooting(self):
         self.bprin_booting_request.get()
         print("[main 프로세스]-rebooting을 시작합니다...")
         ProcControll().main()
-        self.bprin_process.kill()
-        self.simul_process.kill()
+        self._shut_down()
 
     def threading_helper(self):
         yield self.simul_proc_check
@@ -71,7 +82,6 @@ class ProcControll:
         self.shutdown_request.put(SIGNAL) 를 할 때 이 함수가 실행됩니다!
         """
         self.shutdown_request.get()
-        # print("shotdown실행됨 쓰레드 이제 뒤짐")  #!이 쓰레드는 정상 작동한다. 문제는 각 프로세스의 종료 버튼 트리거에 있다
         if self.bprin_queue.empty():
             print("[main 프로세스]-shutdown signal을 수신하였습니다. 프로세스들을 모두 죽입니다.")
             self.bprin_process.kill()
