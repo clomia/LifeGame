@@ -82,7 +82,6 @@ class InputGrid(Entity):
     def __init__(
         self,
         size: int = 15,
-        bg_image: str = f"source/blueprint_bg.jpg",
         pipe_func=lambda x: print(x),
         final_input_count=GameConfig.Bprin_Handicap_Count,
     ):
@@ -94,7 +93,10 @@ class InputGrid(Entity):
         self.is_complete = False
         self.need_decision = False
         self.pipe_func = pipe_func
-        self.bg_image = bg_image
+        if LANGUAGE.now == "ko":
+            self.bg_image = "source/blueprint_bg_ko"
+        elif LANGUAGE.now == "en":
+            self.bg_image = "source/blueprint_bg_en"
         self.size = size
         self.btn_color = color.rgba(0, 0, 0, 0)
         self.outline = tools.outline
