@@ -4,7 +4,7 @@
 __pycache__/
 media/*
 !media/env.jpg
-!env/problem_1.jpg
+!media/problem_1.jpg
 apps/*
 env/*
 test/*
