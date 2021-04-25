@@ -74,7 +74,9 @@ class CellController(Entity):
                         destroy(outline)
                     del self.field[co]
                 except KeyError:
-                    print(f"[simul 프로세스]-CellController[연산정보오류], 지워야 할 세포가 이미 없습니다.")
+                    print(
+                        f"[simul 프로세스]-CellController-무한을 유한으로 변환하는 위치 재연산으로 인해 다른 공간과 정보상의 인터럽트가 발생하였습니다"
+                    )
             elif number == BLUECELL:
                 self.blue_cell(co)
             elif number == REDCELL:
@@ -134,14 +136,12 @@ class CellController(Entity):
         except KeyError:
             self.field[co] = (cell, cubic_dict)
         else:
-            # 이 구문의 실행확률은 대략 1천분의 1이하라고 추측한다.
-            print(
-                "[simul 프로세스]-CellController-Prophecy Delta연산에 문제가 있습니다. 게임 로직에 따르면 세포는 빈자리에만 생성되야 합니다!"
-            )
+            # 세포가 필드를 벗어나면 나머지 연산을 통해 필드안의 적절한 위치로 재연산합니다. 이것으로 인해 아래의 문제가 발생합니다.
+            print("[simul 프로세스]-CellController-무한을 유한으로 변환하는 위치 재연산으로 인해 다른 세포와 공간상의 인터럽트가 발생하였습니다")
             destroy(self.field[co][0])
             for quad in self.field[co][1].values():
                 destroy(quad)
-            print("\tdelta연산 문제 은폐를 위해서 기존에 있던 세포 오프젝트를 제거하였습니다.")
+            print("\t세포 생성을 위해 기존에 있던 세포 오프젝트를 제거하였습니다.")
 
     def blue_cell(self, co):
         cell = Entity(
@@ -170,14 +170,12 @@ class CellController(Entity):
         except KeyError:
             self.field[co] = (cell, cubic_dict)
         else:
-            # 이 구문의 실행확률은 대략 1천분의 1이하라고 추측한다.
-            print(
-                "[simul 프로세스]-CellController-Prophecy Delta연산에 문제가 있습니다. 게임 로직에 따르면 세포는 빈자리에만 생성되야 합니다!"
-            )
+            # 세포가 필드를 벗어나면 나머지 연산을 통해 필드안의 적절한 위치로 재연산합니다. 이것으로 인해 아래의 문제가 발생합니다.
+            print("[simul 프로세스]-CellController-무한을 유한으로 변환하는 위치 재연산으로 인해 다른 세포와 공간상의 인터럽트가 발생하였습니다")
             destroy(self.field[co][0])
             for quad in self.field[co][1].values():
                 destroy(quad)
-            print("\tdelta연산 문제 은폐를 위해서 기존에 있던 세포 오프젝트를 제거하였습니다.")
+            print("\t세포 생성을 위해 기존에 있던 세포 오프젝트를 제거하였습니다")
 
     @staticmethod
     def cell_moving(cell, creating=False):
