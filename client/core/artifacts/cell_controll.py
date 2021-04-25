@@ -66,12 +66,15 @@ class CellController(Entity):
         for co, number in space_dict.items():
             co = self.co_convert(co)
             if not number:
-                cell, cubic = self.field[co]
-                self.cell_monitor.remove(cell.number)
-                destroy(cell)
-                for outline in cubic.values():
-                    destroy(outline)
-                del self.field[co]
+                try:
+                    cell, cubic = self.field[co]
+                    self.cell_monitor.remove(cell.number)
+                    destroy(cell)
+                    for outline in cubic.values():
+                        destroy(outline)
+                    del self.field[co]
+                except KeyError:
+                    print(f"[simul 프로세스]-CellController[연산정보오류], 지워야 할 세포가 이미 없습니다.")
             elif number == BLUECELL:
                 self.blue_cell(co)
             elif number == REDCELL:
@@ -126,7 +129,19 @@ class CellController(Entity):
                 self.cell_monitor.append(cell.number)
         except KeyError:
             self.cell_monitor.append(cell.number)
-        self.field[co] = (cell, cubic_dict)
+        try:
+            self.field[co]
+        except KeyError:
+            self.field[co] = (cell, cubic_dict)
+        else:
+            # 이 구문의 실행확률은 대략 1천분의 1이하라고 추측한다.
+            print(
+                "[simul 프로세스]-CellController-Prophecy Delta연산에 문제가 있습니다. 게임 로직에 따르면 세포는 빈자리에만 생성되야 합니다!"
+            )
+            destroy(self.field[co][0])
+            for quad in self.field[co][1].values():
+                destroy(quad)
+            print("\tdelta연산 문제 은폐를 위해서 기존에 있던 세포 오프젝트를 제거하였습니다.")
 
     def blue_cell(self, co):
         cell = Entity(
@@ -150,7 +165,19 @@ class CellController(Entity):
                 self.cell_monitor.append(cell.number)
         except KeyError:
             self.cell_monitor.append(cell.number)
-        self.field[co] = (cell, cubic_dict)
+        try:
+            self.field[co]
+        except KeyError:
+            self.field[co] = (cell, cubic_dict)
+        else:
+            # 이 구문의 실행확률은 대략 1천분의 1이하라고 추측한다.
+            print(
+                "[simul 프로세스]-CellController-Prophecy Delta연산에 문제가 있습니다. 게임 로직에 따르면 세포는 빈자리에만 생성되야 합니다!"
+            )
+            destroy(self.field[co][0])
+            for quad in self.field[co][1].values():
+                destroy(quad)
+            print("\tdelta연산 문제 은폐를 위해서 기존에 있던 세포 오프젝트를 제거하였습니다.")
 
     @staticmethod
     def cell_moving(cell, creating=False):

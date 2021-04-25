@@ -118,10 +118,14 @@ class SimulConnect(Thread):
         try:
             while field_list := operator():
                 self.sock.recv(4096)
+                print(
+                    f"main프로세스의 recv!!!!!!!!@_@__@ , 이제 연산정보 전송할꺼임 문자열 길이: {len(str(field_list))}"
+                )
                 self.sock.sendall(str(field_list).encode())
+                print("main프로세스------연산정보 전송 완료!")
         except:
             print(
-                "[main 프로세스]-[simul 프로세스]에게 연산 제공중 연결이 끊겼습니다. rebooting 혹은, [bprin프로세스]가 종료된것으로 추정됩니다."
+                "[main 프로세스]-[simul 프로세스]에게 연산 제공중 연결이 끊겼습니다. rebooting 혹은, [simul프로세스]가 종료된것으로 추정됩니다."
             )
         else:
             print("[main 프로세스]-[simul 프로세스]에게 연산 제공을 완료하여, 연산 채널을 종료합니다.")
@@ -145,7 +149,7 @@ class SimulSignalConnect(Thread):
             try:
                 signal = self.sock.recv(4096)
             except:
-                print("[main프로세스]-[bprin프로세스]의 부팅신호 대기중 연결이 끊겼습니다. [bprin프로세스]가 종료된것으로 추정됩니다.")
+                print("[main프로세스]-[bprin프로세스]의 부팅신호 대기중 연결이 끊겼습니다. [simul프로세스]가 종료된것으로 추정됩니다.")
             else:
                 if signal == BPRIN_BOOTING_REQUEST:
                     self.bprin_booting_signal.put(signal)
@@ -170,7 +174,7 @@ class SimulShutdownConnect(Thread):
                 signal = self.sock.recv(4096)
             except:
                 print(
-                    "[main프로세스]-[simul프로세스]의 Shut down 시그널 대기중 연결이 끊겼습니다. rebooting 혹은, [bprin프로세스]가 종료된것으로 추정됩니다."
+                    "[main프로세스]-[simul프로세스]의 Shut down 시그널 대기중 연결이 끊겼습니다. rebooting 혹은, [simul프로세스]가 종료된것으로 추정됩니다."
                 )
             else:
                 print("[main 프로세스]-[Simul프로세스]로부터 Shut down 시그널을 수신하였습니다")

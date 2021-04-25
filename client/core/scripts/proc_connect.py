@@ -31,7 +31,8 @@ class SimulConnection(Thread):
         self.oper_counter = 0
 
     def responser(self, sock, first_call=False):
-        fieldset_list = sock.recv(1048576)
+        fieldset_list = sock.recv(2 ** 20)  # info 104_8576byte를 넘어가면 에러 발생으로인해 연산채널이 끊긴다.
+        print(f"recv는 되었다!!!! {len(fieldset_list)}")
         fieldset_list = literal_eval(fieldset_list.decode())
         assert isinstance(fieldset_list, list)
         self.queue.put(fieldset_list)

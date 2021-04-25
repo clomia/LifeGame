@@ -343,7 +343,8 @@ if __name__ == "__main__":
             count = 0
             count_count += 1
     finish = time.time()
-    print(f"{counter}세대 이터레이션 하는데 걸린 시간: {finish-start}초")
+    print(f"\n{counter}세대 이터레이션 하는데 걸린 시간: {finish-start}초")
+    # print(f"마지막 delta={delta}")
     """ 
     1000번 이터레이션 
     평균 3.7초

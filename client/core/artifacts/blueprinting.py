@@ -133,8 +133,8 @@ class InputGrid(Entity):
                 self,
                 self.execution_btn,
                 self.continue_btn,
-                self.execution_btn.text_entity,
-                self.continue_btn.text_entity,
+                self.execution_btn._text,
+                self.continue_btn._text,
                 self.bg,
             )
         )
@@ -205,8 +205,8 @@ class InputGrid(Entity):
 
         def submit():
             if self.need_decision:
-                destroy(self.execution_btn.text_entity)
-                destroy(self.continue_btn.text_entity)
+                destroy(self.execution_btn._text)
+                destroy(self.continue_btn._text)
                 destroy(self.execution_btn)
                 destroy(self.continue_btn)
                 self.need_decision = False
@@ -229,57 +229,66 @@ class InputGrid(Entity):
         execution_btn.scale_x = self.size // 2 + 0.5
         execution_btn.scale_y = 1.5
 
-        def lang_conf(lang=lang):
+        def lang_conf():
+            lang = LANGUAGE.now
             if lang == "ko" and self.nowlang != "ko":
-                destroy(continue_btn.text_entity)
-                destroy(execution_btn.text_entity)
+                if "_text" in continue_btn.__dict__:
+                    print(f"text객체 삭제 {continue_btn._text.text} , {execution_btn._text.text}")
+                    destroy(continue_btn._text)
+                    destroy(execution_btn._text)
                 continue_text_origin = (-self.size / 5.5, self.size / 1.29)
                 execution_text_origin = (self.size / 5.5, self.size / 1.29)
-                continue_btn.text_entity = Text(
+                continue_btn._text = Text(
                     text="계속",
                     size=0.035,
                     origin=continue_text_origin,
                     alpha=200,
                 )
-                execution_btn.text_entity = Text(
+                execution_btn._text = Text(
                     text="제작",
                     size=0.035,
                     origin=execution_text_origin,
                     alpha=200,
                 )
                 self.nowlang = "ko"
+                HomeBtn.erase_entities.append(execution_btn._text)
+                HomeBtn.erase_entities.append(continue_btn._text)
             elif lang == "en" and self.nowlang != "en":
-                destroy(continue_btn.text_entity)
-                destroy(execution_btn.text_entity)
+                if "_text" in continue_btn.__dict__:
+                    print(f"text객체 삭제 {continue_btn._text.text} , {execution_btn._text.text}")
+                    destroy(continue_btn._text)
+                    destroy(execution_btn._text)
                 continue_text_origin = (-self.size / 12, self.size / 1.29)
                 execution_text_origin = (self.size / 9, self.size / 1.29)
-                continue_btn.text_entity = Text(
+                continue_btn._text = Text(
                     text="continue",
                     size=0.035,
                     origin=continue_text_origin,
                     alpha=200,
                 )
-                execution_btn.text_entity = Text(
+                execution_btn._text = Text(
                     text="create",
                     size=0.035,
                     origin=execution_text_origin,
                     alpha=200,
                 )
                 self.nowlang = "en"
+                HomeBtn.erase_entities.append(execution_btn._text)
+                HomeBtn.erase_entities.append(continue_btn._text)
 
         lang_conf()
         continue_btn.color = self.btn_color
         continue_btn.on_mouse_enter = mouse_hover(continue_btn)
         continue_btn.on_mouse_exit = mouse_exit(continue_btn)
         continue_btn.on_click = continue_henble
-        continue_btn.update = lambda: lang_conf(LANGUAGE.now)
+        continue_btn.update = lang_conf
         self.outline(continue_btn, 200)
 
         execution_btn.color = self.btn_color
         execution_btn.on_mouse_enter = mouse_hover(execution_btn)
         execution_btn.on_mouse_exit = mouse_exit(execution_btn)
         execution_btn.on_click = submit
-        execution_btn.update = lambda: lang_conf(LANGUAGE.now)
+        execution_btn.update = lang_conf
         self.outline(execution_btn, 200)
         return execution_btn, continue_btn
 
