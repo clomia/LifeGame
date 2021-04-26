@@ -621,3 +621,50 @@ class ExecutionWaiter(UI):
             self.sec.x = sec_x - 0.0025
         else:
             self.sec.x = sec_x
+
+
+class StartBtn(Button):
+    """ simul창으로 전환된 이후 클릭을 통해 창이 선택되도록 유도한다."""
+
+    def __init__(self, on_click_func):
+        super().__init__()
+        if S_ESC.is_on:
+            S_ESC.off()
+        self.origin_esc = simul_react_map["escape"]
+        simul_react_map["escape"] = lambda: None
+        self.on_click_func = on_click_func
+        self.inner_color = Entity(parent=self, color=color.black10, model="quad")
+        self.model = Quad(radius=0, mode="line")
+        self.scale = Vec2(1, 0.5)
+        self.color = color.white
+        self.lang_conf()
+        mouse.locked = False
+        self.cursor = GameCursor()
+
+    def lang_conf(self):
+        if LANGUAGE.now == "ko":
+            self.text = "시작"
+            self.now_lang = "ko"
+        elif LANGUAGE.now == "en":
+            self.text = "START"
+            self.now_lang = "en"
+
+    def on_click(self):
+        mouse.locked = True
+        destroy(self.cursor)
+        destroy(self.inner_color)
+        simul_react_map["escape"] = self.origin_esc
+        destroy(self)
+        self.on_click_func()
+
+    def update(self):
+        if self.now_lang != LANGUAGE.now:
+            self.lang_conf()
+
+    def on_mouse_enter(self):
+        self.inner_color.color = color.black33
+        self.cursor.rotational_speed = 5
+
+    def on_mouse_exit(self):
+        self.inner_color.color = color.black10
+        self.cursor.rotational_speed = 1

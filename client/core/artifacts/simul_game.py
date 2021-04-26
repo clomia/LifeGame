@@ -265,5 +265,9 @@ class Judgment(Entity):
 def trigger(cell_controller, eye, bprin_booting_signal_pipe):
     """ simul_game 과 simul_ui 를 묶어서 만든 실행자."""
     referee = Judgment(cell_controller, eye, bprin_booting_signal_pipe)
-    CountDown(cell_controller, count=10, pipe_func=IterStep(cell_controller, eye, referee))
+    StartBtn(
+        on_click_func=lambda: CountDown(
+            cell_controller, count=10, pipe_func=IterStep(cell_controller, eye, referee)
+        )
+    )
     CellMonitor(cell_controller)
