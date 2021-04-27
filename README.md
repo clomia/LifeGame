@@ -1,3 +1,5 @@
+<img src="https://media.githubusercontent.com/media/clomia/LifeGame/master/media/Logo.png" width="300" height="300">
+
 [![wakatime](https://wakatime.com/badge/github/clomia/LifeGame.svg)](https://wakatime.com/badge/github/clomia/LifeGame)  
 ### [Wiki 바로가기](https://github.com/clomia/LifeGame/wiki/%EA%B8%B0%EC%88%A0%EC%A0%81-%EC%9D%B4%EC%8A%88)  
 # [메인 페이지 바로가기](https://www.notion.so/Clomia-LifeGame-7d6029a23c024d748fed96292923cc20)  
@@ -12,7 +14,7 @@ Latest v.1.0.0-alpha 테스트 버전 배포 완료 (2021.4.28)
 * 사용된 디자인 툴은 Adobe Illustrator, Adobe Photoshop, Adobe Premiere 입니다.  
   * 프로젝트에 사용된 각종 디자인 소스의 저작권은 clomia 본인에게 있습니다.  
 * 프로그래밍 언어는 Python을 메인으로 사용하고 있습니다.  
-<img src="https://media.githubusercontent.com/media/clomia/LifeGame/master/media/Logo.png" width="300" height="300">
+
 ---  
 [(2021.4.28) v1.0.0-alpha 다운로드 / Download](https://www.notion.so/Clomia-LifeGame-7d6029a23c024d748fed96292923cc20)
 
