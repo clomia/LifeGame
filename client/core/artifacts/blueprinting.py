@@ -32,6 +32,11 @@ class HomeBtn(Button):
         self.now_lang = LANGUAGE.now
         self.lang_setting()
 
+    def destroy(self):
+        destroy(self.frame)
+        destroy(self.arrow)
+        destroy(self)
+
     def lang_setting(self):
         if LANGUAGE.now == "ko":
             self.text = "로비로 돌아가기"
@@ -138,7 +143,7 @@ class InputGrid(Entity):
                 self.bg,
             )
         )
-        HomeBtn()
+        self.home_btn = HomeBtn()
 
     def btn(self, co):
         button = Button(parent=self, position=co, scale=1)
@@ -174,6 +179,7 @@ class InputGrid(Entity):
                         destroy(self.bg)
                         destroy(self)
                         self.is_complete = True
+                        self.home_btn.destroy()
                         self.pipe_func(self.info)
                         return
                     else:

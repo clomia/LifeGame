@@ -626,10 +626,12 @@ class ExecutionWaiter(UI):
 class StartBtn(Button):
     """ simul창으로 전환된 이후 클릭을 통해 창이 선택되도록 유도한다."""
 
-    def __init__(self, on_click_func):
+    def __init__(self, eye, on_click_func):
         super().__init__()
         if S_ESC.is_on:
             S_ESC.off()
+        self.eye = eye
+        self.eye.enabled = False
         self.origin_esc = simul_react_map["escape"]
         simul_react_map["escape"] = lambda: None
         self.on_click_func = on_click_func
@@ -655,6 +657,7 @@ class StartBtn(Button):
         destroy(self.inner_color)
         simul_react_map["escape"] = self.origin_esc
         destroy(self)
+        self.eye.enabled = True
         self.on_click_func()
 
     def update(self):
