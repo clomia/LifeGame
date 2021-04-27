@@ -7,6 +7,7 @@ media/*
 !media/loose_thombnail.jpg
 !media/icon_design.jpg
 !media/Logo.png
+!media/env2.jpg
 apps/*
 env/*
 test/*
