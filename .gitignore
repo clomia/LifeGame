@@ -4,6 +4,8 @@
 __pycache__/
 media/*
 !media/env.jpg
+!media/loose_thombnail.jpg
+!media/icon_design.jpg
 !media/problem_1.jpg
 apps/*
 env/*
