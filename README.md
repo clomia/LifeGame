@@ -3,7 +3,7 @@
 # [설명 페이지 바로가기](https://www.notion.so/Clomia-LifeGame-7d6029a23c024d748fed96292923cc20)
 ## 셀룰러 오토마타([cellular automata](https://en.wikipedia.org/wiki/Cellular_automaton))를 기반으로 하는 만든 PVP게임
 Latest v.1.0.0-alpha 테스트 버전 배포 완료 (2021.4.28)  
-[![youtube](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://youtu.be/MCcvHmha7Hc "Clomia LifeGame 루즈한 시연영상")
+[![youtube](https://media.githubusercontent.com/media/clomia/LifeGame/master/media/loose_thombnail.jpg)](https://youtu.be/MCcvHmha7Hc "Clomia LifeGame 루즈한 시연영상")
 * v1.0.0-alpha시점에서는 2차원 로직만 존재합니다.  
 * 차후 3차원 cellular automata를 구현할 예정입니다.  
 필드가 3차원 공간인 이유는 이것 때문입니다.  
@@ -12,8 +12,6 @@ Latest v.1.0.0-alpha 테스트 버전 배포 완료 (2021.4.28)
 * 사용된 디자인 툴은 Adobe Illustrator, Adobe Photoshop, Adobe Premiere 입니다.  
   * 프로젝트에 사용된 각종 디자인 소스의 저작권은 clomia 본인에게 있습니다.  
 * 프로그래밍 언어는 Python을 메인으로 사용하고 있습니다.  
----
-![](client/core/artifacts/source/undeveloped_screen.jpg)  
-![](media/env.jpg)
+<img src="media/icon_design.jpg" width="100" height="100">
 ------------
 [(2021.4.28) v1.0.0-alpha 다운로드 / Download](https://www.notion.so/Clomia-LifeGame-7d6029a23c024d748fed96292923cc20)

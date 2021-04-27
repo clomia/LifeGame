@@ -3,10 +3,10 @@
 *.psb
 __pycache__/
 media/*
-!media/env.jpg
+!media/problem_1.jpg
 !media/loose_thombnail.jpg
 !media/icon_design.jpg
-!media/problem_1.jpg
+!media/Logo.png
 apps/*
 env/*
 test/*
