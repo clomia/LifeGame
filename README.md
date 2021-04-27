@@ -4,7 +4,9 @@
 ### [Wiki 바로가기](https://github.com/clomia/LifeGame/wiki/%EA%B8%B0%EC%88%A0%EC%A0%81-%EC%9D%B4%EC%8A%88)  
 # [메인 페이지 바로가기](https://www.notion.so/Clomia-LifeGame-7d6029a23c024d748fed96292923cc20)  
 ## 셀룰러 오토마타([cellular automata](https://en.wikipedia.org/wiki/Cellular_automaton))를 기반으로 하는 만든 PVP게임
-Latest v.1.0.0-alpha 테스트 버전 배포 완료 (2021.4.28)  
+
+   * v.1.0.0-alpha 배포 완료 (2021.4.28)  
+
 [![youtube](https://media.githubusercontent.com/media/clomia/LifeGame/master/media/loose_thombnail.jpg)](https://youtu.be/MCcvHmha7Hc "Clomia LifeGame 루즈한 시연영상")
 * v1.0.0-alpha시점에서는 2차원 로직만 존재합니다.  
 * 차후 3차원 cellular automata를 구현할 예정입니다.  
