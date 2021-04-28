@@ -2,7 +2,7 @@
 
 [![wakatime](https://wakatime.com/badge/github/clomia/LifeGame.svg)](https://wakatime.com/badge/github/clomia/LifeGame)  
 ### [Wiki 바로가기](https://github.com/clomia/LifeGame/wiki/%EA%B8%B0%EC%88%A0%EC%A0%81-%EC%9D%B4%EC%8A%88)  
-# [메인 페이지 바로가기](https://www.notion.so/Clomia-LifeGame-7d6029a23c024d748fed96292923cc20)  
+# [메인 페이지 바로가기 - Go to Web page](https://www.notion.so/Clomia-LifeGame-7d6029a23c024d748fed96292923cc20)  
 ## 셀룰러 오토마타([cellular automata](https://en.wikipedia.org/wiki/Cellular_automaton))를 기반으로 하는 만든 PVP게임
 
    * v.1.0.0-alpha 배포 완료 (2021.4.28)  
