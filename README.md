@@ -1,4 +1,4 @@
-아래 이미지를 클릭하여 플레이 영상으로 이동합니다.
+아래 이미지를 클릭하여 게임 시연 영상으로 이동합니다.
 ---
 Click on the image below to move to the play Game Demonstration Video.
 [![youtube](https://media.githubusercontent.com/media/clomia/LifeGame/master/media/intro.jpg)](https://youtu.be/MCcvHmha7Hc "Clomia LifeGame")  
