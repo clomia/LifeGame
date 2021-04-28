@@ -21,5 +21,10 @@
 [(2021.4.28) v1.0.0-alpha 다운로드 / Download](https://www.notion.so/Clomia-LifeGame-7d6029a23c024d748fed96292923cc20)
 
 ---
+
+[Nomad Coders 사이드 프로젝트 컨테스트 게시글](https://nomadcoders.co/community/thread/650)  
+
+|
+
 [![youtube](https://media.githubusercontent.com/media/clomia/LifeGame/master/media/env2.jpg)](https://youtu.be/4THEgXY8xdc "Clomia LifeGame - 무한증식
 ")
