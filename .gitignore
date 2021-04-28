@@ -8,6 +8,8 @@ media/*
 !media/icon_design.jpg
 !media/Logo.png
 !media/env2.jpg
+!media/main.jpg
+!media/intro.jpg
 apps/*
 env/*
 test/*
