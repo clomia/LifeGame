@@ -10,6 +10,7 @@ media/*
 !media/env2.jpg
 !media/main.jpg
 !media/intro.jpg
+!media/home.jpg
 apps/*
 env/*
 test/*
