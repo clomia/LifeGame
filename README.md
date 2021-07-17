@@ -1,3 +1,5 @@
+## [--Wiki--](https://github-wiki-see.page/m/clomia/LifeGame/wiki)
+
 아래 이미지를 클릭하여 게임 시연 영상으로 이동합니다.
 ---
 Click on the image below to move to the play Game Demonstration Video.
