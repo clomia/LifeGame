@@ -1,5 +1,3 @@
-## [--Wiki--](https://github-wiki-see.page/m/clomia/LifeGame/wiki)
-
 아래 이미지를 클릭하여 게임 시연 영상으로 이동합니다.
 ---
 Click on the image below to move to the play Game Demonstration Video.
@@ -11,7 +9,7 @@ Click on the image below to move to the play Game Demonstration Video.
 
 <img src="https://media.githubusercontent.com/media/clomia/LifeGame/master/media/Logo.png" width="100" height="100">  
 
-### [Wiki 바로가기](https://github.com/clomia/LifeGame/wiki/%EA%B8%B0%EC%88%A0%EC%A0%81-%EC%9D%B4%EC%8A%88)  
+### [기술적 이슈... (구현 사항)](https://github.com/clomia/LifeGame/wiki/%EA%B8%B0%EC%88%A0%EC%A0%81-%EC%9D%B4%EC%8A%88)  
 # [메인 페이지 바로가기 - Go to Web page](https://www.notion.so/Clomia-LifeGame-7d6029a23c024d748fed96292923cc20)  
 ## 셀룰러 오토마타([cellular automata](https://en.wikipedia.org/wiki/Cellular_automaton))를 기반으로 하는 만든 PVP게임
 
