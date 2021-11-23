@@ -283,15 +283,7 @@ class PropheticGrid(Mapping):
 
 
 if __name__ == "__main__":
-    """
-    bprin = {}
-    for i in range(225):
-        if i % 2 == 0:
-            bprin[(-i, i)] = 1
-        else:
-            bprin[(-i, i)] = 2
-    print(f"FieldSet-> {bprin}")
-    """
+
     infinity_pattern = {
         (1, 1): 1,
         (2, 2): 2,
@@ -322,33 +314,34 @@ if __name__ == "__main__":
     }
     iterator = PropheticGrid(infinity_pattern)
     count = 0
-    count_count = 0
+    step = 0
     import time
 
     counter = int(input("이터레이션 횟수 입력: "))
     start = pre_now = time.time()
     for (delta, space), _ in zip(iterator, range(counter)):
-        # print(delta)
         count += 1
         if count < 20:
-            print(count + count_count * 20, end=",")
+            print(count + step * 20, end=",")
         else:
             now = time.time()
             time_delta = now - pre_now
             pre_now = now
             print(
-                count + count_count * 20,
-                f" || {count + count_count * 20}세대에서의 세포 갯수: {space.state()[1] + space.state()[2]}, 20세대 연산하는데 걸린 시간: {time_delta:.3f}초, 1세대 연산시간 평균: {time_delta/20:.4f}초",
+                count + step * 20,
+                f" || {count + step * 20}세대에서의 세포 갯수: {space.state()[1] + space.state()[2]}, 20세대 연산하는데 걸린 시간: {time_delta:.3f}초, 1세대 연산시간 평균: {time_delta/20:.4f}초",
             )
             count = 0
-            count_count += 1
+            step += 1
     finish = time.time()
     print(f"\n{counter}세대 이터레이션 하는데 걸린 시간: {finish-start}초")
-    # print(f"마지막 delta={delta}")
+
     """ 
     1000번 이터레이션 
     평균 3.7초
     10000번 이터레이션
     178초 
-    :위 패턴의 경우 세포 수가 70개로 시작해서 10000세대에에서는 2460개가 된다.
+    +위 패턴의 경우 세포 수가 70개로 시작해서 10000세대에에서는 2460개가 된다.
+
+    알고리즘 테스트 기록: https://github.com/clomia/LifeGame/blob/master/Prophecy%20Test%20Data.txt
     """
