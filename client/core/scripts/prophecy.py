@@ -167,7 +167,7 @@ class PropheticGrid(Mapping):
 
     @staticmethod
     def delta(previous_space: Space, next_space: Space) -> Delta:
-        """ Space 사이의 Delta를 반환한다"""
+        """ Space 사이의 Delta를 반환한다 """
         delta_dict = {}
         for n_co, n_cell in next_space:
             if previous_space[n_co] != n_cell:
