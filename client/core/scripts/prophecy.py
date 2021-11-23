@@ -65,7 +65,7 @@ class PropheticGrid(Mapping):
     (ins)[x] : x세대의 Space를 반환한다. / (ins)[x,y] x~(y-1)까지의 세대를 반환한다.
     ~(ins) : Field을 얼려서 반환한다.
     -(ins) : 시간을 뒤집어서 반환한다. 이 영향으로 Field이 얼게된다.
-    len(int) : 소멸점 까지 걸리는 세대를 반환한다. 소멸점을 모르는 동안에는 0을 반환한다.
+    len(ins) : 소멸점 까지 걸리는 세대를 반환한다. 소멸점을 모르는 동안에는 0을 반환한다.
 
     Field 추출 , 시간역행 , Field얼리기 등 얼마든지 조합해서 구현할수 있다.
 
@@ -208,7 +208,7 @@ class PropheticGrid(Mapping):
 
     def __getitem__(self, generation: int):
         """
-        (int)[x] 를 정의한다
+        (ins)[x] 를 정의한다
         """
         try:
             return self.space_list[generation]
