@@ -62,7 +62,7 @@ class PropheticGrid(Mapping):
 
     for delta in (ins) : 시작점부터 Delta를 이터레이션한다.
     for delta in -(ins) : 종단점~시작점까지 시간을 역행할수 있는 Delta를 이터레이션한다.
-    (ins)[x] : x세대의 Space를 반환한다. / (ins)[x,y] x~(y-1)까지의 세대를 반환한다.
+    (ins)[x] : x세대의 Space를 반환한다. / (ins)[x:y] x~(y-1)까지의 세대를 반환한다.
     ~(ins) : Field을 얼려서 반환한다.
     -(ins) : 시간을 뒤집어서 반환한다. 이 영향으로 Field이 얼게된다.
     len(ins) : 소멸점 까지 걸리는 세대를 반환한다. 소멸점을 모르는 동안에는 0을 반환한다.
